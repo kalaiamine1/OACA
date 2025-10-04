@@ -1,0 +1,494 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sign Up - OACA Tunisia</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-blue: #1e40af;
+      --secondary-blue: #3b82f6;
+      --accent-blue: #60a5fa;
+      --neutral-50: #f8fafc;
+      --neutral-100: #f1f5f9;
+      --neutral-200: #e2e8f0;
+      --neutral-300: #cbd5e1;
+      --neutral-400: #94a3b8;
+      --neutral-500: #64748b;
+      --neutral-600: #475569;
+      --neutral-700: #334155;
+      --neutral-800: #1e293b;
+      --neutral-900: #0f172a;
+      --error-red: #dc2626;
+      --error-bg: #fef2f2;
+      --error-border: #fecaca;
+      --success-green: #16a34a;
+      --success-bg: #f0fdf4;
+      --success-border: #bbf7d0;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: radial-gradient(1200px 800px at 20% 30%, #13306b 0%, #0d1f4a 60%, #091735 100%),
+                  linear-gradient(135deg, #0b1d44 0%, #0a1a3d 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: absolute;
+      inset: -50% -50% -50% -50%;
+      background-image: 
+        radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.12) 0%, transparent 55%),
+        radial-gradient(circle at 80% 20%, rgba(30, 64, 175, 0.10) 0%, transparent 55%),
+        radial-gradient(circle at 40% 40%, rgba(147, 197, 253, 0.08) 0%, transparent 55%);
+      animation: float 20s ease-in-out infinite;
+      z-index: -2;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-20px) rotate(1deg); }
+    }
+
+    .signup-container {
+      width: 100%;
+      max-width: 480px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .signup-card {
+      background: rgba(255, 255, 255, 0.18);
+      backdrop-filter: blur(28px) saturate(140%) contrast(105%);
+      -webkit-backdrop-filter: blur(28px) saturate(140%) contrast(105%);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: 24px;
+      padding: 48px 40px;
+      box-shadow: 
+        0 20px 25px -5px rgba(0, 0, 0, 0.3),
+        0 10px 10px -5px rgba(0, 0, 0, 0.22),
+        0 0 0 1px rgba(255, 255, 255, 0.06);
+      position: relative; 
+      overflow: hidden;
+    }
+
+    .signup-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary-blue), var(--secondary-blue), var(--accent-blue));
+    }
+
+    .brand-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .brand-logo {
+      width: 64px;
+      height: 64px;
+      background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .brand-logo::before {
+      content: '✈';
+      font-size: 28px;
+      color: white;
+      transform: rotate(-45deg);
+    }
+
+    .brand-title {
+      font-size: 28px;
+      font-weight: 700;
+      color: #eaf2ff;
+      margin-bottom: 8px;
+      letter-spacing: -0.025em;
+      text-shadow: 0 1px 1px rgba(0,0,0,0.35);
+    }
+
+    .brand-subtitle {
+      font-size: 16px;
+      color: #b7c6e6;
+      font-weight: 500;
+      text-shadow: 0 1px 1px rgba(0,0,0,0.25);
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: #dbe7ff;
+      margin-bottom: 8px;
+      letter-spacing: 0.025em;
+      text-shadow: 0 1px 1px rgba(0,0,0,0.25);
+    }
+
+    .form-input, .form-select {
+      width: 100%;
+      padding: 14px 18px;
+      font-size: 15px;
+      font-family: inherit;
+      background: rgba(255,255,255,0.14);
+      color: #f5f8ff;
+      border: 2px solid rgba(255,255,255,0.2);
+      border-radius: 12px;
+      transition: all 0.2s ease;
+      outline: none;
+    }
+
+    .form-select {
+      cursor: pointer;
+    }
+
+    .form-select option {
+      background: var(--neutral-800);
+      color: white;
+    }
+
+    .input-group { position: relative; }
+    .input-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 18px; height: 18px;
+      color: #99a9cc;
+      pointer-events: none;
+      display: inline-flex; align-items: center; justify-content: center;
+      text-shadow: 0 1px 1px rgba(0,0,0,0.15);
+    }
+    .input-group .form-input { padding-left: 44px; }
+
+    .form-input:focus, .form-select:focus {
+      background: rgba(255,255,255,0.2);
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.22);
+    }
+
+    .form-input::placeholder {
+      color: var(--neutral-400);
+    }
+
+    .signup-button {
+      width: 100%;
+      padding: 16px 24px;
+      font-size: 16px;
+      font-weight: 600;
+      font-family: inherit;
+      background: linear-gradient(135deg, #274bcc, #3b82f6);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: relative;
+      overflow: hidden;
+      margin-top: 8px;
+    }
+
+    .signup-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px -5px rgba(30, 64, 175, 0.5);
+    }
+
+    .signup-button:active {
+      transform: translateY(0);
+    }
+
+    .signup-button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .notice {
+      margin-top: 20px;
+      padding: 16px 20px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 500;
+      display: none;
+      animation: slideIn 0.3s ease;
+    }
+
+    .error-notice {
+      background: var(--error-bg);
+      border: 1px solid var(--error-border);
+      color: var(--error-red);
+    }
+
+    .success-notice {
+      background: var(--success-bg);
+      border: 1px solid var(--success-border);
+      color: var(--success-green);
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .footer-text {
+      text-align: center;
+      margin-top: 32px;
+      font-size: 14px;
+      color: #94a3c2;
+      text-shadow: 0 1px 1px rgba(0,0,0,0.2);
+    }
+
+    .footer-text a {
+      color: var(--accent-blue);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .footer-text a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 480px) {
+      .signup-card { padding: 32px 24px; border-radius: 16px; }
+      .brand-title { font-size: 24px; }
+      .form-input, .signup-button { padding: 14px 16px; }
+      .form-row { grid-template-columns: 1fr; }
+    }
+
+    .loading { position: relative; }
+    .loading::after {
+      content: '';
+      position: absolute;
+      width: 20px; height: 20px; margin: auto;
+      border: 2px solid transparent; border-top-color: currentColor;
+      border-radius: 50%; animation: spin 1s linear infinite;
+      top: 0; left: 0; bottom: 0; right: 0;
+    }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+    .bg-airplane {
+      position: absolute;
+      opacity: 0.08;
+      color: #bcd3ff;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .terms-checkbox {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .terms-checkbox input[type="checkbox"] {
+      margin-top: 4px;
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+
+    .terms-checkbox label {
+      font-size: 14px;
+      color: #dbe7ff;
+      line-height: 1.5;
+    }
+
+    .terms-checkbox a {
+      color: var(--accent-blue);
+      text-decoration: none;
+    }
+
+    .terms-checkbox a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <span class="bg-airplane" style="left: 6%; top: 14%; font-size: 72px; transform: rotate(-20deg);">✈</span>
+  <span class="bg-airplane" style="left: 86%; top: 18%; font-size: 64px; transform: rotate(15deg);">✈</span>
+  <span class="bg-airplane" style="left: 10%; top: 78%; font-size: 68px; transform: rotate(8deg);">✈</span>
+  <span class="bg-airplane" style="left: 70%; top: 75%; font-size: 80px; transform: rotate(-35deg);">✈</span>
+
+  <div class="signup-container">
+    <div class="signup-card">
+      <div class="brand-header">
+        <div class="brand-logo"></div>
+        <h1 class="brand-title">Join OACA Tunisia</h1>
+        <p class="brand-subtitle">Create your aviation career account</p>
+      </div>
+      <form id="signupForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="firstName" class="form-label">First Name</label>
+            <input id="firstName" type="text" class="form-input" placeholder="Ahmed" required>
+          </div>
+          <div class="form-group">
+            <label for="lastName" class="form-label">Last Name</label>
+            <input id="lastName" type="text" class="form-input" placeholder="Ben Ali" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="email" class="form-label">Email Address</label>
+          <div class="input-group">
+            <span class="input-icon">✉</span>
+            <input id="email" type="email" class="form-input" placeholder="ahmed.benali@email.com" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="phone" class="form-label">Phone Number</label>
+          <div class="input-group">
+            <span class="input-icon">📱</span>
+            <input id="phone" type="tel" class="form-input" placeholder="+216 XX XXX XXX" required>
+          </div>
+        </div>
+
+        <!-- Role selection removed; new signups default to 'user' role -->
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="password" class="form-label">Password</label>
+            <div class="input-group">
+              <span class="input-icon">🔒</span>
+              <input id="password" type="password" class="form-input" placeholder="Min. 8 characters" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="confirmPassword" class="form-label">Confirm Password</label>
+            <div class="input-group">
+              <span class="input-icon">🔒</span>
+              <input id="confirmPassword" type="password" class="form-input" placeholder="Repeat password" required>
+            </div>
+          </div>
+        </div>
+
+        <div class="terms-checkbox">
+          <input type="checkbox" id="terms" required>
+          <label for="terms">
+            I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+          </label>
+        </div>
+        
+        <button id="signupBtn" type="submit" class="signup-button">Create Account</button>
+        <div id="error" class="notice error-notice"></div>
+        <div id="success" class="notice success-notice"></div>
+      </form>
+      <p class="footer-text">
+        Already have an account? <a href="login.html">Sign in</a>
+      </p>
+    </div>
+  </div>
+  <script>
+    const form = document.getElementById('signupForm');
+    const signupBtn = document.getElementById('signupBtn');
+    const errorDiv = document.getElementById('error');
+    const successDiv = document.getElementById('success');
+    
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      signupBtn.disabled = true; 
+      signupBtn.classList.add('loading'); 
+      signupBtn.textContent = ''; 
+      errorDiv.style.display = 'none';
+      successDiv.style.display = 'none';
+      
+      const firstName = document.getElementById('firstName').value.trim();
+      const lastName = document.getElementById('lastName').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+      const terms = document.getElementById('terms').checked;
+      
+      // Validation
+      if (!firstName || !lastName || !email || !phone || !password || !confirmPassword) {
+        showError('Please fill in all fields');
+        resetButton();
+        return;
+      }
+      
+      if (password.length < 8) {
+        showError('Password must be at least 8 characters long');
+        resetButton();
+        return;
+      }
+      
+      if (password !== confirmPassword) {
+        showError('Passwords do not match');
+        resetButton();
+        return;
+      }
+      
+      if (!terms) {
+        showError('Please accept the Terms of Service and Privacy Policy');
+        resetButton();
+        return;
+      }
+      
+      // Email validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        showError('Please enter a valid email address');
+        resetButton();
+        return;
+      }
+      
+      // Simulate signup process: redirect to /login after success
+      setTimeout(() => {
+        showSuccess('Account created successfully! Redirecting to login...');
+        setTimeout(() => { window.location.href = '/login'; }, 2000);
+      }, 1500);
+    });
+    
+    function showError(message) { 
+      errorDiv.textContent = message; 
+      errorDiv.style.display = 'block'; 
+    }
+    
+    function showSuccess(message) { 
+      successDiv.textContent = message; 
+      successDiv.style.display = 'block'; 
+    }
+    
+    function resetButton() {
+      signupBtn.disabled = false; 
+      signupBtn.classList.remove('loading'); 
+      signupBtn.textContent = 'Create Account';
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,865 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin Dashboard - OACA</title>
+  <style>
+    :root {
+      --bg1: #0b1d44;
+      --bg2: #0a1a3d;
+      --glass: rgba(255,255,255,0.08);
+      --glass-border: rgba(255,255,255,0.14);
+      --text: #e6eeff;
+      --muted: #9db0d9;
+      --accent: #3b82f6;
+      --accent-2: #60a5fa;
+      --success: #22c55e;
+      --danger: #ef4444;
+    }
+
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      color: var(--text);
+      background: radial-gradient(1200px 800px at 20% 30%, #13306b 0%, #0d1f4a 60%, #091735 100%),
+                  linear-gradient(135deg, var(--bg1) 0%, var(--bg2) 100%);
+      background-attachment: fixed;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    }
+
+    .container { max-width: 1100px; margin: 0 auto; padding: 24px; }
+
+    header {
+      position: sticky; top: 0; z-index: 10;
+      display:flex; justify-content: space-between; align-items: center;
+      padding: 16px 24px; margin: -12px -12px 16px; border-radius: 16px;
+      background: rgba(255,255,255,0.06);
+      backdrop-filter: blur(16px) saturate(140%);
+      -webkit-backdrop-filter: blur(16px) saturate(140%);
+      border: 1px solid var(--glass-border);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    }
+
+    h1 { margin: 0; font-size: 20px; letter-spacing: 0.3px; }
+    .muted { color: var(--muted); }
+
+    .nav {
+      display:flex; gap:8px; margin: 16px 0; flex-wrap: wrap;
+    }
+    .tab {
+      border: 1px solid var(--glass-border);
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      border-radius: 12px;
+      padding: 10px 12px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .tab.active { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(59,130,246,0.25) inset; }
+    .tab.disabled { opacity: .45; pointer-events: none; }
+
+    .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 16px; }
+    .card {
+      grid-column: span 12;
+      border: 1px solid var(--glass-border);
+      background: var(--glass);
+      backdrop-filter: blur(20px) saturate(140%);
+      -webkit-backdrop-filter: blur(20px) saturate(140%);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+    }
+
+    .section#section-users {
+      grid-column: 1 / -1;
+      width: 100%;
+    }
+
+    .section#section-users .card {
+      width: 100%;
+      max-width: none;
+      padding: 24px;
+    }
+    .section#section-quiz {
+      grid-column: 1 / -1;
+      width: 100%;
+    }
+    .section#section-quiz .card {
+      width: 100%;
+      max-width: none;
+      padding: 24px;
+    }
+    .section#section-report {
+      grid-column: 1 / -1;
+      width: 100%;
+    }
+    .section#section-report .card {
+      width: 100%;
+      max-width: none;
+      padding: 24px;
+    }
+    .section#section-reunion {
+      grid-column: 1 / -1;
+      width: 100%;
+    }
+    .section#section-reunion .card {
+      width: 100%;
+      max-width: none;
+      padding: 24px;
+    }
+    @media (min-width: 900px) {
+      .card.half { grid-column: span 6; }
+    }
+
+    @media (max-width: 768px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+      
+      .form-group.form-actions {
+        align-items: stretch;
+      }
+      
+      .form-group.form-actions .btn {
+        width: 100%;
+      }
+      
+      .section-header {
+        flex-direction: column;
+        gap: 12px;
+        align-items: stretch;
+      }
+      
+      .section-header .btn {
+        width: 100%;
+      }
+    }
+
+    .card h2 { margin: 0 0 8px; font-size: 18px; }
+    .card p { margin: 0 0 20px; }
+
+    .form-section {
+      margin-bottom: 32px;
+      padding: 20px;
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      background: rgba(255,255,255,0.03);
+    }
+
+    .form-section:last-child {
+      margin-bottom: 0;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      align-items: end;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-group.form-actions {
+      display: flex;
+      justify-content: flex-start;
+      align-items: flex-end;
+    }
+
+    .form-actions-container {
+      margin-top: 20px;
+      display: flex;
+      justify-content: flex-start;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .users-list {
+      max-height: 400px;
+      overflow-y: auto;
+      border: 1px solid var(--glass-border);
+      border-radius: 8px;
+      background: rgba(255,255,255,0.02);
+    }
+
+    .users-list li {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--glass-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background-color 0.2s ease;
+    }
+
+    .users-list li:last-child {
+      border-bottom: none;
+    }
+
+    .users-list li:hover {
+      background: rgba(255,255,255,0.05);
+    }
+
+    .user-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      width: 100%;
+    }
+
+    .user-email {
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .user-details {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .user-role {
+      font-size: 12px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      background: rgba(59, 130, 246, 0.2);
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+
+    .user-matricule {
+      font-size: 12px;
+      color: var(--accent-2);
+      font-family: monospace;
+      background: rgba(96, 165, 250, 0.1);
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+
+    .btn {
+      border: 1px solid var(--accent);
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color:#fff; border-radius:10px; padding:10px 12px; cursor:pointer;
+      font-weight: 600; letter-spacing: .2px; box-shadow: 0 6px 18px rgba(59,130,246,.35);
+      transition: transform .15s ease, box-shadow .15s ease, opacity .15s ease;
+    }
+    .btn:hover { transform: translateY(-1px); box-shadow: 0 10px 22px rgba(59,130,246,.45); }
+    .btn.secondary { background: transparent; color: var(--text); border-color: var(--glass-border); box-shadow: none; }
+    .btn.secondary:hover { background: rgba(255,255,255,0.06); }
+
+    input, select {
+      padding: 10px 12px; border-radius: 10px; border: 1px solid var(--glass-border);
+      background: rgba(255,255,255,0.08); color: var(--text);
+      outline: none; min-width: 220px; backdrop-filter: blur(6px);
+    }
+    label { display:block; margin: 0 0 6px; font-weight: 600; }
+
+    ul { list-style: none; padding: 0; margin: 10px 0 0; }
+    ul li { padding: 8px 10px; border: 1px solid var(--glass-border); background: rgba(255,255,255,0.05); border-radius: 10px; margin-bottom: 8px; }
+
+    .header-actions { display:flex; align-items:center; gap: 8px; }
+
+    .section { display: none; }
+    .section.active { display: block; }
+
+    /* Polished cards for Report and Reunion */
+    #scoresPanel.card, #reunionPanel.card {
+      border: 1px solid var(--glass-border);
+      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+      backdrop-filter: blur(18px) saturate(140%);
+      -webkit-backdrop-filter: blur(18px) saturate(140%);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 16px 36px rgba(0,0,0,0.28);
+    }
+    #scoresPanel h2, #reunionPanel h2 { margin-bottom: 6px; }
+    #scoresPanel .muted, #reunionPanel .muted { margin-bottom: 14px; }
+    /* List item styling */
+    #scoresList li, #meetingsList li {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 14px;
+      border: 1px solid var(--glass-border);
+      background: rgba(255,255,255,0.05);
+      border-radius: 10px;
+      transition: background-color 0.2s ease, border-color 0.2s ease;
+    }
+    #scoresList li:hover, #meetingsList li:hover {
+      background: rgba(255,255,255,0.07);
+      border-color: rgba(255,255,255,0.22);
+    }
+    /* Support two-line layout inside list items when needed */
+    .list-col { display:flex; flex-direction: column; gap: 4px; }
+    .dim { color: var(--muted); font-size: 12px; }
+  </style>
+  <script>
+  // Protect page: redirect to login if not authenticated
+  (async () => {
+    try {
+      const res = await fetch('/api/me', { credentials: 'include' });
+      if (!res.ok) { window.location.href = '/login.html'; return; }
+      const me = await res.json();
+      // Set label immediately if element exists
+      const who = document.getElementById('who');
+      if (who) { who.textContent = `${me.email} (${me.role})`; }
+      else {
+        document.addEventListener('DOMContentLoaded', () => {
+          const w2 = document.getElementById('who');
+          if (w2) w2.textContent = `${me.email} (${me.role})`;
+        });
+      }
+      // Initialize tabs right away
+      setupTabs(me.role);
+    } catch (e) {
+      window.location.href = '/login.html';
+    }
+  })();
+
+  function setupTabs(role) {
+    const tabs = {
+      users: document.getElementById('tab-users'),
+      quiz: document.getElementById('tab-quiz'),
+      report: document.getElementById('tab-report'),
+      reunion: document.getElementById('tab-reunion'),
+    };
+    const sections = {
+      users: document.getElementById('section-users'),
+      quiz: document.getElementById('section-quiz'),
+      report: document.getElementById('section-report'),
+      reunion: document.getElementById('section-reunion'),
+    };
+
+    if (!tabs.users || !sections.users) return;
+
+    // Limit access for non-admins
+    if (role !== 'admin') {
+      tabs.users.classList.add('disabled');
+      tabs.report.classList.add('disabled');
+    }
+
+    function activate(name) {
+      for (const key of Object.keys(sections)) {
+        sections[key].classList.toggle('active', key === name);
+        tabs[key].classList.toggle('active', key === name);
+      }
+      if (name === 'reunion') {
+        loadMeetings();
+      }
+    }
+
+    // Default active tab
+    activate(role === 'admin' ? 'users' : 'quiz');
+
+    tabs.users.addEventListener('click', () => activate('users'));
+    tabs.quiz.addEventListener('click', () => activate('quiz'));
+    tabs.report.addEventListener('click', () => activate('report'));
+    tabs.reunion.addEventListener('click', () => activate('reunion'));
+  }
+  </script>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>OACA Admin Dashboard</h1>
+      <div class="header-actions">
+        <span class="muted" id="who"></span>
+        <button class="btn secondary" onclick="logout()">Logout</button>
+      </div>
+    </header>
+
+    <nav class="nav">
+      <button id="tab-users" class="tab">User Management</button>
+      <button id="tab-quiz" class="tab">Quiz Management</button>
+      <button id="tab-report" class="tab">Report</button>
+      <button id="tab-reunion" class="tab">Reunion Report</button>
+    </nav>
+
+    <div class="grid">
+      <section id="section-users" class="section">
+        <div class="card" id="adminPanel" style="display:none;">
+          <h2>User Management</h2>
+          <p class="muted">Create and manage user accounts for the OACA system.</p>
+          
+          <div class="form-section">
+            <h3 style="margin: 0 0 16px; font-size: 16px; color: var(--text);">Create New User</h3>
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Email Address</label>
+                <input id="newUserEmail" type="email" placeholder="user@example.com" required>
+              </div>
+              <div class="form-group">
+                <label>Role</label>
+                <select id="newUserRole">
+                  <option value="user">User</option>
+                  <option value="admin">Admin</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-actions-container">
+              <button class="btn" onclick="createUser()">Create User & Send Email</button>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <div class="section-header">
+              <h3 style="margin: 0; font-size: 16px; color: var(--text);">User List</h3>
+              <button class="btn secondary" onclick="loadUsers()">Refresh Users</button>
+            </div>
+            <ul id="usersList" class="users-list"></ul>
+          </div>
+        </div>
+      </section>
+
+      <section id="section-quiz" class="section">
+        <div class="card">
+          <h2>Quiz Management</h2>
+          <p class="muted">Create a new quiz assignment and review existing assignments.</p>
+          <div class="form-section">
+            <h3 style="margin: 0 0 12px; font-size: 16px;">Create Quiz Assignment</h3>
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Candidate</label>
+                <select id="assignUser"></select>
+                <div class="muted" style="font-size:12px;">Pick from existing users</div>
+              </div>
+              <div class="form-group">
+                <label>Sections (sum = 15)</label>
+                <div id="sectionsContainer"></div>
+                <div class="muted" style="font-size:12px;">Remaining: <span id="remaining">15</span></div>
+              </div>
+              <div class="form-group form-actions">
+                <button id="createBtn" class="btn" onclick="createAssignment()" disabled>Create Quiz</button>
+              </div>
+            </div>
+            <div id="assignInfo" class="muted" style="margin-top:8px;"></div>
+          </div>
+          <div class="form-actions-container" style="gap:8px; display:flex; margin-bottom: 12px;">
+            <button class="btn secondary" onclick="loadAssignments()">Refresh Assignments</button>
+          </div>
+          <div class="form-section">
+            <div class="section-header">
+              <h3 style="margin: 0; font-size: 16px;">Assignments</h3>
+            </div>
+            <ul id="assignmentsList"></ul>
+          </div>
+
+        </div>
+      </section>
+
+      <section id="section-report" class="section">
+        <div class="card" id="scoresPanel" style="display:none;">
+          <h2>Report</h2>
+          <p class="muted">Overall scores submitted by users.</p>
+          <button class="btn secondary" onclick="loadScores()">Refresh Scores</button>
+          <ul id="scoresList"></ul>
+        </div>
+      </section>
+
+      <section id="section-reunion" class="section">
+        <div class="card" id="reunionPanel" style="display:none;">
+          <h2>Reunion Report</h2>
+          <p class="muted">Interviews planned (reunions). You can also plan a new interview.</p>
+          <div class="form-section" style="margin-bottom:16px;">
+            <h3 style="margin: 0 0 12px; font-size: 16px;">Planify Interview</h3>
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Candidate Email</label>
+                <input id="planEmail" type="email" placeholder="candidate@example.com">
+              </div>
+              <div class="form-group">
+                <label>Date & Time</label>
+                <input id="planDatetime" type="datetime-local">
+              </div>
+              <div class="form-group">
+                <label>Duration (minutes)</label>
+                <input id="planDuration" type="number" min="1" step="5" value="30">
+              </div>
+              <div class="form-group form-actions">
+                <button class="btn" onclick="planifyInterview()">Planify</button>
+              </div>
+            </div>
+            <div id="planSuccess" style="display:none; background:#f0fdf4; color:#166534; border:1px solid #bbf7d0; padding:10px; border-radius:6px; margin-top:8px;"></div>
+            <div id="planError" style="display:none; background:#fef2f2; color:#dc2626; border:1px solid #fecaca; padding:10px; border-radius:6px; margin-top:8px;"></div>
+          </div>
+          <ul id="meetingsList"></ul>
+        </div>
+      </section>
+    </div>
+
+  </div>
+
+  <script>
+  async function logout() {
+    try { await fetch('/api/logout', { method: 'POST', credentials: 'include' }); }
+    finally { window.location.href = '/login.html'; }
+  }
+
+  // Admin panels logic
+  document.addEventListener('DOMContentLoaded', async () => {
+    const meRes = await fetch('/api/me', { credentials: 'include' });
+    if (meRes.ok) {
+      const me = await meRes.json();
+      if (me.role === 'admin') {
+        document.getElementById('adminPanel').style.display = '';
+        document.getElementById('scoresPanel').style.display = '';
+        const reunionPanel = document.getElementById('reunionPanel');
+        if (reunionPanel) reunionPanel.style.display = '';
+        // Initialize quiz creation controls
+        try {
+          await Promise.all([loadUsersForAssign(), loadSectionsForAssign()]);
+          setupSectionAssignControls();
+          updateCreateAssignState();
+          loadAssignments();
+        } catch (e) {}
+        loadUsers();
+        loadScores();
+      }
+    }
+  });
+
+  async function loadUsersForAssign() {
+    const sel = document.getElementById('assignUser');
+    if (!sel) return;
+    sel.innerHTML = '';
+    const res = await fetch('/api/users', { credentials: 'include' });
+    if (!res.ok) return;
+    const users = await res.json();
+    const first = document.createElement('option');
+    first.value = '';
+    first.textContent = 'Select a candidate...';
+    sel.appendChild(first);
+    for (const u of users) {
+      const opt = document.createElement('option');
+      opt.value = u.email;
+      opt.textContent = `${u.email}${u.matricule ? ' — ' + u.matricule : ''}`;
+      sel.appendChild(opt);
+    }
+    sel.addEventListener('change', updateCreateAssignState);
+  }
+
+  async function loadSectionsForAssign() {
+    const container = document.getElementById('sectionsContainer');
+    if (!container) return;
+    container.innerHTML = '';
+    const res = await fetch('/api/quiz-sections', { credentials: 'include' });
+    if (!res.ok) return;
+    const sections = await res.json();
+    for (const s of sections) {
+      const wrap = document.createElement('div');
+      wrap.style.display = 'flex';
+      wrap.style.alignItems = 'center';
+      wrap.style.gap = '8px';
+      wrap.style.marginBottom = '6px';
+      wrap.innerHTML = `<label style="min-width:200px; margin:0;">${s.name} <span class="muted">(max ${s.count})</span></label><input type="number" min="0" max="${s.count}" step="1" value="0" data-section="${s.name}" data-last="0">`;
+      container.appendChild(wrap);
+    }
+  }
+
+  function setupSectionAssignControls() {
+    const inputs = document.querySelectorAll('#sectionsContainer input[type="number"]');
+    inputs.forEach(inp => {
+      inp.addEventListener('input', onAssignSectionChange);
+      inp.addEventListener('blur', onAssignSectionChange);
+    });
+  }
+
+  function assignCurrentTotal() {
+    let total = 0;
+    document.querySelectorAll('#sectionsContainer input[type="number"]').forEach(inp => {
+      total += (parseInt(inp.value || '0', 10) || 0);
+    });
+    return total;
+  }
+
+  function onAssignSectionChange(e) {
+    const t = e.target;
+    const max = parseInt(t.getAttribute('max') || '0', 10) || 0;
+    let v = parseInt(t.value || '0', 10) || 0;
+    if (v < 0) v = 0;
+    if (v > max) v = max;
+    const prev = parseInt(t.getAttribute('data-last') || '0', 10) || 0;
+    const totalWithout = assignCurrentTotal() - prev;
+    const remaining = 15 - totalWithout;
+    if (v > remaining) v = remaining;
+    t.value = String(v);
+    t.setAttribute('data-last', String(v));
+    updateCreateAssignState();
+  }
+
+  function updateCreateAssignState() {
+    const total = assignCurrentTotal();
+    const rem = document.getElementById('remaining');
+    if (rem) rem.textContent = String(Math.max(0, 15 - total));
+    const sel = document.getElementById('assignUser');
+    const btn = document.getElementById('createBtn');
+    const info = document.getElementById('assignInfo');
+    let err = '';
+    if (!sel || !sel.value) err = 'Select a candidate.';
+    else if (total < 15) err = 'Total must be exactly 15.';
+    else if (total > 15) err = 'Total exceeds 15.';
+    if (btn) btn.disabled = Boolean(err);
+    if (info) info.textContent = err ? err : '';
+  }
+
+  async function createUser() {
+    const email = document.getElementById('newUserEmail').value;
+    const role = document.getElementById('newUserRole').value;
+    
+    if (!email) {
+      alert('Please enter an email address');
+      return;
+    }
+    
+    // Show loading state
+    const createBtn = document.querySelector('.form-actions-container .btn');
+    const originalText = createBtn.textContent;
+    createBtn.disabled = true;
+    createBtn.textContent = 'Creating User...';
+    
+    try {
+      const response = await fetch('/api/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ email, role })
+      });
+      
+      const result = await response.json();
+      
+      if (response.ok) {
+        alert(`User created successfully!\n\nMatricule: ${result.matricule}\n\nWelcome email sent with login credentials.\n\nCheck the console for full credentials.`);
+        document.getElementById('newUserEmail').value = '';
+        await loadUsers();
+      } else {
+        alert('Error: ' + (result.error || 'Failed to create user'));
+      }
+    } catch (error) {
+      alert('Error: ' + error.message);
+    } finally {
+      // Reset button state
+      createBtn.disabled = false;
+      createBtn.textContent = originalText;
+    }
+  }
+
+  async function loadUsers() {
+    const ul = document.getElementById('usersList');
+    ul.innerHTML = '';
+    
+    try {
+      const res = await fetch('/api/users', { credentials: 'include' });
+      if (!res.ok) {
+        console.error('Failed to load users:', res.status);
+        ul.innerHTML = '<li style="color: var(--danger); text-align: center; padding: 20px;">Failed to load users</li>';
+        return;
+      }
+      
+      const users = await res.json();
+      
+      if (!users || users.length === 0) {
+        ul.innerHTML = '<li style="color: var(--muted); text-align: center; padding: 20px;">No users found</li>';
+        return;
+      }
+      
+      for (const u of users) {
+        const li = document.createElement('li');
+        li.innerHTML = `
+          <div class="user-info">
+            <div class="user-email">${u.email}</div>
+            <div class="user-details">
+              <span class="user-role">${u.role.toUpperCase()}</span>
+              ${u.matricule ? `<span class="user-matricule">Matricule: ${u.matricule}</span>` : ''}
+            </div>
+          </div>
+        `;
+        ul.appendChild(li);
+      }
+    } catch (error) {
+      console.error('Error loading users:', error);
+      ul.innerHTML = '<li style="color: var(--danger); text-align: center; padding: 20px;">Error loading users</li>';
+    }
+  }
+
+  async function loadScores() {
+    const ul = document.getElementById('scoresList');
+    ul.innerHTML = '';
+    const res = await fetch('/api/scores', { credentials: 'include' });
+    if (!res.ok) return;
+    const scores = await res.json();
+    for (const s of scores) {
+      const li = document.createElement('li');
+      li.textContent = `${s.email} — ${s.category || 'All'}: ${s.correct}/${s.total_with_keys} (attempted ${s.attempted})`;
+      ul.appendChild(li);
+    }
+  }
+  async function planifyInterview() {
+    const email = document.getElementById('planEmail').value.trim();
+    const dt = document.getElementById('planDatetime').value;
+    const duration = parseInt(document.getElementById('planDuration').value||'0',10)||0;
+    const successBox = document.getElementById('planSuccess');
+    const errorBox = document.getElementById('planError');
+    successBox.style.display = 'none'; successBox.textContent = '';
+    errorBox.style.display = 'none'; errorBox.textContent = '';
+    if (!email || !dt || !duration) { errorBox.textContent = 'Please fill all fields.'; errorBox.style.display='block'; return; }
+    // future date validation
+    const now = new Date();
+    const when = new Date(dt);
+    if (!(when instanceof Date) || isNaN(when.getTime()) || when <= now) {
+      errorBox.textContent = 'The interview date must be in the future.'; errorBox.style.display='block'; return;
+    }
+    const btn = document.querySelector('#section-reunion .form-actions .btn');
+    const prev = btn.textContent; btn.textContent = 'Planning...'; btn.disabled = true;
+    try {
+      const res = await fetch('/planify-interview', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ email, datetime: dt, duration })
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) { errorBox.textContent = data.error || 'Failed to plan.'; errorBox.style.display='block'; }
+      else {
+        successBox.textContent = 'Interview planned. Zoom: ' + (data.join_url || '');
+        successBox.style.display='block';
+        // reset inputs
+        document.getElementById('planEmail').value = '';
+        document.getElementById('planDatetime').value = '';
+        document.getElementById('planDuration').value = '30';
+        loadMeetings();
+      }
+    } catch (e) {
+      errorBox.textContent = String(e);
+      errorBox.style.display='block';
+    } finally {
+      btn.textContent = prev; btn.disabled = false;
+    }
+  }
+  // Set minimum datetime to now on load
+  document.addEventListener('DOMContentLoaded', () => {
+    const el = document.getElementById('planDatetime');
+    if (el) {
+      const now = new Date();
+      now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+      el.min = now.toISOString().slice(0,16);
+    }
+  });
+  async function loadSections() {
+    const container = document.getElementById('sectionsContainer');
+    container.innerHTML = '';
+    const res = await fetch('/api/quiz-sections', { credentials: 'include' });
+    if (!res.ok) return;
+    const sections = await res.json();
+    for (const s of sections) {
+      const wrap = document.createElement('div');
+      wrap.style.display = 'flex';
+      wrap.style.alignItems = 'center';
+      wrap.style.gap = '8px';
+      wrap.style.marginBottom = '6px';
+      wrap.innerHTML = `<label style="min-width:200px; margin:0;">${s.name} <span class="muted">(max ${s.count})</span></label><input type="number" min="0" max="${s.count}" step="1" value="0" data-section="${s.name}">`;
+      container.appendChild(wrap);
+    }
+  }
+  async function createAssignment() {
+    const sel = document.getElementById('assignUser');
+    const info = document.getElementById('assignInfo');
+    if (info) info.textContent = '';
+    const email = sel && sel.value ? sel.value.trim().toLowerCase() : '';
+    if (!email) { if (info) info.textContent = 'Select a candidate.'; return; }
+    const inputs = document.querySelectorAll('#sectionsContainer input[type="number"]');
+    const per_section = {};
+    let total = 0;
+    inputs.forEach(inp => { const v = parseInt(inp.value||'0',10)||0; per_section[inp.getAttribute('data-section')] = v; total += v; });
+    if (total !== 15) { if (info) info.textContent = 'Counts must sum to 15'; return; }
+    const btn = document.getElementById('createBtn') || document.querySelector('button.btn');
+    const prev = btn.textContent; btn.textContent = 'Creating...'; btn.disabled = true;
+    try {
+      const res = await fetch('/api/quiz-assignments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ email, per_section, total: 15 })
+      });
+      const data = await res.json();
+      if (!res.ok) { if (info) info.textContent = data.error || 'Failed'; }
+      else { if (info) info.textContent = 'Quiz created and candidate notified.'; loadAssignments(); }
+    } catch (e) {
+      if (info) info.textContent = String(e);
+    } finally {
+      btn.textContent = prev; btn.disabled = false;
+    }
+  }
+  async function loadAssignments() {
+    const ul = document.getElementById('assignmentsList');
+    if (!ul) return;
+    ul.innerHTML = '';
+    try {
+      const res = await fetch('/api/quiz-assignments', { credentials: 'include' });
+      if (!res.ok) return;
+      const rows = await res.json();
+      if (!rows.length) {
+        ul.innerHTML = '<li class="muted">No quiz assignments yet</li>';
+        return;
+      }
+      for (const r of rows) {
+        const li = document.createElement('li');
+        const started = r.started_at ? new Date(r.started_at).toLocaleString() : '';
+        const finished = r.finished_at ? new Date(r.finished_at).toLocaleString() : '';
+        li.textContent = `${r.email} — ${r.category || 'All'} — ${r.question_count || '?'} q — started ${started}${finished ? ' — finished ' + finished : ''}${typeof r.score === 'number' ? ` — score ${r.score}/${r.total_with_keys}` : ''}`;
+        ul.appendChild(li);
+      }
+    } catch (e) {}
+  }
+  </script>
+  <script>
+async function loadMeetings() {
+  const ul = document.getElementById('meetingsList');
+  ul.innerHTML = '';
+
+  try {
+    const res = await fetch('/meetings', { credentials: 'include' });
+    if (!res.ok) {
+      ul.innerHTML = '<li style="color:red;">Impossible de charger les réunions</li>';
+      return;
+    }
+
+    const meetings = await res.json();
+    if (!meetings.length) {
+      ul.innerHTML = '<li style="color:gray;">Aucune réunion planifiée</li>';
+      return;
+    }
+
+    meetings.forEach(m => {
+      const li = document.createElement('li');
+      li.innerHTML = `
+        <strong>${m.email}</strong> — ${new Date(m.datetime).toLocaleString()} — ${m.duration} min
+        <br><a href="${m.zoom_link}" target="_blank">Lien Zoom</a>
+      `;
+      ul.appendChild(li);
+    });
+  } catch (err) {
+    ul.innerHTML = '<li style="color:red;">Erreur lors du chargement</li>';
+    console.error(err);
+  }
+}
+
+// Meetings will load when the Reunion tab is activated
+</script>
+
+</body>
+</html>
+
+

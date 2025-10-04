@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Planifier Entretien</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    background: #f3f4f6; min-height:100vh;
+    display:flex; align-items:center; justify-content:center;
+    padding:20px; color:#1a1a1a;
+}
+.container {
+    background:#ffffff; border:1px solid #e5e7eb; border-radius:8px;
+    box-shadow:0 4px 6px -1px rgba(0,0,0,0.1),0 2px 4px -1px rgba(0,0,0,0.06);
+    padding:40px; width:100%; max-width:500px; position:relative;
+    animation:fadeIn 0.3s ease-out;
+}
+.container::before {
+    content:''; position:absolute; top:0; left:0; right:0; height:3px; background:#1f2937;
+}
+@keyframes fadeIn { from {opacity:0; transform: translateY(10px);} to {opacity:1; transform: translateY(0);} }
+h1 { text-align:center; color:#1f2937; font-size:2.25rem; font-weight:600; margin-bottom:10px; letter-spacing:-0.025em; }
+.subtitle { text-align:center; color:#6b7280; margin-bottom:40px; font-size:1rem; font-weight:400; }
+.form-group { margin-bottom:25px; position:relative; }
+label { display:block; color:#374151; font-weight:500; margin-bottom:8px; font-size:0.875rem; }
+input { width:100%; padding:12px 16px; border:1px solid #d1d5db; border-radius:6px; font-size:1rem; background:#ffffff; outline:none; }
+input:focus { border-color:#1f2937; box-shadow:0 0 0 3px rgba(31,41,55,0.1); }
+.btn-container { text-align:center; margin-top:35px; }
+button {
+    background:#1f2937; color:white; border:none; padding:14px 32px; border-radius:6px;
+    font-size:1rem; font-weight:500; cursor:pointer; transition:all 0.2s ease;
+}
+button:hover { background:#111827; }
+button:active { background:#0f172a; }
+button:disabled { opacity:0.7; cursor:not-allowed; }
+.success-message, .error-message {
+    display:none; padding:16px; border-radius:6px; margin-top:20px; text-align:center; font-weight:500;
+}
+.success-message { background:#f0fdf4; color:#166534; border:1px solid #bbf7d0; }
+.error-message { background:#fef2f2; color:#dc2626; border:1px solid #fecaca; }
+@media (max-width:600px) { .container { padding:30px 20px; margin:20px; } h1 { font-size:2rem; } button { width:100%; padding:18px; } }
+</style>
+</head>
+<body>
+<div class="container">
+    <h1>Planifier</h1>
+    <p class="subtitle">Planifiez vos entretiens professionnels</p>
+
+    <form id="interviewForm">
+        <div class="form-group">
+            <label>Email du candidat</label>
+            <input type="email" id="candidateEmail" placeholder="candidat@exemple.com" required>
+        </div>
+
+        <div class="form-group">
+            <label>Date et heure de l'entretien</label>
+            <input type="datetime-local" id="interviewDate" required>
+        </div>
+
+        <div class="form-group">
+            <label>Durée (minutes)</label>
+            <input type="number" id="interviewDuration" value="30" min="15" max="180" required>
+        </div>
+
+        <div class="btn-container">
+            <button type="button" onclick="planifierEntretien()">Planifier l'entretien</button>
+        </div>
+    </form>
+
+    <div class="success-message" id="successMessage">
+        <strong>🎉 Entretien planifié avec succès !</strong><br>
+        <span id="zoomLink"></span>
+    </div>
+
+    <div class="error-message" id="errorMessage">
+        <strong>❌ Erreur</strong><br>
+        <span id="errorText"></span>
+    </div>
+</div>
+
+<script>
+// Définir la date minimum à maintenant
+const now = new Date();
+now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+document.getElementById('interviewDate').min = now.toISOString().slice(0,16);
+
+async function planifierEntretien() {
+    const email = document.getElementById('candidateEmail').value;
+    const datetime = document.getElementById('interviewDate').value;
+    const duration = document.getElementById('interviewDuration').value;
+
+    if(!email || !datetime || !duration) {
+        showError('Veuillez remplir tous les champs obligatoires.');
+        return;
+    }
+
+    const selectedDate = new Date(datetime);
+    if(selectedDate <= new Date()) {
+        showError('La date de l\'entretien doit être dans le futur.');
+        return;
+    }
+
+    try {
+        const res = await fetch('/planify-interview', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, datetime, duration })
+        });
+
+        const data = await res.json();
+        if(data.success) {
+            showSuccess("Lien Zoom : " + data.join_url);
+            document.getElementById('interviewForm').reset();
+        } else {
+            showError(data.error || 'Erreur inconnue');
+        }
+    } catch(err) {
+        showError('Erreur réseau ou serveur');
+        console.error(err);
+    }
+}
+
+function showSuccess(message) {
+    hideMessages();
+    document.getElementById('zoomLink').textContent = message;
+    document.getElementById('successMessage').style.display = 'block';
+    document.getElementById('successMessage').scrollIntoView({behavior:'smooth'});
+}
+
+function showError(message) {
+    hideMessages();
+    document.getElementById('errorText').textContent = message;
+    document.getElementById('errorMessage').style.display = 'block';
+    document.getElementById('errorMessage').scrollIntoView({behavior:'smooth'});
+}
+
+function hideMessages() {
+    document.getElementById('successMessage').style.display='none';
+    document.getElementById('errorMessage').style.display='none';
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,507 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Login - OACA Aviation</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-blue: #1e40af;
+      --secondary-blue: #3b82f6;
+      --accent-blue: #60a5fa;
+      --neutral-50: #f8fafc;
+      --neutral-100: #f1f5f9;
+      --neutral-200: #e2e8f0;
+      --neutral-300: #cbd5e1;
+      --neutral-400: #94a3b8;
+      --neutral-500: #64748b;
+      --neutral-600: #475569;
+      --neutral-700: #334155;
+      --neutral-800: #1e293b;
+      --neutral-900: #0f172a;
+      --error-red: #dc2626;
+      --error-bg: #fef2f2;
+      --error-border: #fecaca;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: radial-gradient(1200px 800px at 20% 30%, #13306b 0%, #0d1f4a 60%, #091735 100%),
+                  linear-gradient(135deg, #0b1d44 0%, #0a1a3d 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Aviation-themed background elements */
+    body::before {
+      content: '';
+      position: absolute;
+      inset: -50% -50% -50% -50%;
+      background-image: 
+        radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.12) 0%, transparent 55%),
+        radial-gradient(circle at 80% 20%, rgba(30, 64, 175, 0.10) 0%, transparent 55%),
+        radial-gradient(circle at 40% 40%, rgba(147, 197, 253, 0.08) 0%, transparent 55%);
+      animation: float 20s ease-in-out infinite;
+      z-index: -2;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-20px) rotate(1deg); }
+    }
+
+    .login-container {
+      width: 100%;
+      max-width: 420px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .login-card {
+      background: rgba(255, 255, 255, 0.18);
+      backdrop-filter: blur(28px) saturate(140%) contrast(105%);
+      -webkit-backdrop-filter: blur(28px) saturate(140%) contrast(105%);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: 24px;
+      padding: 48px 40px;
+      box-shadow: 
+        0 20px 25px -5px rgba(0, 0, 0, 0.3),
+        0 10px 10px -5px rgba(0, 0, 0, 0.22),
+        0 0 0 1px rgba(255, 255, 255, 0.06);
+      position: relative; 
+      overflow: hidden;
+    }
+
+    .login-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary-blue), var(--secondary-blue), var(--accent-blue));
+    }
+
+    .brand-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .brand-logo {
+      width: 64px;
+      height: 64px;
+      background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .brand-logo::before {
+      content: '✈';
+      font-size: 28px;
+      color: white;
+      transform: rotate(-45deg);
+    }
+
+    .brand-title {
+      font-size: 28px;
+      font-weight: 700;
+      color: #eaf2ff;
+      margin-bottom: 8px;
+      letter-spacing: -0.025em;
+      text-shadow: 0 1px 1px rgba(0,0,0,0.35);
+    }
+
+    .brand-subtitle {
+      font-size: 16px;
+      color: #b7c6e6;
+      font-weight: 500;
+      text-shadow: 0 1px 1px rgba(0,0,0,0.25);
+    }
+
+    .form-group {
+      margin-bottom: 24px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: #dbe7ff;
+      margin-bottom: 8px;
+      letter-spacing: 0.025em;
+      text-shadow: 0 1px 1px rgba(0,0,0,0.25);
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 16px 20px;
+      font-size: 16px;
+      font-family: inherit;
+      background: rgba(255,255,255,0.14);
+      color: #f5f8ff;
+      border: 2px solid rgba(255,255,255,0.2);
+      border-radius: 12px;
+      transition: all 0.2s ease;
+      outline: none;
+    }
+
+    /* Input with leading icon */
+    .input-group { position: relative; }
+    .input-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 18px; height: 18px;
+      color: #99a9cc;
+      pointer-events: none;
+      display: inline-flex; align-items: center; justify-content: center;
+      text-shadow: 0 1px 1px rgba(0,0,0,0.15);
+    }
+    .input-group .form-input { padding-left: 44px; }
+
+    .form-input:focus {
+      background: rgba(255,255,255,0.2);
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.22);
+    }
+
+    .form-input::placeholder {
+      color: var(--neutral-400);
+    }
+
+    .login-button {
+      width: 100%;
+      padding: 16px 24px;
+      font-size: 16px;
+      font-weight: 600;
+      font-family: inherit;
+      background: linear-gradient(135deg, #274bcc, #3b82f6);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: relative;
+      overflow: hidden;
+      margin-top: 8px;
+    }
+
+    .login-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px -5px rgba(30, 64, 175, 0.5);
+    }
+
+    .login-button:active {
+      transform: translateY(0);
+    }
+
+    .login-button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .error-notice {
+      margin-top: 20px;
+      padding: 16px 20px;
+      background: var(--error-bg);
+      border: 1px solid var(--error-border);
+      border-radius: 12px;
+      color: var(--error-red);
+      font-size: 14px;
+      font-weight: 500;
+      display: none;
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .footer-text {
+      text-align: center;
+      margin-top: 32px;
+      font-size: 14px;
+      color: #94a3c2;
+      text-shadow: 0 1px 1px rgba(0,0,0,0.2);
+    }
+
+    .helper-row { margin-top: 14px; display:flex; justify-content:center; }
+    .helper-row a { color: var(--secondary-blue); text-decoration: none; font-weight: 600; }
+    .helper-row a:hover { text-decoration: underline; }
+
+    .login-mode-toggle {
+      display: flex;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 4px;
+      margin-bottom: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .mode-btn {
+      flex: 1;
+      padding: 12px 16px;
+      border: none;
+      background: transparent;
+      color: rgba(255, 255, 255, 0.7);
+      font-weight: 600;
+      font-size: 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .mode-btn.active {
+      background: var(--secondary-blue);
+      color: white;
+      box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+    }
+
+    .mode-btn:hover:not(.active) {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+    }
+
+    /* Responsive design + extreme zoom clarity */
+    @media (max-width: 480px) {
+      .login-card { padding: 32px 24px; border-radius: 16px; }
+      .brand-title { font-size: 24px; }
+      .form-input, .login-button { padding: 14px 16px; }
+    }
+    @media (min-width: 1400px) {
+      /* When heavily zoomed out, increase opacity a touch for clarity */
+      .login-card { background: rgba(255,255,255,0.22); }
+      .form-input { background: rgba(255,255,255,0.18); border-color: rgba(255,255,255,0.24); }
+    }
+
+    /* Loading state */
+    .loading { position: relative; }
+    .loading::after {
+      content: '';
+      position: absolute;
+      width: 20px; height: 20px; margin: auto;
+      border: 2px solid transparent; border-top-color: currentColor;
+      border-radius: 50%; animation: spin 1s linear infinite;
+      top: 0; left: 0; bottom: 0; right: 0;
+    }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <div aria-hidden="true" style="position:absolute; inset:0; pointer-events:none; z-index:0;">
+    <span style="position:absolute; left:6%; top:14%; opacity:0.08; font-size:72px; color:#bcd3ff; transform: rotate(-20deg);">✈</span>
+    <span style="position:absolute; left:86%; top:18%; opacity:0.08; font-size:64px; color:#bcd3ff; transform: rotate(15deg);">✈</span>
+    <span style="position:absolute; left:10%; top:78%; opacity:0.08; font-size:68px; color:#bcd3ff; transform: rotate(8deg);">✈</span>
+    <span style="position:absolute; left:70%; top:75%; opacity:0.08; font-size:80px; color:#bcd3ff; transform: rotate(-35deg);">✈</span>
+    <span style="position:absolute; left:45%; top:8%; opacity:0.06; font-size:60px; color:#bcd3ff; transform: rotate(-12deg);">✈</span>
+    <span style="position:absolute; left:30%; top:50%; opacity:0.06; font-size:58px; color:#bcd3ff; transform: rotate(28deg);">✈</span>
+  </div>
+  <div class="login-container">
+    <div class="login-card">
+      <div class="brand-header">
+        <div class="brand-logo"></div>
+        <h1 class="brand-title">OACA</h1>
+        <p class="brand-subtitle">Aviation Administration</p>
+      </div>
+      <form id="loginForm" action="/api/login" method="post">
+        <div class="login-mode-toggle">
+          <button type="button" id="emailMode" class="mode-btn active">Email Login</button>
+          <button type="button" id="matriculeMode" class="mode-btn">Matricule Login</button>
+        </div>
+        
+        <div id="emailLoginForm">
+          <div class="form-group">
+            <label for="email" class="form-label">Email Address</label>
+            <div class="input-group">
+              <span class="input-icon">✉</span>
+              <input id="email" type="email" class="form-input" placeholder="admin@oaca.local" autocomplete="username">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="password" class="form-label">Password</label>
+            <div class="input-group">
+              <span class="input-icon">🔒</span>
+              <input id="password" type="password" class="form-input" placeholder="Enter your password" autocomplete="current-password">
+            </div>
+          </div>
+        </div>
+        
+        <div id="matriculeLoginForm" style="display: none;">
+          <div class="form-group">
+            <label for="matricule" class="form-label">Matricule</label>
+            <div class="input-group">
+              <span class="input-icon">🆔</span>
+              <input id="matricule" type="text" class="form-input" placeholder="Enter your 8-character matricule" maxlength="8">
+            </div>
+          </div>
+        </div>
+        
+        <button id="loginBtn" type="submit" class="login-button">Sign In</button>
+        <div id="error" class="error-notice"></div>
+      </form>
+      <div class="helper-row"><a href="#">Forgot your password?</a></div>
+      <p class="footer-text">© 2024 OACA Aviation Company. All rights reserved.</p>
+    </div>
+  </div>
+  <script>
+    fetch('/api/me', { credentials: 'include' })
+      .then(r => r.ok ? r.json() : null)
+      .then(me => {
+        if (me && me.role) {
+          if (me.role === 'admin') window.location.href = '/dashboard.html';
+          else window.location.href = '/home.html';
+        }
+      })
+      .catch(() => {});
+    
+    const form = document.getElementById('loginForm');
+    const loginBtn = document.getElementById('loginBtn');
+    const errorDiv = document.getElementById('error');
+    const emailMode = document.getElementById('emailMode');
+    const matriculeMode = document.getElementById('matriculeMode');
+    const emailForm = document.getElementById('emailLoginForm');
+    const matriculeForm = document.getElementById('matriculeLoginForm');
+    
+    let currentMode = (localStorage.getItem('loginMode') || 'email');
+    
+    // Mode toggle functionality
+    emailMode.addEventListener('click', () => {
+      currentMode = 'email';
+      emailMode.classList.add('active');
+      matriculeMode.classList.remove('active');
+      emailForm.style.display = 'block';
+      matriculeForm.style.display = 'none';
+      clearForm();
+      localStorage.setItem('loginMode', currentMode);
+    });
+    
+    matriculeMode.addEventListener('click', () => {
+      currentMode = 'matricule';
+      matriculeMode.classList.add('active');
+      emailMode.classList.remove('active');
+      emailForm.style.display = 'none';
+      matriculeForm.style.display = 'block';
+      clearForm();
+      localStorage.setItem('loginMode', currentMode);
+    });
+    
+    function clearForm() {
+      document.getElementById('email').value = '';
+      document.getElementById('password').value = '';
+      document.getElementById('matricule').value = '';
+      errorDiv.style.display = 'none';
+    }
+    
+    // Restore last-used mode and values on load
+    (function restorePersisted() {
+      if (currentMode === 'matricule') {
+        matriculeMode.click();
+      } else {
+        emailMode.click();
+      }
+      const lastEmail = localStorage.getItem('loginEmail') || '';
+      const lastMatricule = localStorage.getItem('loginMatricule') || '';
+      if (lastEmail) document.getElementById('email').value = lastEmail;
+      if (lastMatricule) document.getElementById('matricule').value = lastMatricule;
+    })();
+
+    // Persist as user types
+    document.getElementById('email').addEventListener('input', (e)=>{
+      localStorage.setItem('loginEmail', String(e.target.value||''));
+    });
+    document.getElementById('matricule').addEventListener('input', (e)=>{
+      localStorage.setItem('loginMatricule', String(e.target.value||''));
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      loginBtn.disabled = true; 
+      loginBtn.classList.add('loading'); 
+      loginBtn.textContent = ''; 
+      errorDiv.style.display = 'none';
+      
+      try {
+        let requestBody;
+        if (currentMode === 'email') {
+          const email = document.getElementById('email').value;
+          const password = document.getElementById('password').value;
+          if (!email || !password) {
+            showError('Please fill in all fields');
+            return;
+          }
+          requestBody = { email, password };
+          localStorage.setItem('loginEmail', email);
+        } else {
+          const matricule = document.getElementById('matricule').value;
+          if (!matricule || matricule.length !== 8) {
+            showError('Please enter a valid 8-character matricule');
+            return;
+          }
+          requestBody = { matricule };
+          localStorage.setItem('loginMatricule', matricule);
+        }
+        
+        const response = await fetch('/api/login', { 
+          method: 'POST', 
+          headers: { 'Content-Type': 'application/json' }, 
+          credentials: 'include', 
+          body: JSON.stringify(requestBody) 
+        });
+        
+        if (response.ok) {
+          const meRes = await fetch('/api/me', { credentials: 'include' });
+          if (meRes.ok) {
+            const me = await meRes.json();
+            if (me && me.role === 'admin') {
+              window.location.href = '/dashboard.html';
+              return;
+            }
+          }
+          window.location.href = '/home.html';
+        } else {
+          let msg = 'Invalid credentials. Please try again.';
+          try { 
+            const data = await response.json(); 
+            if (data && data.error) msg = data.error; 
+          } catch (_) { 
+            const txt = await response.text(); 
+            if (txt) msg = txt; 
+          }
+          showError(msg);
+        }
+      } catch (err) {
+        showError('Connection error. Please check your network and try again.');
+      } finally {
+        loginBtn.disabled = false; 
+        loginBtn.classList.remove('loading'); 
+        loginBtn.textContent = 'Sign In to Dashboard';
+      }
+    });
+    
+    function showError(message) { 
+      errorDiv.textContent = message; 
+      errorDiv.style.display = 'block'; 
+    }
+  </script>
+</body>
+</html>

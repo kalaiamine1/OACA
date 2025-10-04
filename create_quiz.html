@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Create Quiz - OACA</title>
+  <style>
+    :root { --bg1:#0b1d44; --bg2:#0a1a3d; --glass: rgba(255,255,255,0.08); --glass-b: rgba(255,255,255,0.14); --text:#e6eeff; --muted:#9db0d9; --accent:#3b82f6; --accent2:#60a5fa; }
+    body { margin:0; color:var(--text); background: radial-gradient(1200px 800px at 20% 30%, #13306b 0%, #0d1f4a 60%, #091735 100%), linear-gradient(135deg, var(--bg1) 0%, var(--bg2) 100%); font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+    .container { max-width: 900px; margin: 0 auto; padding: 24px; }
+    .card { border:1px solid var(--glass-b); background: var(--glass); border-radius: 16px; padding: 20px; }
+    h1 { margin: 0 0 8px; font-size: 20px; }
+    .muted { color: var(--muted); }
+    .btn { border: 1px solid var(--accent); background: linear-gradient(135deg, var(--accent), var(--accent2)); color:#fff; border-radius:10px; padding:10px 12px; cursor:pointer; font-weight:600; }
+    .btn.secondary { background: transparent; color: var(--text); border-color: var(--glass-b); }
+    .row { display:flex; gap: 12px; align-items:center; flex-wrap: wrap; }
+    .form-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+    .form-group { display:flex; flex-direction: column; }
+    label { margin:0 0 6px; font-weight:600; }
+    input, select { padding: 10px 12px; border-radius: 10px; border:1px solid var(--glass-b); background: rgba(255,255,255,0.08); color: var(--text); }
+    ul { list-style:none; padding:0; margin: 10px 0 0; }
+    .hint { font-size: 12px; color: var(--muted); margin-top: 6px; }
+    .error { color: #ffb4b4; }
+  </style>
+  <script>
+  // Protect: admin only
+  (async () => {
+    const res = await fetch('/api/me', { credentials: 'include' });
+    if (!res.ok) { window.location.href = '/login.html'; return; }
+    const me = await res.json();
+    if (me.role !== 'admin') { window.location.href = '/dashboard.html'; }
+  })();
+  </script>
+</head>
+<body>
+  <div class="container">
+    <div class="row" style="justify-content: space-between; margin-bottom: 12px;">
+      <h1>Create Quiz Assignment</h1>
+      <div class="row">
+        <a class="btn secondary" href="/dashboard.html">Back</a>
+      </div>
+    </div>
+    <div class="card">
+      <p class="muted">Choose per-section counts that sum to 15, and select a candidate to assign.</p>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Candidate</label>
+          <select id="assignUser"></select>
+          <div class="hint">Search or pick from existing users.</div>
+        </div>
+        <div class="form-group">
+          <label>Sections (sum = 15)</label>
+          <div id="sectionsContainer"></div>
+          <div class="hint">Remaining: <span id="remaining">15</span></div>
+        </div>
+      </div>
+      <div class="row" style="margin-top: 12px;">
+        <button id="createBtn" class="btn" onclick="createAssignment()" disabled>Create Quiz</button>
+      </div>
+      <div id="assignInfo" class="muted" style="margin-top: 8px;"></div>
+    </div>
+  </div>
+
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    Promise.all([loadSections(), loadUsers()]).then(() => {
+      setupSectionControls();
+      updateCreateState();
+    });
+  });
+
+  async function loadSections() {
+    const container = document.getElementById('sectionsContainer');
+    container.innerHTML = '';
+    const res = await fetch('/api/quiz-sections', { credentials: 'include' });
+    if (!res.ok) return;
+    const sections = await res.json();
+    for (const s of sections) {
+      const wrap = document.createElement('div');
+      wrap.style.display = 'flex';
+      wrap.style.alignItems = 'center';
+      wrap.style.gap = '8px';
+      wrap.style.marginBottom = '6px';
+      wrap.innerHTML = `<label style=\"min-width:200px; margin:0;\">${s.name} <span class=\"muted\">(max ${s.count})</span></label><input type=\"number\" min=\"0\" max=\"${s.count}\" step=\"1\" value=\"0\" data-section=\"${s.name}\" data-last=\"0\">`;
+      container.appendChild(wrap);
+    }
+  }
+
+  async function loadUsers() {
+    const sel = document.getElementById('assignUser');
+    sel.innerHTML = '';
+    try {
+      const res = await fetch('/api/users', { credentials: 'include' });
+      if (!res.ok) { sel.innerHTML = '<option value="">Failed to load users</option>'; return; }
+      const users = await res.json();
+      const first = document.createElement('option'); first.value = ''; first.textContent = 'Select a candidate...'; sel.appendChild(first);
+      for (const u of users) {
+        const opt = document.createElement('option');
+        opt.value = u.email;
+        opt.textContent = `${u.email}${u.matricule ? ' — ' + u.matricule : ''}`;
+        sel.appendChild(opt);
+      }
+      sel.addEventListener('change', updateCreateState);
+    } catch (e) {
+      sel.innerHTML = '<option value="">Error loading users</option>';
+    }
+  }
+
+  function setupSectionControls() {
+    const inputs = document.querySelectorAll('#sectionsContainer input[type="number"]');
+    inputs.forEach(inp => {
+      inp.addEventListener('input', onSectionInputChange);
+      inp.addEventListener('blur', onSectionInputChange);
+    });
+  }
+
+  function currentTotal() {
+    let total = 0;
+    const inputs = document.querySelectorAll('#sectionsContainer input[type="number"]');
+    inputs.forEach(inp => { total += (parseInt(inp.value||'0',10)||0); });
+    return total;
+  }
+
+  function onSectionInputChange(e) {
+    const target = e.target;
+    const max = parseInt(target.getAttribute('max')||'0',10)||0;
+    let val = parseInt(target.value||'0',10)||0;
+    if (val < 0) val = 0;
+    if (val > max) val = max;
+    const prev = parseInt(target.getAttribute('data-last')||'0',10)||0;
+    const totalWithout = currentTotal() - prev;
+    const remaining = 15 - totalWithout;
+    if (val > remaining) val = remaining;
+    target.value = String(val);
+    target.setAttribute('data-last', String(val));
+    updateCreateState();
+  }
+
+  function updateCreateState() {
+    const total = currentTotal();
+    const remainingEl = document.getElementById('remaining');
+    if (remainingEl) remainingEl.textContent = String(Math.max(0, 15 - total));
+    const userSel = document.getElementById('assignUser');
+    const btn = document.getElementById('createBtn');
+    const info = document.getElementById('assignInfo');
+    let err = '';
+    if (!userSel.value) err = 'Select a candidate.';
+    else if (total < 15) err = 'Total must be exactly 15.';
+    else if (total > 15) err = 'Total exceeds 15.';
+    btn.disabled = Boolean(err);
+    info.textContent = err ? err : '';
+    if (err) info.classList.add('error'); else info.classList.remove('error');
+  }
+
+  async function createAssignment() {
+    const email = (document.getElementById('assignUser').value || '').trim().toLowerCase();
+    const info = document.getElementById('assignInfo');
+    info.textContent = '';
+    if (!email) { info.textContent = 'Select a candidate.'; info.classList.add('error'); return; }
+    const inputs = document.querySelectorAll('#sectionsContainer input[type="number"]');
+    const per_section = {};
+    let total = 0;
+    inputs.forEach(inp => { const v = parseInt(inp.value||'0',10)||0; per_section[inp.getAttribute('data-section')] = v; total += v; });
+    if (total !== 15) { info.textContent = 'Counts must sum to 15'; return; }
+    const btn = document.getElementById('createBtn');
+    const prev = btn.textContent; btn.textContent = 'Creating...'; btn.disabled = true;
+    try {
+      const res = await fetch('/api/quiz-assignments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ email, per_section, total: 15 })
+      });
+      const data = await res.json();
+      if (!res.ok) { info.textContent = data.error || 'Failed'; }
+      else { info.textContent = 'Quiz created and candidate notified.'; }
+    } catch (e) {
+      info.textContent = String(e);
+    } finally {
+      btn.textContent = prev; btn.disabled = false;
+    }
+  }
+  </script>
+</body>
+</html>
+
+

@@ -1,0 +1,647 @@
+{
+  "quiz_data": {
+    "title": "Aviation Exam Questions",
+    "description": "Comprehensive aviation exam questions covering ATFM, regulations, navigation, and procedures",
+    "categories": [
+      {
+        "name": "ATFM",
+        "description": "Air Traffic Flow Management",
+        "questions": [
+          {
+            "id": 1,
+            "question": "FPL doit être déposée auprès de l'IFPS :",
+            "options": {
+              "A": "Au plus tard 5 jours avant la date du vol (120 heures avant l'heure estimée (EOBT))",
+              "B": "au moins 2 heures avant l'EOBT",
+              "C": "au moins 3 heures avant l'EOBT"
+            },
+            "correct_answer": null
+          },
+          {
+            "id": 2,
+            "question": "Le message d'allocation des slots SAM est émis",
+            "options": {
+              "A": "avant 3h de l'EOBT",
+              "B": "avant 2h de l'EOBT",
+              "C": "Après le depot du plan de vol"
+            },
+            "correct_answer": null
+          },
+          {
+            "id": 3,
+            "question": "Un contrôleur ne permet pas un vol de décoller s'il est suspendu sauf dans le cas ou :",
+            "options": {
+              "A": "il reçoit un DES plus un SAM",
+              "B": "il reçoit un SRM",
+              "C": "il envoi un REA"
+            },
+            "correct_answer": null
+          },
+          {
+            "id": 4,
+            "question": "Le message READY est envoyé :",
+            "options": {
+              "A": "entre EOBT moins 15 minutes et l'CTOT du vol",
+              "B": "au moins 2 heures avant l'EOBT",
+              "C": "entre EOBT moins 30 minutes et l'CTOT"
+            },
+            "correct_answer": null
+          },
+          {
+            "id": 5,
+            "question": "Le message REA peut être envoyer par l'origine suivante :",
+            "options": {
+              "A": "Tour de contrôle",
+              "B": "FMP",
+              "C": "Bureau de piste",
+              "D": "A+b"
+            },
+            "correct_answer": null
+          },
+          {
+            "id": 6,
+            "question": "Quels sont les vols exemptés de l'attribution des créneaux ATFM?",
+            "options": {
+              "A": "Un vol avec indicateur STS: STS/HEAD, STS/SAR, STS/FFR, STS/MEDEVAC ou STS/ATFMX",
+              "B": "Un vol avec indicateur STS:: STS/STATE, STS/SAR, STS/MEDEVAC ou STS/ATFMX",
+              "C": "Un vol avec indicateur STS: STS/HEAD, STS/SAR, ou STS/MEDEVAC"
+            },
+            "correct_answer": null
+          },
+          {
+            "id": 7,
+            "question": "Le contrôleur permet les vols régulés de décoller dans une fenêtre du temps",
+            "options": {
+              "A": "-5 min +15min de L'heure calculée de décollage CTOT",
+              "B": "-5 min +10min de L'heure calculée de décollage CTOT",
+              "C": "-15min +15min de l'EOBT"
+            },
+            "correct_answer": null
+          },
+          {
+            "id": 8,
+            "question": "Dans quel cas on peut répondre à un message de suspension de vol FLS par un message de confirmation de vol FCM.",
+            "options": {
+              "A": "visibilité réduite de l'aérodrome et l'indisponibilité de l'espace aérien",
+              "B": "changement imprévue du CTOT",
+              "C": "revalidation du plan de vol"
+            },
+            "correct_answer": null
+          },
+          {
+            "id": 9,
+            "question": "Les messages envoyés par le système ETFMS à l'ATC et à l'exploitant des aéronefs au même temps",
+            "options": {
+              "A": "SIP - Slot Improvement Proposal et le RRP - Rerouting Proposal",
+              "B": "SMM - Slot Missed Message et FCM - Flight Confirmation",
+              "C": "SAM - Slot Allocation, SRM - Slot Revision, SLC – Slot Cancellation et FLS - Flight Suspension"
+            },
+            "correct_answer": null
+          }
+        ]
+      },
+      {
+        "name": "Réglementation",
+        "description": "Aviation Regulations",
+        "questions": [
+          {
+            "id": 10,
+            "question": "Un vol VFR de nuit peut être effectué quand:",
+            "options": {
+              "A": "hauteur de la base des nuages égale ou supérieure à 300 m",
+              "B": "hauteur de la base des nuages égale ou supérieure à 350 m",
+              "C": "hauteur de la base des nuages égale ou supérieure à 400 m",
+              "D": "hauteur de la base des nuages égale ou supérieure à 450 m"
+            },
+            "correct_answer": "D"
+          },
+          {
+            "id": 11,
+            "question": "Dans l'espace aérien de classe F, tous les vols bénéficient :",
+            "options": {
+              "A": "de contrôle",
+              "B": "du service d'information de vol",
+              "C": "du service d'information de vol s'ils le demandent",
+              "D": "du service de contrôle de vol s'ils le demandent"
+            },
+            "correct_answer": "C"
+          },
+          {
+            "id": 12,
+            "question": "Sauf autorisation d'un organisme du contrôle de la circulation aérienne, un aéronef en vol VFR ne doit ni décoller d'un aérodrome situé dans une zone de contrôle, ni atterrir sur cet aérodrome, ni pénétrer dans la zone de circulation ou dans le circuit de cet aérodrome :",
+            "options": {
+              "A": "lorsque le plafond est inférieur à 450m",
+              "B": "lorsque le plafond est inférieur à 400m",
+              "C": "lorsque le plafond est inférieur à 300m",
+              "D": "lorsque le plafond est inférieur à 250m"
+            },
+            "correct_answer": "A"
+          },
+          {
+            "id": 13,
+            "question": "Les minimas opérationnels d'une approche ILS CAT 1 sont :",
+            "options": {
+              "A": "DH : 200 Pieds / Visibilité horizontale : 600 M / RVR : 550 M",
+              "B": "DH : 200 Pieds / Visibilité horizontale : 800 M / RVR : 550 M",
+              "C": "DH : 60 Pieds / Visibilité horizontale : 800 M / RVR : 550 M",
+              "D": "DH : 200 Pieds / Visibilité horizontale : 800 M / RVR : 450 M"
+            },
+            "correct_answer": null
+          },
+          {
+            "id": 14,
+            "question": "Dans l'espace aérien de classe D :",
+            "options": {
+              "A": "Les vols IFR et VFR sont admis ; il est fourni un service de contrôle de la circulation aérienne à tous les vols; la séparation est assurée entre les vols IFR et VFR; les vols VFR reçoivent des informations de circulation relatives aux autres vols VFR",
+              "B": "Les vols IFR et VFR sont admis ; il est fourni un service de contrôle de la circulation aérienne à tous les vols; la séparation est assurée entre les vols IFR et les vols IFR reçoivent des informations de circulation relatives aux vols VFR; les vols VFR reçoivent des informations de circulation relatives aux VFR spéciaux",
+              "C": "Seuls les Vols IFR sont admis",
+              "D": "Les vols IFR et VFR sont admis ; il est fourni un service de contrôle de la circulation aérienne à tous les vols; la séparation est assurée entre les vols IFR et les vols VFR reçoivent des informations de circulation relatives à tous les autres vols"
+            },
+            "correct_answer": null
+          },
+          {
+            "id": 15,
+            "question": "La partie d'un aérodrome destinée aux évolutions des aéronefs à la surface constitue :",
+            "options": {
+              "A": "L'aire de manœuvre",
+              "B": "L'aire de mouvement",
+              "C": "Les voies de circulation",
+              "D": "L'aire de trafic"
+            },
+            "correct_answer": null
+          },
+          {
+            "id": 16,
+            "question": "L'altitude d'un aérodrome c'est :",
+            "options": {
+              "A": "l'altitude du point le plus élevé de la zone d'aérodrome",
+              "B": "l'altitude du point le plus élevé de la zone voisine d'aérodrome",
+              "C": "l'altitude du seuil de la piste aux instruments",
+              "D": "l'altitude du point le plus élevé de l'aire d'atterrissage"
+            },
+            "correct_answer": null
+          },
+          {
+            "id": 17,
+            "question": "Les vols VFR dans la phase de croisière volant au-dessus du niveau le plus élevé des deux niveaux suivants, seront effectués à l'un des niveaux de vol correspondant à leur route :",
+            "options": {
+              "A": "600m (2000ft) MSL et 300m (1000ft) GND",
+              "B": "900m (3000ft) MSL et 600m (2000ft) GND",
+              "C": "450m (1500ft) MSL et 150m (500ft) GND",
+              "D": "900m (3000ft) MSL et 300m (1000ft) GND"
+            },
+            "correct_answer": null
+          },
+          {
+            "id": 18,
+            "question": "Au voisinage du niveau moyen de la mer, la pression :",
+            "options": {
+              "A": "Augmente de 1hPa chaque 28ft",
+              "B": "Diminue de 28hPa chaque 1ft",
+              "C": "Diminue de 1hPa chaque 28ft",
+              "D": "Augmente de 1hPa chaque 100ft"
+            },
+            "correct_answer": null
+          },
+          {
+            "id": 19,
+            "question": "L'approche a vue est accordées :",
+            "options": {
+              "A": "les conditions MTO IMC",
+              "B": "les conditions MTO VMC",
+              "C": "visibilité 3000m",
+              "D": "visibilite 3500m"
+            },
+            "correct_answer": "B"
+          },
+          {
+            "id": 20,
+            "question": "Pour une procédure d'approche classique ; le point d'approche final a pour abréviation",
+            "options": {
+              "A": "FAP",
+              "B": "FAF",
+              "C": "IAF",
+              "D": "IF"
+            },
+            "correct_answer": "B"
+          },
+          {
+            "id": 21,
+            "question": "Le service de contrôle de la circulation aérienne est assuré au vol VFR dans les espaces aériens de classes :",
+            "options": {
+              "A": "B C D",
+              "B": "C D E",
+              "C": "A B D",
+              "D": "E F G"
+            },
+            "correct_answer": "A"
+          }
+        ]
+      },
+      {
+        "name": "Systèmes et Équipements",
+        "description": "Systems and Equipment",
+        "questions": [
+          {
+            "id": 22,
+            "question": "Le système anticollision embarqué (ACAS):",
+            "options": {
+              "A": "Est un système embarqué qui, au moyen des signaux de transpondeur de radar secondaire de surveillance (SSR), renseigne le pilote sur les obstacles au sol qui risquent d'entrer en conflit avec son avion",
+              "B": "Est un système embarqué qui, au moyen des signaux de transpondeur de radar secondaire de surveillance (SSR) et indépendamment des systèmes sol, renseigne le pilote sur les aéronefs dotés d'un transpondeur SSR qui risquent d'entrer en conflit avec son aéronef",
+              "C": "a+b"
+            },
+            "correct_answer": null
+          },
+          {
+            "id": 23,
+            "question": "Un aéronef non identifié est un aéronef :",
+            "options": {
+              "A": "Observé mais dont l'identité est non déterminée",
+              "B": "Non observé mais dont l'identité est déterminée",
+              "C": "Aéronef dont le transfert d'identification n'a pas été établi par l'organisme transféreur",
+              "D": "Aéronef observé"
+            },
+            "correct_answer": null
+          },
+          {
+            "id": 24,
+            "question": "Dans le cas d'un vol non contrôlé l'INCERFA est déclenchée : lorsque l'avion n'est pas arrivé dans les :",
+            "options": {
+              "A": "60",
+              "B": "30",
+              "C": "20",
+              "D": "10"
+            },
+            "correct_answer": "B"
+          },
+          {
+            "id": 25,
+            "question": "IL est permit à titre d'urgence d'utiliser temporairement des niveaux de vol espacés d'une distance égale à la moitié du minimum de séparation verticale applicable, en cas de panne:",
+            "options": {
+              "A": "de fréquence",
+              "B": "totale de l'équipement radar",
+              "C": "radio",
+              "D": "partielle de l'équipement radar"
+            },
+            "correct_answer": null
+          },
+          {
+            "id": 26,
+            "question": "L'ADS-B est l'acronyme de:",
+            "options": {
+              "A": "Automatic dependent system bearing",
+              "B": "Automatic dependent system broadcast",
+              "C": "Automatic dependent surveillance bearing",
+              "D": "Automatic dependent surveillance broadcast"
+            },
+            "correct_answer": null
+          },
+          {
+            "id": 27,
+            "question": "What is the primary function of the Mode S transponder system in aircraft operations?",
+            "options": {
+              "A": "To provide pilots with real-time weather updates and navigation data",
+              "B": "To enable aircraft identification, reporting, and standard length data link communication between the ground and air",
+              "C": "To control aircraft engine performance and efficiency",
+              "D": "To manage air traffic flow and schedules at airports"
+            },
+            "correct_answer": "B"
+          }
+        ]
+      },
+      {
+        "name": "Navigation et Procédures",
+        "description": "Navigation and Procedures",
+        "questions": [
+          {
+            "id": 28,
+            "question": "There are three components of PBN:",
+            "options": {
+              "A": "Navigation Aid (NAVAID) Infrastructure, Navigation information, (NAVAID)",
+              "B": "Navigation Specification, Navigation Application and Navigation Aid (NAVAID) Infrastructure",
+              "C": "Navigation Aid (NAVAID), navigation Infrastructure and Navigation procedure",
+              "D": "RNP specification, RNP procedure and NAVAID"
+            },
+            "correct_answer": "B"
+          },
+          {
+            "id": 29,
+            "question": "Advanced – RNP (A-RNP)",
+            "options": {
+              "A": "A-RNP is a Navigation Specification that was specifically developed to cover all phases of flight under a single certification and operational approval",
+              "B": "A-RNP is the degree of confidence that can be placed on the position estimation by the RNAV system",
+              "C": "Is a Navigation confidence that was specifically developed to cover all phases of flight under a many certification and operational approval",
+              "D": "All responses are correct"
+            },
+            "correct_answer": "A"
+          },
+          {
+            "id": 30,
+            "question": "Navigation de surface (RNAV) :",
+            "options": {
+              "A": "une méthode de navigation permettant de suivre n'importe quelle trajectoire dans les limites de aides de navigation à référence sur station, ou dans les limites de possibilités d'une aide autonome ou grâce à une combinaison des ces deux moyens",
+              "B": "méthode de navigation qui permet à un a/c de suivre une route par un moyen automatique déterminant le prochain point de compte rendu",
+              "C": "méthode de navigation utilisant un moyen radio sol/air pour déterminer le point suivant à survoler",
+              "D": "méthode de navigation utilisée dans une région à grande densité de trafic"
+            },
+            "correct_answer": "A"
+          }
+        ]
+      },
+      {
+        "name": "Séparation des Aéronefs",
+        "description": "Aircraft Separation",
+        "questions": [
+          {
+            "id": 31,
+            "question": "Si un aéronef à l'arrivée effectue une approche complète aux instruments, un aéronef au départ peut décoller :",
+            "options": {
+              "A": "Dans une direction qui diverge d'au moins 90 degrés par rapport à la direction inverse de la trajectoire d'approche finale de l'aéronef à l'arrivé avant au moins 3 min de son passage au dessus du seuil de la piste",
+              "B": "Dans toute direction jusqu'à ce que l'aéronef à l'arrivée ait amorcé son virage conventionnel ou ait commencé à virer pour l'approche finale",
+              "C": "Dans une direction qui diverge d'au moins 45 degrés par rapport à la direction inverse de la trajectoire d'approche de l'aéronef à l'arrivée lorsque celui ci ait amorcé son virage conventionnel ou ait commencé à virer pour l'approche finale à condition que le décollage ait lieu au moins 3 min avant l'heure prévue de passage de l'aéronef à l'arrivée vertical seuil",
+              "D": "(B+C)"
+            },
+            "correct_answer": null
+          },
+          {
+            "id": 32,
+            "question": "Deux aéronefs au départ qui suivent la même route et dont le premier aéronef vole à une vitesse supérieure d'au moins 20 nœuds sont séparés au moment de départ par :",
+            "options": {
+              "A": "1 Min",
+              "B": "2 Min",
+              "C": "4 Min",
+              "D": "5 Min"
+            },
+            "correct_answer": null
+          },
+          {
+            "id": 33,
+            "question": "Quelle est la distance minimale de séparation latérale recommandée pour des aéronefs en croisière dans un espace aérien contrôlé ?",
+            "options": {
+              "A": "5 NM",
+              "B": "10 NM",
+              "C": "15 NM",
+              "D": "20 NM"
+            },
+            "correct_answer": null
+          },
+          {
+            "id": 34,
+            "question": "En fonction de la turbulence de sillage un minimum de séparation de 3 minutes sera appliqué à l'arrivée entre a/c :",
+            "options": {
+              "A": "De faible tonnage atterrissant derrière un a/c moyen tonnage",
+              "B": "De moyen tonnage atterrissant derrière un a/c gros –porteur",
+              "C": "De faible tonnage atterrissant derrière un a/c gros –porteur",
+              "D": "Les réponses a et c sont justes"
+            },
+            "correct_answer": "D"
+          },
+          {
+            "id": 35,
+            "question": "Le minimum de séparation en fonction de la turbulence de sillage fondé sur le radar entre un faible tonnage et un gros porteur.",
+            "options": {
+              "A": "8 NM",
+              "B": "10NM",
+              "C": "5 NM",
+              "D": "4 NM"
+            },
+            "correct_answer": "B"
+          },
+          {
+            "id": 36,
+            "question": "Le minimum de séparation longitudinale fondé sure la distance DME situe au point de convergence des routes convergentes est de 20NM à condition que :",
+            "options": {
+              "A": "Chaque aéronef signale sa position par rapport au DME situé au point de convergence des routes",
+              "B": "L'angle formé par les routes suivies soit inférieur à 90 degrés",
+              "C": "a et b",
+              "D": "Les indications de la station DME aient été vérifiées correctes"
+            },
+            "correct_answer": null
+          },
+          {
+            "id": 37,
+            "question": "Pour les besoins de l'application de la séparation longitudinale, l'expression « même route » signifie :",
+            "options": {
+              "A": "Routes ayant la même direction qui forme un angle inférieur à 45 degrés, et dont les espaces aériens protégés se chevauchent",
+              "B": "Routes ayant la même direction qui forme un angle inférieur à 45 degrés ou supérieur à 315 degrés, et dont les espaces aériens protégés se chevauchent",
+              "C": "Routes ayant la même direction et route sécantes ou partie de route sécantes qui forme un angle inférieur à 45 degrés ou supérieur à 315 degrés, et dont les espaces aériens protégés se chevauchent",
+              "D": "Routes sécantes ou parties de routes sécantes qui forme un angle inférieur à 45 degrés, et dont les espaces aériens protégés se chevauchent"
+            },
+            "correct_answer": null
+          },
+          {
+            "id": 38,
+            "question": "En cas d'autorisation de VFR spécial, les minimums de séparation OACI seront utilisés entre :",
+            "options": {
+              "A": "Les aéronefs en vol IFR et les aéronefs en vol VFR spécial et les aéronefs en VFR spécial entre eux",
+              "B": "Les aéronefs en vol VFR spécial et les aéronefs en vol VFR",
+              "C": "Les aéronefs en vol VFR spécial",
+              "D": "Les aéronefs en vol IFR et les aéronefs en vol VFR"
+            },
+            "correct_answer": null
+          }
+        ]
+      },
+      {
+        "name": "Services d'Alerte et Situations Dégradées",
+        "description": "Alert Services and Degraded Situations",
+        "questions": [
+          {
+            "id": 39,
+            "question": "Si un vol envoie un signal d'urgence panne :",
+            "options": {
+              "A": "Une DETRESFA doit être déclenchée",
+              "B": "Une INCERFA doit être déclenchée",
+              "C": "Une ALERFA doit être déclenchée au plus tard 5 min après la réception du signal",
+              "D": "Une ALERFA doit être déclenchée immédiatement"
+            },
+            "correct_answer": "D"
+          },
+          {
+            "id": 40,
+            "question": "Dans un environnement radar un vol IFR subissant une panne de communication en IMC doit :",
+            "options": {
+              "A": "caler son transpondeur sur le code 7500",
+              "B": "conserver pendant 7minutes la dernière vitesse et le dernier niveau assignés ou l'altitude de vol minimum assigné, si celle –ci est supérieure au dernier niveau assigné",
+              "C": "b+d",
+              "D": "caler son transpondeur sur le code 7600"
+            },
+            "correct_answer": null
+          },
+          {
+            "id": 41,
+            "question": "Un contrôleur qui constate qu'un a/c équipé TCAS suit un avis de résolution (RA) :",
+            "options": {
+              "A": "donner a cet a/c des instructions qui augmente la séparation avec la (les)a/c menaçant",
+              "B": "fournir des instructions a l'a/c menaçant a fin d'éloigner ce dernier de l'a/c TCAS",
+              "C": "donner l'information du trafic a l'a/c TCAS",
+              "D": "donner l'information du trafic à l'a/c TCAS et à tout autre trafic au voisinage de l'a/c TCAS"
+            },
+            "correct_answer": null
+          }
+        ]
+      },
+      {
+        "name": "Information Aéronautique",
+        "description": "Aeronautical Information",
+        "questions": [
+          {
+            "id": 39,
+            "question": "La Mise à jour de l'AIP Tunisie sera effectuée :",
+            "options": {
+              "A": "A la date d'entrée en vigueur de l'AMDT AIP AIRAC",
+              "B": "A la date de publication de l'AMDT AIP AIRAC"
+            },
+            "correct_answer": null
+          },
+          {
+            "id": 40,
+            "question": "Les informations temporaires de validité supérieure à 90 jours et ayant de l'importance pour l'exploitation seront publiées par :",
+            "options": {
+              "A": "SUP AIP AIRAC",
+              "B": "SUP AIP",
+              "C": "NOTAM"
+            },
+            "correct_answer": null
+          },
+          {
+            "id": 41,
+            "question": "L'AIP est divisé en :",
+            "options": {
+              "A": "2 Parties",
+              "B": "3 Parties",
+              "C": "4 Parties"
+            },
+            "correct_answer": null
+          },
+          {
+            "id": 42,
+            "question": "En règle générale, la durée de validité maximum d'un NOTAM ne devrait pas être supérieure à :",
+            "options": {
+              "A": "28 jours",
+              "B": "42 jours",
+              "C": "90 jours"
+            },
+            "correct_answer": null
+          },
+          {
+            "id": 43,
+            "question": "La Mise à jour de l'AIP Tunisie sera effectuée :",
+            "options": {
+              "A": "A la date d'entrée en vigueur de l'AMDT AIP AIRAC",
+              "B": "A la date de publication de l'AMDT AIP AIRAC"
+            },
+            "correct_answer": null
+          },
+          {
+            "id": 44,
+            "question": "Les informations temporaires de validité supérieure à 90 jours et ayant de l'importance pour l'exploitation seront publiées par :",
+            "options": {
+              "A": "SUP AIP AIRAC",
+              "B": "SUP AIP",
+              "C": "NOTAM"
+            },
+            "correct_answer": null
+          },
+          {
+            "id": 45,
+            "question": "L'AIP est divisé en :",
+            "options": {
+              "A": "2 Parties",
+              "B": "3 Parties",
+              "C": "4 Parties"
+            },
+            "correct_answer": null
+          },
+          {
+            "id": 46,
+            "question": "En règle générale, la durée de validité maximum d'un NOTAM ne devrait pas être supérieure à :",
+            "options": {
+              "A": "28 jours",
+              "B": "42 jours",
+              "C": "90 jours"
+            },
+            "correct_answer": null
+          },
+          {
+            "id": 47,
+            "question": "Afin d'améliorer la prévention contre les excursions de piste, l'OACI à élaborer une nouvelle méthode harmonisée pour l'évaluation et la transmission d'informations standardisées sur l'état de surface de piste a l'échelle globale il s'agit du :",
+            "options": {
+              "A": "Format d'information Mondial(GRF)",
+              "B": "Forme de compte rendu Mondial(GRF)",
+              "C": "Format de compte rendu Mondial (GRF)",
+              "D": "Format international de l'état de surface(FGR)"
+            },
+            "correct_answer": null
+          },
+          {
+            "id": 48,
+            "question": "Le service d'information sur le format GRF est principalement utilisé pour :",
+            "options": {
+              "A": "Fournir des informations aux pilotes sur les conditions météorologiques en temps réel pendant le vol.",
+              "B": "Informer les contrôleurs aériens des changements dans les espaces aériens réservés.",
+              "C": "Communiquer l'état des pistes d'atterrissage et les conditions de surface, afin d'assurer la sécurité des manœuvres au sol.",
+              "D": "Fournir des mises à jour sur l'état de la circulation aérienne, y compris les fermetures temporaires des pistes et les restrictions d'accès aux terminaux"
+            },
+            "correct_answer": null
+          },
+          {
+            "id": 49,
+            "question": "L'abréviation utilisée dans les publications aéronautiques pour désigner le point de référence d'un aérodrome est :",
+            "options": {
+              "A": "ARP",
+              "B": "REF",
+              "C": "RDH",
+              "D": "ALT"
+            },
+            "correct_answer": null
+          },
+          {
+            "id": 50,
+            "question": "Quelle est la catégorie des messages la plus prioritaire :",
+            "options": {
+              "A": "DD",
+              "B": "GG",
+              "C": "FF",
+              "D": "SS"
+            },
+            "correct_answer": null
+          },
+          {
+            "id": 51,
+            "question": "« ZZZZ » insérer dans la case 13 signifier :",
+            "options": {
+              "A": "L'aéroport est militaire",
+              "B": "L'aéroport a 2 pistes parallèles",
+              "C": "L'aéroport n'a pas un indicateur d'emplacement OACI",
+              "D": "L'aéroport est mixte"
+            },
+            "correct_answer": null
+          },
+          {
+            "id": 52,
+            "question": "Les messages liés au FPL sont :",
+            "options": {
+              "A": "DEP – CHG – ARR – CNL – DLA",
+              "B": "DEP – ARR – REA – DLA -CNL",
+              "C": "SAM –SRM – DLA –CNL –CHG",
+              "D": "DEP – ARR – CNL –REA – CHG"
+            },
+            "correct_answer": null
+          },
+          {
+            "id": 53,
+            "question": "L'objectif du traitement des ELS est :",
+            "options": {
+              "A": "L'identification des responsables de ces événements",
+              "B": "De comprendre comment se sont déroulés ces événements",
+              "C": "D'évaluer la gravité et les causes de ces événements",
+              "D": "La prévention des futurs événements"
+            },
+            "correct_answer": "D"
+          }
+        ]
+      }
+    ]
+  }
+}
