@@ -9,6 +9,7 @@ from configuration import (
     COOKIE_NAME,
     COOKIE_SECURE,
     COOKIE_SAMESITE,
+    JWT_EXPIRES_MIN,
 )
 from jwthelper import create_jwt, verify_jwt
 
@@ -57,7 +58,7 @@ def api_login():
         secure=COOKIE_SECURE,
         samesite=COOKIE_SAMESITE,
         path="/",
-        max_age=60 * 60 * 24,
+        max_age=JWT_EXPIRES_MIN * 60,  # 15 minutes by default
     )
     return resp
 
@@ -66,7 +67,7 @@ def api_login():
 def api_logout():
     resp = make_response(jsonify({"ok": True}))
     # Invalidate cookie immediately
-    resp.set_cookie(COOKIE_NAME, "", expires=0, path="/")
+    resp.set_cookie(COOKIE_NAME, "", expires=0, path="/", httponly=True, secure=COOKIE_SECURE, samesite=COOKIE_SAMESITE)
     return resp
 
 

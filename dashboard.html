@@ -305,6 +305,11 @@
     /* Support two-line layout inside list items when needed */
     .list-col { display:flex; flex-direction: column; gap: 4px; }
     .dim { color: var(--muted); font-size: 12px; }
+
+    /* Toast */
+    #toast { position: fixed; right: 20px; top: 20px; z-index: 1000; display:none; padding: 12px 14px; border-radius: 10px; box-shadow: 0 10px 24px rgba(0,0,0,0.35); font-weight: 600; }
+    #toast.success { background: #064e3b; color: #d1fae5; border: 1px solid #10b981; }
+    #toast.error { background: #7f1d1d; color: #fee2e2; border: 1px solid #ef4444; }
   </style>
   <script>
   // Protect page: redirect to login if not authenticated
@@ -373,6 +378,7 @@
 </head>
 <body>
   <div class="container">
+    <div id="toast"></div>
     <header>
       <h1>OACA Admin Dashboard</h1>
       <div class="header-actions">
@@ -446,6 +452,8 @@
               </div>
             </div>
             <div id="assignInfo" class="muted" style="margin-top:8px;"></div>
+            <div id="assignSuccess" style="display:none; background:#f0fdf4; color:#166534; border:1px solid #bbf7d0; padding:10px; border-radius:6px; margin-top:8px; font-weight:600;"></div>
+            <div id="assignError" style="display:none; background:#fef2f2; color:#dc2626; border:1px solid #fecaca; padding:10px; border-radius:6px; margin-top:8px; font-weight:600;"></div>
           </div>
           <div class="form-actions-container" style="gap:8px; display:flex; margin-bottom: 12px;">
             <button class="btn secondary" onclick="loadAssignments()">Refresh Assignments</button>
@@ -503,6 +511,17 @@
   </div>
 
   <script>
+  function showToast(message, type) {
+    const el = document.getElementById('toast');
+    if (!el) return;
+    el.className = '';
+    el.classList.add(type === 'error' ? 'error' : 'success');
+    el.id = 'toast';
+    el.textContent = message || '';
+    el.style.display = 'block';
+    clearTimeout(window.__toastTimer);
+    window.__toastTimer = setTimeout(() => { el.style.display = 'none'; }, 2600);
+  }
   async function logout() {
     try { await fetch('/api/logout', { method: 'POST', credentials: 'include' }); }
     finally { window.location.href = '/login.html'; }
@@ -571,9 +590,10 @@
 
   function setupSectionAssignControls() {
     const inputs = document.querySelectorAll('#sectionsContainer input[type="number"]');
+    window.__lastAssignInput = null;
     inputs.forEach(inp => {
-      inp.addEventListener('input', onAssignSectionChange);
-      inp.addEventListener('blur', onAssignSectionChange);
+      inp.addEventListener('input', (e)=>{ window.__lastAssignInput = e.target; onAssignSectionChange(e); });
+      inp.addEventListener('blur', (e)=>{ window.__lastAssignInput = e.target; onAssignSectionChange(e); });
     });
   }
 
@@ -592,7 +612,9 @@
     if (v < 0) v = 0;
     if (v > max) v = max;
     const prev = parseInt(t.getAttribute('data-last') || '0', 10) || 0;
-    const totalWithout = assignCurrentTotal() - prev;
+    // Compute remaining by treating this input's contribution as its previous value
+    const currentTotal = assignCurrentTotal();
+    const totalWithout = currentTotal - v + prev; // swap current with prev to see room left
     const remaining = 15 - totalWithout;
     if (v > remaining) v = remaining;
     t.value = String(v);
@@ -609,8 +631,8 @@
     const info = document.getElementById('assignInfo');
     let err = '';
     if (!sel || !sel.value) err = 'Select a candidate.';
-    else if (total < 15) err = 'Total must be exactly 15.';
     else if (total > 15) err = 'Total exceeds 15.';
+    // allow any total up to 15
     if (btn) btn.disabled = Boolean(err);
     if (info) info.textContent = err ? err : '';
   }
@@ -776,14 +798,21 @@
   async function createAssignment() {
     const sel = document.getElementById('assignUser');
     const info = document.getElementById('assignInfo');
+    const okBox = document.getElementById('assignSuccess');
+    const errBox = document.getElementById('assignError');
     if (info) info.textContent = '';
+    if (okBox) { okBox.style.display = 'none'; okBox.textContent=''; }
+    if (errBox) { errBox.style.display = 'none'; errBox.textContent=''; }
     const email = sel && sel.value ? sel.value.trim().toLowerCase() : '';
     if (!email) { if (info) info.textContent = 'Select a candidate.'; return; }
     const inputs = document.querySelectorAll('#sectionsContainer input[type="number"]');
     const per_section = {};
     let total = 0;
     inputs.forEach(inp => { const v = parseInt(inp.value||'0',10)||0; per_section[inp.getAttribute('data-section')] = v; total += v; });
-    if (total !== 15) { if (info) info.textContent = 'Counts must sum to 15'; return; }
+    if (total > 15) {
+      if (info) info.textContent = 'Total exceeds 15';
+      return;
+    }
     const btn = document.getElementById('createBtn') || document.querySelector('button.btn');
     const prev = btn.textContent; btn.textContent = 'Creating...'; btn.disabled = true;
     try {
@@ -794,10 +823,23 @@
         body: JSON.stringify({ email, per_section, total: 15 })
       });
       const data = await res.json();
-      if (!res.ok) { if (info) info.textContent = data.error || 'Failed'; }
-      else { if (info) info.textContent = 'Quiz created and candidate notified.'; loadAssignments(); }
+      if (!res.ok) {
+        if (info) info.textContent = data.error || 'Failed';
+        showToast(data.error || 'Failed to create quiz', 'error');
+        if (errBox) { errBox.textContent = data.error || 'Failed to create quiz assignment.'; errBox.style.display='block'; }
+      } else {
+        if (info) info.textContent = 'Quiz created successfully. Email sent and notification queued.';
+        showToast('Quiz created successfully', 'success');
+        if (okBox) { okBox.textContent = 'Quiz created successfully. Candidate has been notified via email and inbox.'; okBox.style.display='block'; }
+        // Reset inputs to 0 and remaining to 15
+        document.querySelectorAll('#sectionsContainer input[type="number"]').forEach(inp => { inp.value = '0'; inp.setAttribute('data-last','0'); });
+        updateCreateAssignState();
+        loadAssignments();
+      }
     } catch (e) {
       if (info) info.textContent = String(e);
+      showToast(String(e), 'error');
+      if (errBox) { errBox.textContent = String(e); errBox.style.display='block'; }
     } finally {
       btn.textContent = prev; btn.disabled = false;
     }

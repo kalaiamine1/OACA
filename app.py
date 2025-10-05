@@ -28,11 +28,7 @@ app.register_blueprint(interview_bp)
 # --- Routes principales ---
 @app.route("/")
 def root():
-    claims = _current_user_claims()
-    if not claims:
-        return redirect("/login.html")
-    if claims.get("role") == "admin":
-        return redirect("/dashboard.html")
+    # Default landing goes to public home; login pages handle auth flows
     return redirect("/home")
 
 @app.route("/quiz.js")
@@ -54,6 +50,10 @@ def login_page():
 @app.route("/signup")
 def signup_page():
     return send_from_directory(BASE_DIR, "signup.html")
+
+@app.route("/assigned_quiz.html")
+def assigned_quiz_page():
+    return send_from_directory(BASE_DIR, "assigned_quiz.html")
 
 @app.route("/aviation_quiz_data.json")
 def quiz_data():

@@ -2,6 +2,9 @@ import datetime
 from typing import Any, Dict, List
 import os
 import json
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 from flask import Blueprint, jsonify, request
 
@@ -10,6 +13,51 @@ from login import _current_user_claims
 
 
 scores_bp = Blueprint("scores", __name__)
+def _send_assignment_email_smtp(target_email: str, assignment_id: str, per_section: Dict[str, int]) -> bool:
+    """Send assignment email using SMTP settings from environment.
+    Env vars:
+      SMTP_SERVER, SMTP_PORT, SMTP_USER, SMTP_PASSWORD, SMTP_SENDER, APP_BASE_URL
+    """
+    try:
+      smtp_server = os.environ.get("SMTP_SERVER", "")
+      smtp_port = int(os.environ.get("SMTP_PORT", "587"))
+      smtp_user = os.environ.get("SMTP_USER", "")
+      smtp_password = os.environ.get("SMTP_PASSWORD", "")
+      sender_email = os.environ.get("SMTP_SENDER", smtp_user or "noreply@oaca.local")
+      app_base_url = os.environ.get("APP_BASE_URL", "http://localhost:8000")
+
+      if not smtp_server or not smtp_user or not smtp_password:
+          # Incomplete SMTP configuration
+          return False
+
+      start_url = f"{app_base_url.rstrip('/')}/assigned_quiz.html?assignment_id={assignment_id}"
+
+      msg = MIMEMultipart('alternative')
+      msg['Subject'] = "OACA – New Quiz Assigned"
+      msg['From'] = sender_email
+      msg['To'] = target_email
+
+      # OACA branded minimalist email (no section breakdown)
+      html_content = f"""
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset=\"utf-8\" />
+        <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />
+        <title>OACA Quiz Assignment</title>
+      </head>
+      <body style=\"font-family:Segoe UI,Roboto,Arial,sans-serif; margin:0; background:#0b1d44; color:#eaf2ff;\">\n        <div style=\"max-width:640px;margin:0 auto;padding:24px;\">\n          <div style=\"background:linear-gradient(135deg,#10265f,#0b1d44); border:1px solid rgba(255,255,255,0.15); border-radius:16px; overflow:hidden;\">\n            <div style=\"padding:22px 22px 8px; text-align:center;\">\n              <div style=\"width:56px;height:56px;margin:0 auto 10px; border-radius:14px; background:linear-gradient(135deg,#3b82f6,#60a5fa); display:flex; align-items:center; justify-content:center; font-weight:800; color:#fff;\">✈</div>\n              <div style=\"font-size:22px; font-weight:800; letter-spacing:.2px;\">OACA Aviation</div>\n              <div style=\"opacity:.8; font-size:13px;\">Aviation Administration System</div>\n            </div>\n            <div style=\"padding:16px 24px 6px;\">\n              <h2 style=\"margin:10px 0 8px; font-size:20px;\">New Quiz Assigned</h2>\n              <p style=\"margin:0 0 12px; line-height:1.55;\">A new quiz has been assigned to your account. Click the button below to begin. Your progress will be timed.</p>\n              <p style=\"margin:16px 0 22px;\">\n                <a href=\"{start_url}\" style=\"display:inline-block; padding:12px 18px; background:linear-gradient(135deg,#274bcc,#3b82f6); color:#ffffff; text-decoration:none; border-radius:10px; font-weight:700; box-shadow:0 8px 20px rgba(30,64,175,.35);\">Start Quiz</a>\n              </p>\n              <div style=\"font-size:12px; color:#cfe2ff; opacity:.85;\">If the button doesn’t work, copy and paste this link:</div>\n              <div style=\"font-size:12px; margin-top:6px;\"><a href=\"{start_url}\" style=\"color:#93c5fd; text-decoration:none;\">{start_url}</a></div>\n            </div>\n            <div style=\"padding:16px 24px 22px; border-top:1px solid rgba(255,255,255,0.14); text-align:center; opacity:.8; font-size:12px;\">\n              © OACA Aviation. All rights reserved.\n            </div>\n          </div>\n        </div>\n      </body>\n      </html>\n      """
+      msg.attach(MIMEText(html_content, 'html'))
+
+      server = smtplib.SMTP(smtp_server, smtp_port)
+      server.starttls()
+      server.login(smtp_user, smtp_password)
+      server.sendmail(sender_email, target_email, msg.as_string())
+      server.quit()
+      return True
+    except Exception:
+      return False
+
 
 
 @scores_bp.route("/api/quiz-assignments", methods=["POST"])  # create assignment when user starts a quiz
@@ -27,11 +75,10 @@ def create_quiz_assignment():
             return jsonify({"error": "Forbidden"}), 403
         target_email = str(body.get("email")).strip().lower()
         per_section: Dict[str, int] = {str(k): int(v) for k, v in body.get("per_section", {}).items()}
-        total = int(body.get("total", 0))
-        if total != 15:
-            return jsonify({"error": "total must be 15"}), 400
-        if sum(per_section.values()) != 15:
-            return jsonify({"error": "per_section counts must sum to 15"}), 400
+        # Compute total from per_section; allow any total up to 15
+        total_sum = sum(per_section.values())
+        if total_sum > 15:
+            return jsonify({"error": "total must be <= 15"}), 400
         # Load quiz data and select questions per section
         base_dir = os.path.dirname(os.path.abspath(__file__))
         data_path = os.path.join(base_dir, "aviation_quiz_data.json")
@@ -62,7 +109,7 @@ def create_quiz_assignment():
             "email": target_email,
             "assigned_by": claims.get("email"),
             "per_section": per_section,
-            "total": 15,
+            "total": int(total_sum),
             "selected": selected,
             "created_at": datetime.datetime.utcnow(),
             "started_at": None,
@@ -73,14 +120,18 @@ def create_quiz_assignment():
         }
         db = get_db()
         result = db[ASSIGNMENTS_COLLECTION].insert_one(doc)
-        # Send notification email (mock) and store notification
+        # Send notification email (SMTP if configured) and store notification
         try:
-            print(f"[ASSIGNMENT EMAIL] To: {target_email} — You have been assigned a quiz with 15 questions. Sections: {', '.join(f'{k}:{v}' for k,v in per_section.items())}")
+            # Attempt SMTP; if not configured, log to console as fallback
+            sent = _send_assignment_email_smtp(target_email, str(result.inserted_id), per_section)
+            if not sent:
+                print(f"[ASSIGNMENT EMAIL - FALLBACK] To: {target_email} — You have been assigned a quiz with {int(total_sum)} questions. Start: /assigned_quiz.html?assignment_id={str(result.inserted_id)}")
+            # Store notification for inbox
             db[NOTIFICATIONS_COLLECTION].insert_one({
                 "email": target_email,
                 "type": "quiz_assignment",
                 "title": "New Quiz Assigned",
-                "message": f"You have been assigned a quiz with 15 questions.",
+                "message": f"You have been assigned a quiz with {int(total_sum)} questions. Click to start.",
                 "assignment_id": str(result.inserted_id),
                 "created_at": datetime.datetime.utcnow(),
                 "read": False,

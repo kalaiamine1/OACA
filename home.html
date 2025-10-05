@@ -609,21 +609,48 @@
         <button class="close-btn" id="closeProfileModal">Close</button>
       </div>
       <div class="modal-body">
-        <label>Avatar URL</label>
-        <input id="modalAvatarUrl" type="url" placeholder="https://.../avatar.png">
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;">
+          <img id="modalAvatarPreview" src="" alt="avatar" style="width:64px; height:64px; border-radius:50%; object-fit:cover; border:1px solid rgba(255,255,255,0.25); background:rgba(255,255,255,0.08);">
+          <div style="flex:1;">
+            <input id="modalAvatarFile" type="file" accept="image/*" style="background:transparent; border:none; color:#eaf2ff; width:100%;">
+            <div style="display:flex; gap:8px; margin-top:6px;">
+              <button class="btn btn-secondary" id="uploadAvatarBtn">Upload Photo</button>
+              <span id="avatarUploadMsg" style="align-self:center; font-size:13px; color:#cfe2ff;"></span>
+            </div>
+          </div>
+        </div>
         <label>Display Name</label>
         <input id="modalProfileName" type="text" placeholder="Your name">
         <label>Username</label>
         <input id="modalUsername" type="text" placeholder="username">
         <label>CIN (8 digits)</label>
         <input id="modalCIN" type="text" maxlength="8" placeholder="00000000">
-        <label>New Password</label>
-        <input id="modalProfilePwd" type="password" placeholder="********">
         <div class="modal-actions">
           <button class="btn btn-secondary" id="closeModalSecondary">Cancel</button>
           <button class="btn btn-primary" id="saveModalProfile">Save</button>
         </div>
         <div id="modalProfileMsg" style="margin-top:8px; color:#cfe2ff;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Change Password Modal -->
+  <div class="modal-backdrop" id="changePwdModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 style="margin:0;">Change Password</h3>
+        <button class="close-btn" id="closeChangePwdModal">Close</button>
+      </div>
+      <div class="modal-body">
+        <label>Old Password</label>
+        <input id="oldPwd" type="password" placeholder="********">
+        <label>New Password</label>
+        <input id="newPwd" type="password" placeholder="********">
+        <div class="modal-actions">
+          <button class="btn btn-secondary" id="cancelChangePwd">Cancel</button>
+          <button class="btn btn-primary" id="saveChangePwd">Change Password</button>
+        </div>
+        <div id="changePwdMsg" style="margin-top:8px; color:#cfe2ff;"></div>
       </div>
     </div>
   </div>
@@ -650,9 +677,7 @@
           const openProfile = document.getElementById('openProfile');
           if (openProfile) openProfile.addEventListener('click', openProfileModal);
           const resetPwd = document.getElementById('resetPwd');
-          if (resetPwd) resetPwd.addEventListener('click', async ()=>{
-            try { const r = await fetch('/api/profile/reset_password', { method:'POST', credentials:'include' }); const d = await r.json(); alert(r.ok ? ('Temporary password: ' + d.temporary_password) : (d.error||'Failed')); } catch(e){ alert(String(e)); }
-          });
+          if (resetPwd) resetPwd.addEventListener('click', openChangePwdModal);
           // Notifications inbox
           const inboxBtn = document.getElementById('inboxBtn');
           const inboxList = document.getElementById('inboxList');
@@ -665,7 +690,18 @@
                 const rows = resN.ok ? await resN.json() : [];
                 if (!rows.length) inboxList.innerHTML = '<div class="inbox-item">No notifications</div>';
                 else {
-                  inboxList.innerHTML = rows.map(n => `<div class=\"inbox-item ${n.read? '' : 'unread'}\"><div class=\"title\">${n.title||'Notification'}</div><div>${n.message||''}</div><div class=\"time\">${(n.created_at||'').toString()}</div></div>`).join('');
+                  inboxList.innerHTML = rows.map(n => {
+                    const clickable = (n.type === 'quiz_assignment' && n.assignment_id);
+                    const body = `<div class=\"inbox-item ${n.read? '' : 'unread'}\" ${clickable? `data-assignment-id=\\\"${n.assignment_id}\\\"` : ''}><div class=\"title\">${n.title||'Notification'}</div><div>${n.message||''}</div><div class=\"time\">${(n.created_at||'').toString()}</div></div>`;
+                    return body;
+                  }).join('');
+                  // Attach click handlers to quiz_assignment items
+                  Array.from(inboxList.querySelectorAll('.inbox-item[data-assignment-id]')).forEach(el => {
+                    el.addEventListener('click', () => {
+                      const id = el.getAttribute('data-assignment-id');
+                      if (id) window.location.href = `/assigned_quiz.html?assignment_id=${encodeURIComponent(id)}`;
+                    });
+                  });
                 }
                 inboxList.style.display='flex';
                 await fetch('/api/notifications/read', { method:'POST', credentials:'include' });
@@ -707,9 +743,11 @@
           const nameEl = document.getElementById('modalProfileName');
           const userEl = document.getElementById('modalUsername');
           const cinEl = document.getElementById('modalCIN');
+          const avatarPrev = document.getElementById('modalAvatarPreview');
           if (nameEl) nameEl.value = p.name || '';
           if (userEl) userEl.value = p.username || '';
           if (cinEl) cinEl.value = p.cin || '';
+          if (avatarPrev) avatarPrev.src = p.avatar_url || '';
           const msg = document.getElementById('modalProfileMsg'); if (msg) msg.textContent = '';
         }).catch(()=>{});
     }
@@ -722,15 +760,54 @@
       const name = (document.getElementById('modalProfileName')||{}).value || '';
       const username = (document.getElementById('modalUsername')||{}).value || '';
       const cin = (document.getElementById('modalCIN')||{}).value || '';
-      const password = (document.getElementById('modalProfilePwd')||{}).value || '';
       const msg = document.getElementById('modalProfileMsg'); if (msg) msg.textContent = '';
       if (cin && (!/^\d{8}$/.test(cin))) { if (msg) msg.textContent='CIN must be exactly 8 digits.'; return; }
       try {
-        const res = await fetch('/api/profile', { method:'PUT', headers:{'Content-Type':'application/json'}, credentials:'include', body: JSON.stringify({ name: name || undefined, username: username || undefined, cin: cin || undefined, password: password || undefined }) });
+        const res = await fetch('/api/profile', { method:'PUT', headers:{'Content-Type':'application/json'}, credentials:'include', body: JSON.stringify({ name: name || undefined, username: username || undefined, cin: cin || undefined }) });
         const data = await res.json();
         if (!res.ok) { if (msg) msg.textContent = data.error || 'Failed'; }
-        else { if (msg) msg.textContent = 'Profile updated.'; const pwd = document.getElementById('modalProfilePwd'); if (pwd) pwd.value=''; setTimeout(closeProfileModal, 900); }
+        else { if (msg) msg.textContent = 'Profile updated.'; setTimeout(closeProfileModal, 900); }
       } catch (e) { if (msg) msg.textContent = String(e); }
+    });
+
+    // Avatar upload
+    const uploadAvatarBtn = document.getElementById('uploadAvatarBtn');
+    if (uploadAvatarBtn) uploadAvatarBtn.addEventListener('click', async ()=>{
+      const fInput = document.getElementById('modalAvatarFile');
+      const info = document.getElementById('avatarUploadMsg'); if (info) info.textContent='';
+      if (!fInput || !fInput.files || !fInput.files[0]) { if (info) info.textContent = 'Select an image first.'; return; }
+      const fd = new FormData();
+      fd.append('file', fInput.files[0]);
+      try {
+        const r = await fetch('/api/profile/avatar', { method:'POST', body: fd, credentials:'include' });
+        const d = await r.json();
+        if (!r.ok) { if (info) info.textContent = d.error || 'Upload failed'; return; }
+        const avatarPrev = document.getElementById('modalAvatarPreview'); if (avatarPrev) avatarPrev.src = d.avatar_url || '';
+        if (info) info.textContent = 'Uploaded.';
+      } catch(e) { if (info) info.textContent = String(e); }
+    });
+
+    // Change password modal handlers
+    const changePwdModal = document.getElementById('changePwdModal');
+    const closeChangePwdModalBtn = document.getElementById('closeChangePwdModal');
+    const cancelChangePwd = document.getElementById('cancelChangePwd');
+    function openChangePwdModal(){ if (changePwdModal) { const msg = document.getElementById('changePwdMsg'); if (msg) msg.textContent=''; (document.getElementById('oldPwd')||{}).value=''; (document.getElementById('newPwd')||{}).value=''; changePwdModal.classList.add('active'); } }
+    function closeChangePwd(){ if (changePwdModal) changePwdModal.classList.remove('active'); }
+    if (closeChangePwdModalBtn) closeChangePwdModalBtn.addEventListener('click', closeChangePwd);
+    if (cancelChangePwd) cancelChangePwd.addEventListener('click', closeChangePwd);
+    if (changePwdModal) changePwdModal.addEventListener('click', (e)=>{ if (e.target === changePwdModal) closeChangePwd(); });
+    const saveChangePwdBtn = document.getElementById('saveChangePwd');
+    if (saveChangePwdBtn) saveChangePwdBtn.addEventListener('click', async ()=>{
+      const old_password = (document.getElementById('oldPwd')||{}).value || '';
+      const new_password = (document.getElementById('newPwd')||{}).value || '';
+      const msg = document.getElementById('changePwdMsg'); if (msg) msg.textContent='';
+      if (!old_password || !new_password) { if (msg) msg.textContent = 'Both fields are required.'; return; }
+      try {
+        const r = await fetch('/api/profile/reset_password', { method:'POST', headers:{'Content-Type':'application/json'}, credentials:'include', body: JSON.stringify({ old_password, new_password }) });
+        const d = await r.json();
+        if (!r.ok) { if (msg) msg.textContent = d.error || 'Failed'; return; }
+        if (msg) msg.textContent = 'Password changed.'; setTimeout(closeChangePwd, 900);
+      } catch(e){ if (msg) msg.textContent = String(e); }
     });
   </script>
 </body>

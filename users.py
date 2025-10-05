@@ -5,9 +5,11 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from typing import Any, Dict
+import os
 
 from flask import Blueprint, jsonify, request
-from werkzeug.security import generate_password_hash
+from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
 
 from configuration import get_db, USERS_COLLECTION, NOTIFICATIONS_COLLECTION
 from login import _current_user_claims
@@ -342,7 +344,7 @@ def get_profile():
     return jsonify(user)
 
 
-@users_bp.route("/api/profile", methods=["PUT"])  # update display name or password
+@users_bp.route("/api/profile", methods=["PUT"])  # update profile fields (no password here)
 def update_profile():
     claims = _current_user_claims()
     if not claims:
@@ -358,9 +360,10 @@ def update_profile():
     cin = body.get("cin")
     if isinstance(cin, str) and cin.isdigit() and len(cin) == 8:
         updates["cin"] = cin
-    new_password = body.get("password")
-    if isinstance(new_password, str) and new_password:
-        updates["password_hash"] = generate_password_hash(new_password)
+    # Optional avatar URL (set by upload endpoint)
+    avatar_url = body.get("avatar_url")
+    if isinstance(avatar_url, str) and avatar_url.strip():
+        updates["avatar_url"] = avatar_url.strip()
     if not updates:
         return jsonify({"error": "No updates"}), 400
     db = get_db()
@@ -368,15 +371,54 @@ def update_profile():
     return jsonify({"ok": True})
 
 
-@users_bp.route("/api/profile/reset_password", methods=["POST"])  # issue a temporary password
+@users_bp.route("/api/profile/reset_password", methods=["POST"])  # change password via old/new (repurposed)
 def reset_password():
     claims = _current_user_claims()
     if not claims:
         return jsonify({"error": "Unauthorized"}), 401
-    temp = generate_password()
+    body: Dict[str, Any] = request.get_json(silent=True) or {}
+    old_password = body.get("old_password")
+    new_password = body.get("new_password")
+    if not isinstance(old_password, str) or not isinstance(new_password, str) or not new_password:
+        return jsonify({"error": "old_password and new_password are required"}), 400
     db = get_db()
-    db[USERS_COLLECTION].update_one({"email": claims.get("email")}, {"$set": {"password_hash": generate_password_hash(temp)}})
-    return jsonify({"ok": True, "temporary_password": temp})
+    user = db[USERS_COLLECTION].find_one({"email": claims.get("email")})
+    if not user or not check_password_hash(user.get("password_hash", ""), old_password):
+        return jsonify({"error": "Old password is incorrect"}), 400
+    db[USERS_COLLECTION].update_one({"email": claims.get("email")}, {"$set": {"password_hash": generate_password_hash(new_password)}})
+    return jsonify({"ok": True})
+
+
+# Removed separate change_password endpoint to consolidate on reset_password
+
+
+@users_bp.route("/api/profile/avatar", methods=["POST"])  # upload avatar file and set URL
+def upload_avatar():
+    claims = _current_user_claims()
+    if not claims:
+        return jsonify({"error": "Unauthorized"}), 401
+    if "file" not in request.files:
+        return jsonify({"error": "No file part"}), 400
+    file = request.files["file"]
+    if file.filename == "":
+        return jsonify({"error": "No selected file"}), 400
+    filename = secure_filename(file.filename)
+    if not filename:
+        return jsonify({"error": "Invalid filename"}), 400
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    upload_dir = os.path.join(base_dir, "uploads", "avatars")
+    os.makedirs(upload_dir, exist_ok=True)
+    # Prefix filename with user identifier to avoid collisions
+    user_prefix = claims.get("email", "user")
+    safe_prefix = "".join(c for c in user_prefix if c.isalnum())
+    final_name = f"{safe_prefix}_{filename}"
+    file_path = os.path.join(upload_dir, final_name)
+    file.save(file_path)
+    # Public URL relative to app static root
+    public_url = f"/uploads/avatars/{final_name}"
+    db = get_db()
+    db[USERS_COLLECTION].update_one({"email": claims.get("email")}, {"$set": {"avatar_url": public_url}})
+    return jsonify({"ok": True, "avatar_url": public_url})
 
 
 @users_bp.route("/api/notifications", methods=["GET"])  # list current user's notifications

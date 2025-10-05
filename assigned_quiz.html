@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Assigned Quiz</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif; background:#0b1d44; color:#eaf2ff; margin:0; }
+    .container { max-width: 920px; margin: 0 auto; padding: 24px; }
+    .card { background: rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.16); border-radius: 14px; padding: 16px 18px; margin-top: 16px; }
+    .hidden { display: none; }
+    .header { display:flex; justify-content: space-between; align-items:center; }
+    .timer { font-weight: 800; color: #60a5fa; }
+    .notice { margin: 10px 0; color: #cfe2ff; }
+    .option { margin: 8px 0; }
+    .actions { display:flex; gap:8px; margin-top: 12px; }
+    .btn { padding: 10px 16px; border-radius: 10px; border:1px solid rgba(255,255,255,0.25); background: rgba(255,255,255,0.12); color:#fff; cursor:pointer; }
+    .btn-primary { background: linear-gradient(135deg, #274bcc, #3b82f6); border:none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h2 style="margin:0;">Assigned Quiz</h2>
+      <div class="timer" id="timer">--:--</div>
+    </div>
+    <div id="setupCard" class="card">
+      <div class="notice" id="setupMsg">This quiz was assigned to you. When you click Start, the timer begins.</div>
+      <div class="actions">
+        <button class="btn btn-primary" id="startAssigned">Start Quiz</button>
+        <a class="btn" href="/home">Back</a>
+      </div>
+    </div>
+
+    <div id="quizCard" class="card hidden">
+      <div id="progress"></div>
+      <div id="questionText" style="margin: 12px 0;"></div>
+      <div id="options"></div>
+      <div class="actions">
+        <button class="btn" id="nextBtn">Next</button>
+        <button class="btn btn-primary hidden" id="submitBtn">Submit</button>
+        <button class="btn" id="cancelBtn">Cancel</button>
+      </div>
+      <div id="quizMsg" class="notice"></div>
+    </div>
+
+    <div id="resultCard" class="card hidden">
+      <div id="resultSummary"></div>
+      <div id="resultDetails" style="margin-top:8px;"></div>
+      <div class="actions">
+        <a class="btn" href="/home">Home</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function(){
+      const qs = new URLSearchParams(window.location.search);
+      const assignmentId = qs.get('assignment_id');
+      const setupCard = document.getElementById('setupCard');
+      const quizCard = document.getElementById('quizCard');
+      const resultCard = document.getElementById('resultCard');
+      const setupMsg = document.getElementById('setupMsg');
+      const startBtn = document.getElementById('startAssigned');
+      const progressEl = document.getElementById('progress');
+      const questionTextEl = document.getElementById('questionText');
+      const optionsEl = document.getElementById('options');
+      const nextBtn = document.getElementById('nextBtn');
+      const submitBtn = document.getElementById('submitBtn');
+      const cancelBtn = document.getElementById('cancelBtn');
+      const quizMsg = document.getElementById('quizMsg');
+      const resultSummary = document.getElementById('resultSummary');
+      const resultDetails = document.getElementById('resultDetails');
+      const timerEl = document.getElementById('timer');
+
+      const state = { questions: [], index: 0, answers: {}, countdown: 15*60, tick: null };
+
+      function show(el){ el.classList.remove('hidden'); }
+      function hide(el){ el.classList.add('hidden'); }
+      function setMsg(el, t){ el.textContent = t || ''; }
+
+      function fmt(sec){ const m = Math.floor(sec/60); const s = sec%60; return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`; }
+      function updateTimer(){ timerEl.textContent = fmt(state.countdown); }
+      function startTimer(){ if (state.tick) return; updateTimer(); state.tick = setInterval(()=>{ state.countdown -= 1; updateTimer(); if (state.countdown <= 0){ clearInterval(state.tick); state.tick=null; submit(); } }, 1000); }
+
+      async function fetchQuestions(){
+        try {
+          const r = await fetch('/api/quiz-assignments/questions', { method:'POST', headers:{'Content-Type':'application/json'}, credentials:'include', body: JSON.stringify({ assignment_id: assignmentId }) });
+          if (r.status === 401){ window.location.href = '/login.html'; return false; }
+          if (!r.ok){ setMsg(setupMsg, 'Failed to load assigned quiz.'); return false; }
+          const d = await r.json();
+          const cats = (d.quiz_data && Array.isArray(d.quiz_data.categories)) ? d.quiz_data.categories : [];
+          const qs = cats.length ? (cats[0].questions || []) : [];
+          state.questions = qs;
+          return true;
+        } catch(e){ setMsg(setupMsg, String(e)); return false; }
+      }
+
+      function render(){
+        const i = state.index;
+        const q = state.questions[i];
+        progressEl.textContent = `Question ${i+1} of ${state.questions.length}`;
+        questionTextEl.textContent = q.question || '';
+        optionsEl.innerHTML = '';
+        Object.entries(q.options||{}).sort((a,b)=>a[0].localeCompare(b[0])).forEach(([k,label])=>{
+          const div = document.createElement('div');
+          div.className = 'option';
+          div.innerHTML = `<label><input type="radio" name="q_${i}" value="${k}"> ${k}. ${label}</label>`;
+          optionsEl.appendChild(div);
+        });
+        setMsg(quizMsg, '');
+        if (i === state.questions.length-1){ hide(nextBtn); show(submitBtn); } else { show(nextBtn); hide(submitBtn); }
+      }
+
+      function recordOrWarn(){
+        const i = state.index;
+        const sel = document.querySelector(`input[name="q_${i}"]:checked`);
+        if (!sel){ setMsg(quizMsg, 'Please select an answer.'); return false; }
+        state.answers[i] = sel.value;
+        return true;
+      }
+
+      function next(){ if (!recordOrWarn()) return; if (state.index < state.questions.length-1){ state.index += 1; render(); } }
+      function cancel(){ hide(quizCard); hide(resultCard); show(setupCard); if (state.tick){ clearInterval(state.tick); state.tick=null; } setMsg(setupMsg, 'Quiz cancelled.'); }
+
+      function submit(){ if (!recordOrWarn()) return; if (state.tick){ clearInterval(state.tick); state.tick=null; }
+        let score=0, total=0; const details=[]; state.questions.forEach((q, i)=>{
+          const ans = String(state.answers[i]||'').toUpperCase();
+          const key = (q.correct_answer==null)?null:String(q.correct_answer).toUpperCase();
+          if (key==null) return; total+=1; if (ans===key) score+=1; else details.push(`Q${i+1} (${q.id||i}): Your ${ans} | Correct ${key}`);
+        });
+        resultSummary.textContent = `Attempted: ${state.questions.length} — Score: ${score}/${total}`;
+        resultDetails.innerHTML = details.length? `<ul>${details.map(t=>`<li>${t}</li>`).join('')}</ul>` : '';
+        fetch('/api/scores', { method:'POST', headers:{'Content-Type':'application/json'}, credentials:'include', body: JSON.stringify({ attempted: state.questions.length, correct: score, total_with_keys: total, assignment_id: assignmentId }) }).catch(()=>{});
+        hide(quizCard); show(resultCard);
+      }
+
+      if (!assignmentId){ setMsg(setupMsg, 'Missing assignment_id.'); startBtn.disabled = true; }
+      // Auth probe – redirect unauthenticated users to login immediately
+      (async ()=>{
+        try {
+          const me = await fetch('/api/me', { credentials:'include' });
+          if (!me.ok){ window.location.href = '/login.html'; }
+        } catch(_) { window.location.href = '/login.html'; }
+      })();
+      startBtn.addEventListener('click', async ()=>{ if (!assignmentId) return; const ok = await fetchQuestions(); if (!ok) return; hide(setupCard); show(quizCard); state.index=0; state.answers={}; startTimer(); render(); });
+      nextBtn.addEventListener('click', next);
+      submitBtn.addEventListener('click', submit);
+      cancelBtn.addEventListener('click', cancel);
+      // initial timer display
+      updateTimer();
+    })();
+  </script>
+</body>
+</html>
+
+
