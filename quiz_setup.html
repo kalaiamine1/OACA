@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Setup - OACA</title>
+    <style>
+        :root {
+            --bg1: #0b1d44;
+            --bg2: #0a1a3d;
+            --glass: rgba(255,255,255,0.08);
+            --glass-border: rgba(255,255,255,0.14);
+            --text: #e6eeff;
+            --muted: #9db0d9;
+            --accent: #3b82f6;
+            --accent-2: #60a5fa;
+            --success: #22c55e;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+        }
+
+        html, body { 
+            height: 100%; 
+            margin: 0; 
+            padding: 0;
+        }
+        
+        body {
+            color: var(--text);
+            background: radial-gradient(1200px 800px at 20% 30%, #13306b 0%, #0d1f4a 60%, #091735 100%),
+                        linear-gradient(135deg, var(--bg1) 0%, var(--bg2) 100%);
+            background-attachment: fixed;
+            font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 24px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .setup-card {
+            background: var(--glass);
+            backdrop-filter: blur(16px) saturate(140%);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            width: 100%;
+            max-width: 600px;
+        }
+
+        h1 {
+            margin: 0 0 8px 0;
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            color: var(--muted);
+            font-size: 16px;
+            margin-bottom: 32px;
+        }
+
+        .camera-setup {
+            margin: 32px 0;
+            position: relative;
+        }
+
+        #video {
+            width: 100%;
+            max-width: 400px;
+            height: 300px;
+            background: #000;
+            border-radius: 12px;
+            object-fit: cover;
+            border: 2px solid var(--glass-border);
+        }
+
+        #canvas {
+            display: none;
+        }
+
+        .status {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin: 16px 0;
+            padding: 12px 16px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--warning);
+            animation: pulse 2s infinite;
+        }
+
+        .status.ready .status-indicator {
+            background: var(--success);
+        }
+
+        .status.error .status-indicator {
+            background: var(--danger);
+        }
+
+        .face-capture-progress {
+            margin: 16px 0;
+            text-align: center;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 12px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), var(--accent-2));
+            border-radius: 4px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        .capture-instructions {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 12px;
+            padding: 16px;
+            margin: 16px 0;
+            text-align: center;
+        }
+
+        .capture-instructions h4 {
+            margin: 0 0 8px 0;
+            color: var(--accent-2);
+            font-size: 16px;
+        }
+
+        .capture-instructions p {
+            margin: 0;
+            font-size: 14px;
+            color: var(--text);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .instructions {
+            text-align: left;
+            margin: 24px 0;
+            padding: 20px;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 12px;
+        }
+
+        .instructions h3 {
+            margin: 0 0 12px 0;
+            color: var(--accent-2);
+            font-size: 16px;
+        }
+
+        .instructions ul {
+            margin: 0;
+            padding-left: 20px;
+            color: var(--text);
+        }
+
+        .instructions li {
+            margin: 8px 0;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent) 0%, #2563eb 100%);
+            border: none;
+            color: white;
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin: 24px 0;
+            min-width: 200px;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .warning {
+            text-align: left;
+            margin: 24px 0;
+            padding: 20px;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 12px;
+            color: #fca5a5;
+        }
+
+        .warning strong {
+            color: #ef4444;
+            font-size: 16px;
+        }
+
+        .warning ul {
+            margin: 12px 0 0 0;
+            padding-left: 20px;
+        }
+
+        .warning li {
+            margin: 6px 0;
+            font-size: 14px;
+        }
+
+        .back-link {
+            position: absolute;
+            top: 24px;
+            left: 24px;
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: var(--text);
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                padding: 16px;
+            }
+            
+            .setup-card {
+                padding: 24px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+            
+            #video {
+                height: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="/home" class="back-link">← Back to Home</a>
+    
+    <div class="container">
+        <div class="setup-card">
+            <h1>Quiz Setup</h1>
+            <p class="subtitle">AI-Powered Anti-Cheating Detection</p>
+            
+            <div class="camera-setup">
+                <video id="video" autoplay playsinline muted></video>
+                <canvas id="canvas"></canvas>
+                
+                <div id="status" class="status">
+                    <div class="status-indicator"></div>
+                    <span>Initializing camera...</span>
+                </div>
+                
+                <div id="faceCaptureStatus" class="status" style="display: none;">
+                    <div class="status-indicator"></div>
+                    <span>Capturing reference face...</span>
+                </div>
+                
+                <div id="faceCaptureProgress" class="face-capture-progress" style="display: none;">
+                    <div class="capture-instructions">
+                        <h4>📸 Face Capture in Progress</h4>
+                        <p>Please keep your face centered and still</p>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <div id="progressText">Preparing...</div>
+                </div>
+            </div>
+            
+            <div class="instructions">
+                <h3>Before Starting:</h3>
+                <ul>
+                    <li>✓ Ensure your face is clearly visible</li>
+                    <li>✓ Stay in frame throughout the test</li>
+                    <li>✓ No other person should be visible</li>
+                    <li>✓ Do not stand up or move away</li>
+                    <li>✓ Ensure good lighting conditions</li>
+                </ul>
+            </div>
+            
+            <div style="
+                background: rgba(59, 130, 246, 0.1);
+                border: 1px solid rgba(59, 130, 246, 0.3);
+                border-radius: 12px;
+                padding: 20px;
+                margin: 20px 0;
+                text-align: center;
+            ">
+                <h4 style="color: var(--accent-2); margin: 0 0 12px 0; font-size: 16px;">📋 Quiz Flow</h4>
+                <div style="display: flex; justify-content: center; align-items: center; gap: 16px; flex-wrap: wrap;">
+                    <div style="
+                        background: rgba(255, 255, 255, 0.1);
+                        color: var(--muted);
+                        padding: 8px 16px;
+                        border-radius: 20px;
+                        font-size: 14px;
+                        font-weight: 600;
+                    ">1. Guide</div>
+                    <div style="color: var(--muted); font-size: 18px;">→</div>
+                    <div style="
+                        background: var(--accent);
+                        color: white;
+                        padding: 8px 16px;
+                        border-radius: 20px;
+                        font-size: 14px;
+                        font-weight: 600;
+                    ">2. Face Setup</div>
+                    <div style="color: var(--muted); font-size: 18px;">→</div>
+                    <div style="
+                        background: rgba(255, 255, 255, 0.1);
+                        color: var(--muted);
+                        padding: 8px 16px;
+                        border-radius: 20px;
+                        font-size: 14px;
+                        font-weight: 600;
+                    ">3. Quiz</div>
+                </div>
+            </div>
+            
+            <button id="startBtn" class="btn-primary" disabled style="display: none;">
+                Start Quiz
+            </button>
+            
+            <button id="retryCameraBtn" class="btn-primary" style="display: none; margin-top: 16px;">
+                Retry Camera
+            </button>
+            <div id="countdown" style="display: none; margin: 24px 0; font-size: 18px; color: var(--accent-2); font-weight: 600;">
+                Starting quiz in <span id="countdownNumber">3</span> seconds...
+            </div>
+            
+            <div class="warning">
+                <strong>Warning:</strong> The system will monitor for:
+                <ul>
+                    <li>Face disappearing for 30+ seconds</li>
+                    <li>Multiple faces detected</li>
+                    <li>Person switching or face changes</li>
+                    <li>Standing up or significant movement</li>
+                    <li>Moving too close or far from camera</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const startBtn = document.getElementById('startBtn');
+        const statusDiv = document.getElementById('status');
+        const faceCaptureStatus = document.getElementById('faceCaptureStatus');
+        const faceCaptureProgress = document.getElementById('faceCaptureProgress');
+        const progressFill = document.getElementById('progressFill');
+        const progressText = document.getElementById('progressText');
+        const retryCameraBtn = document.getElementById('retryCameraBtn');
+        const countdownDiv = document.getElementById('countdown');
+        const countdownNumber = document.getElementById('countdownNumber');
+        let stream = null;
+        let faceCaptured = false;
+
+        // Get assignment ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const assignmentId = urlParams.get('assignment_id');
+
+        // Check if quiz was terminated due to violation
+        function checkTerminationStatus() {
+            if (assignmentId) {
+                try {
+                    const terminated = localStorage.getItem(`assigned_quiz_state_${assignmentId}_terminated`);
+                    if (terminated) {
+                        const data = JSON.parse(terminated);
+                        if (data.terminated) {
+                            statusDiv.innerHTML = `<div class="status-indicator"></div><span>Quiz terminated: ${data.message}</span>`;
+                            statusDiv.classList.add('error');
+                            startBtn.disabled = true;
+                            startBtn.textContent = 'Quiz Terminated';
+                            startBtn.style.display = 'block';
+                            return true;
+                        }
+                    }
+                } catch(_) {}
+            }
+            return false;
+        }
+
+        // Show countdown and start quiz
+        function showCountdown() {
+            countdownDiv.style.display = 'block';
+            let count = 3;
+            countdownNumber.textContent = count;
+            
+            const countdownInterval = setInterval(() => {
+                count--;
+                countdownNumber.textContent = count;
+                
+                if (count <= 0) {
+                    clearInterval(countdownInterval);
+                    if (stream) {
+                        stream.getTracks().forEach((track) => track.stop());
+                    }
+                    // Redirect to assigned quiz with assignment ID
+                    if (assignmentId) {
+                        window.location.href = `/assigned_quiz.html?assignment_id=${assignmentId}`;
+                    } else {
+                        window.location.href = '/assigned_quiz.html';
+                    }
+                }
+            }, 1000);
+        }
+
+        // Initialize camera
+        async function initCamera() {
+            console.log('Initializing camera...');
+            statusDiv.innerHTML = '<div class="status-indicator"></div><span>Requesting camera access...</span>';
+            
+            // Set a timeout to detect if camera is taking too long
+            const cameraTimeout = setTimeout(() => {
+                if (!stream) {
+                    console.error('Camera initialization timeout');
+                    statusDiv.innerHTML = '<div class="status-indicator"></div><span>Camera initialization timeout. Please try again.</span>';
+                    statusDiv.classList.add('error');
+                    retryCameraBtn.style.display = 'block';
+                }
+            }, 10000); // 10 second timeout
+            
+            try {
+                // Check if getUserMedia is supported
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                    throw new Error('Camera not supported in this browser');
+                }
+                
+                console.log('Requesting camera permissions...');
+                stream = await navigator.mediaDevices.getUserMedia({
+                    video: {
+                        width: { ideal: 640, min: 320 },
+                        height: { ideal: 480, min: 240 },
+                        facingMode: 'user',
+                    },
+                });
+                
+                console.log('Camera stream obtained:', stream);
+                video.srcObject = stream;
+                
+                // Clear timeout since we got the stream
+                clearTimeout(cameraTimeout);
+                
+                // Wait for video to be ready
+                video.onloadedmetadata = () => {
+                    console.log('Video metadata loaded, starting face capture...');
+                    startFaceCapture();
+                };
+                
+                // Also try oncanplay event as backup
+                video.oncanplay = () => {
+                    console.log('Video can play, starting face capture...');
+                    if (!faceCaptured) {
+                        startFaceCapture();
+                    }
+                };
+                
+                // Add error handling for video element
+                video.onerror = (e) => {
+                    console.error('Video element error:', e);
+                    clearTimeout(cameraTimeout);
+                    statusDiv.innerHTML = '<div class="status-indicator"></div><span>Video error - Please try again</span>';
+                    statusDiv.classList.add('error');
+                    retryCameraBtn.style.display = 'block';
+                };
+                
+            } catch (err) {
+                console.error('Camera error:', err);
+                clearTimeout(cameraTimeout);
+                let errorMessage = 'Camera access denied';
+                
+                if (err.name === 'NotAllowedError') {
+                    errorMessage = 'Camera access denied. Please allow camera access and try again.';
+                } else if (err.name === 'NotFoundError') {
+                    errorMessage = 'No camera found. Please connect a camera and try again.';
+                } else if (err.name === 'NotSupportedError') {
+                    errorMessage = 'Camera not supported in this browser. Please use a modern browser.';
+                }
+                
+                statusDiv.innerHTML = `<div class="status-indicator"></div><span>${errorMessage}</span>`;
+                statusDiv.classList.add('error');
+                retryCameraBtn.style.display = 'block';
+            }
+        }
+
+        // Start face capture process
+        async function startFaceCapture() {
+            console.log('Starting face capture process...');
+            statusDiv.style.display = 'none';
+            faceCaptureProgress.style.display = 'block';
+            progressText.textContent = 'Position your face in the center of the camera...';
+            progressFill.style.width = '20%';
+            
+            // Wait 3 seconds for user to position themselves with progress
+            let progress = 20;
+            const progressInterval = setInterval(() => {
+                progress += 10;
+                progressFill.style.width = `${Math.min(progress, 80)}%`;
+                if (progress >= 80) {
+                    clearInterval(progressInterval);
+                    progressText.textContent = 'Capturing face in 3 seconds...';
+                    setTimeout(() => {
+                        captureReferenceFace();
+                    }, 1000);
+                }
+            }, 500);
+        }
+
+        // Capture reference face
+        async function captureReferenceFace() {
+            progressText.textContent = 'Capturing reference face...';
+            progressFill.style.width = '90%';
+            
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0);
+
+            const imageData = canvas.toDataURL('image/jpeg');
+
+            try {
+                console.log('Capturing reference face...');
+                const response = await fetch('/api/setup-reference', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ 
+                        image: imageData,
+                        assignment_id: assignmentId
+                    }),
+                });
+
+                console.log('Response status:', response.status);
+                const result = await response.json();
+                console.log('Response result:', result);
+
+                if (result.success) {
+                    faceCaptured = true;
+                    progressText.textContent = '✓ Reference face captured successfully!';
+                    progressFill.style.width = '100%';
+                    
+                    // Hide progress and show main status
+                    setTimeout(() => {
+                        faceCaptureProgress.style.display = 'none';
+                        statusDiv.style.display = 'flex';
+                        statusDiv.innerHTML = '<div class="status-indicator"></div><span>Face setup complete - Starting quiz...</span>';
+                        statusDiv.classList.add('ready');
+                        
+                        // Show countdown and auto-start quiz
+                        showCountdown();
+                    }, 1500);
+                } else {
+                    progressText.textContent = `❌ ${result.error || 'Face capture failed'}`;
+                    progressFill.style.background = 'var(--danger)';
+                    // Retry after 2 seconds
+                    setTimeout(() => {
+                        progressFill.style.background = 'linear-gradient(90deg, var(--accent), var(--accent-2))';
+                        progressFill.style.width = '20%';
+                        startFaceCapture();
+                    }, 2000);
+                }
+            } catch (err) {
+                console.error('Face capture error:', err);
+                progressText.textContent = '❌ Connection error - Retrying...';
+                progressFill.style.background = 'var(--danger)';
+                setTimeout(() => {
+                    progressFill.style.background = 'linear-gradient(90deg, var(--accent), var(--accent-2))';
+                    progressFill.style.width = '20%';
+                    startFaceCapture();
+                }, 2000);
+            }
+        }
+
+        // Start quiz
+        startBtn.addEventListener('click', () => {
+            if (!faceCaptured) {
+                alert('Please complete face setup before starting the quiz.');
+                return;
+            }
+            if (stream) {
+                stream.getTracks().forEach((track) => track.stop());
+            }
+            // Redirect to assigned quiz with assignment ID
+            if (assignmentId) {
+                window.location.href = `/assigned_quiz.html?assignment_id=${assignmentId}`;
+            } else {
+                window.location.href = '/assigned_quiz.html';
+            }
+        });
+
+        // Retry camera button
+        retryCameraBtn.addEventListener('click', () => {
+            console.log('Retrying camera initialization...');
+            retryCameraBtn.style.display = 'none';
+            statusDiv.classList.remove('error');
+            statusDiv.innerHTML = '<div class="status-indicator"></div><span>Retrying camera...</span>';
+            
+            // Stop existing stream if any
+            if (stream) {
+                stream.getTracks().forEach((track) => track.stop());
+                stream = null;
+            }
+            
+            // Reinitialize camera
+            initCamera();
+        });
+
+        // Check termination status first
+        if (checkTerminationStatus()) {
+            // Quiz was terminated, don't proceed with camera initialization
+            console.log('Quiz was terminated, skipping camera initialization');
+        } else {
+            // Initialize on load
+            initCamera();
+        }
+    </script>
+</body>
+</html>
+

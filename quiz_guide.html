@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Guide - OACA</title>
+    <style>
+        :root {
+            --bg1: #0b1d44;
+            --bg2: #0a1a3d;
+            --glass: rgba(255,255,255,0.08);
+            --glass-border: rgba(255,255,255,0.14);
+            --text: #e6eeff;
+            --muted: #9db0d9;
+            --accent: #3b82f6;
+            --accent-2: #60a5fa;
+            --success: #22c55e;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+        }
+
+        html, body { 
+            height: 100%; 
+            margin: 0; 
+            padding: 0;
+        }
+        
+        body {
+            color: var(--text);
+            background: radial-gradient(1200px 800px at 20% 30%, #13306b 0%, #0d1f4a 60%, #091735 100%),
+                        linear-gradient(135deg, var(--bg1) 0%, var(--bg2) 100%);
+            background-attachment: fixed;
+            font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 24px;
+            min-height: 100vh;
+        }
+
+        .guide-card {
+            background: var(--glass);
+            backdrop-filter: blur(16px) saturate(140%);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            margin-bottom: 24px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: white;
+            font-weight: bold;
+        }
+
+        h1 {
+            margin: 0 0 8px 0;
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            color: var(--muted);
+            font-size: 18px;
+            margin-bottom: 32px;
+        }
+
+        .warning-section {
+            background: rgba(239, 68, 68, 0.1);
+            border: 2px solid rgba(239, 68, 68, 0.3);
+            border-radius: 16px;
+            padding: 24px;
+            margin: 24px 0;
+        }
+
+        .warning-title {
+            color: var(--danger);
+            font-size: 20px;
+            font-weight: 700;
+            margin: 0 0 16px 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .warning-icon {
+            font-size: 24px;
+        }
+
+        .warning-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .warning-list li {
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(239, 68, 68, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .warning-list li:last-child {
+            border-bottom: none;
+        }
+
+        .warning-list li::before {
+            content: "⚠️";
+            font-size: 18px;
+        }
+
+        .info-section {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 16px;
+            padding: 24px;
+            margin: 24px 0;
+        }
+
+        .info-title {
+            color: var(--accent-2);
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0 0 16px 0;
+        }
+
+        .info-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .info-list li {
+            padding: 8px 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .info-list li::before {
+            content: "✓";
+            color: var(--success);
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .monitoring-section {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 16px;
+            padding: 24px;
+            margin: 24px 0;
+        }
+
+        .monitoring-title {
+            color: var(--warning);
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0 0 16px 0;
+        }
+
+        .monitoring-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .monitoring-item {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .monitoring-item h4 {
+            color: var(--warning);
+            margin: 0 0 8px 0;
+            font-size: 14px;
+        }
+
+        .monitoring-item p {
+            color: var(--muted);
+            margin: 0;
+            font-size: 12px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            margin-top: 32px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 16px 32px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text);
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.2s ease;
+            display: inline-block;
+            text-align: center;
+            min-width: 160px;
+        }
+
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent) 0%, #2563eb 100%);
+            border: none;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(107, 114, 128, 0.2);
+            border-color: rgba(107, 114, 128, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(107, 114, 128, 0.3);
+        }
+
+        .consequences {
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid var(--danger);
+            border-radius: 16px;
+            padding: 24px;
+            margin: 24px 0;
+        }
+
+        .consequences h3 {
+            color: var(--danger);
+            margin: 0 0 16px 0;
+            font-size: 20px;
+            text-align: center;
+        }
+
+        .consequences p {
+            color: var(--text);
+            margin: 8px 0;
+            text-align: center;
+        }
+
+        .back-link {
+            position: absolute;
+            top: 24px;
+            left: 24px;
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: var(--text);
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                padding: 16px;
+            }
+            
+            .guide-card {
+                padding: 24px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+            
+            .actions {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="/home" class="back-link">← Back to Home</a>
+    
+    <div class="container">
+        <div class="guide-card">
+            <div class="header">
+                <div class="logo">✈</div>
+                <h1>Quiz Guidelines</h1>
+                <p class="subtitle">Important Information Before Starting Your Aviation Quiz</p>
+            </div>
+
+            <div class="warning-section">
+                <h2 class="warning-title">
+                    <span class="warning-icon">⚠️</span>
+                    Critical Warnings
+                </h2>
+                <ul class="warning-list">
+                    <li><strong>Face Detection Required:</strong> Your face must be clearly visible throughout the entire quiz</li>
+                    <li><strong>No Standing Up:</strong> You must remain seated during the entire quiz duration</li>
+                    <li><strong>Single Person Only:</strong> No other people should be visible in the camera frame</li>
+                    <li><strong>No Face Changes:</strong> You cannot switch places with another person</li>
+                    <li><strong>Camera Monitoring:</strong> The system continuously monitors your behavior</li>
+                    <li><strong>Automatic Termination:</strong> Any violation will immediately terminate your quiz</li>
+                </ul>
+            </div>
+
+            <div class="consequences">
+                <h3>🚫 Consequences of Violations</h3>
+                <p><strong>If you violate any rule, your quiz will be:</strong></p>
+                <p>• <strong>Immediately terminated</strong> with no warning</p>
+                <p>• <strong>Screenshot captured</strong> as evidence of the violation</p>
+                <p>• <strong>Access permanently blocked</strong> - you cannot retake the quiz</p>
+                <p>• <strong>Reported to administrators</strong> with violation details</p>
+            </div>
+
+            <div class="info-section">
+                <h3 class="info-title">📋 Pre-Quiz Checklist</h3>
+                <ul class="info-list">
+                    <li>Ensure your face is clearly visible and well-lit</li>
+                    <li>Position yourself in the center of the camera frame</li>
+                    <li>Remove any hats, sunglasses, or face coverings</li>
+                    <li>Close any other applications or browser tabs</li>
+                    <li>Ensure a stable internet connection</li>
+                    <li>Have your ID ready for verification if needed</li>
+                    <li>Use a quiet environment with minimal distractions</li>
+                    <li>Keep your hands visible and away from your face</li>
+                </ul>
+            </div>
+
+            <div class="monitoring-section">
+                <h3 class="monitoring-title">🔍 What We Monitor</h3>
+                <div class="monitoring-grid">
+                    <div class="monitoring-item">
+                        <h4>Face Detection</h4>
+                        <p>Ensures your face is visible at all times</p>
+                    </div>
+                    <div class="monitoring-item">
+                        <h4>Movement Detection</h4>
+                        <p>Detects if you stand up or move away</p>
+                    </div>
+                    <div class="monitoring-item">
+                        <h4>Person Verification</h4>
+                        <p>Ensures the same person throughout</p>
+                    </div>
+                    <div class="monitoring-item">
+                        <h4>Multiple Faces</h4>
+                        <p>Detects if other people are present</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-section">
+                <h3 class="info-title">⏱️ Quiz Information</h3>
+                <ul class="info-list">
+                    <li><strong>Duration:</strong> 15 minutes (900 seconds)</li>
+                    <li><strong>Questions:</strong> 60 randomly selected questions</li>
+                    <li><strong>Format:</strong> Multiple choice questions</li>
+                    <li><strong>Navigation:</strong> Use Next/Previous buttons only</li>
+                    <li><strong>Timer:</strong> Visible countdown in the top-right corner</li>
+                    <li><strong>Auto-submit:</strong> Quiz submits automatically when time expires</li>
+                </ul>
+            </div>
+
+            <div class="warning-section">
+                <h2 class="warning-title">
+                    <span class="warning-icon">🔢</span>
+                    Attempt Limit
+                </h2>
+                <ul class="warning-list">
+                    <li><strong>Maximum 3 Attempts:</strong> You can only take the quiz a maximum of 3 times</li>
+                    <li><strong>Attempt Tracking:</strong> Each quiz assignment counts as one attempt</li>
+                    <li><strong>No Reset:</strong> Attempts cannot be reset or increased</li>
+                    <li><strong>Permanent Limit:</strong> Once you reach 3 attempts, you cannot take the quiz again</li>
+                    <li><strong>Use Wisely:</strong> Make sure you are prepared before starting each attempt</li>
+                </ul>
+            </div>
+
+            <div class="actions">
+                <button class="btn btn-secondary" onclick="window.location.href='/home'">
+                    Cancel
+                </button>
+                <button class="btn btn-primary" onclick="proceedToSetup()">
+                    I Understand - Proceed to Setup
+                </button>
+            </div>
+            
+            <div style="
+                background: rgba(59, 130, 246, 0.1);
+                border: 1px solid rgba(59, 130, 246, 0.3);
+                border-radius: 12px;
+                padding: 20px;
+                margin-top: 24px;
+                text-align: center;
+            ">
+                <h4 style="color: var(--accent-2); margin: 0 0 12px 0; font-size: 16px;">📋 Quiz Flow</h4>
+                <div style="display: flex; justify-content: center; align-items: center; gap: 16px; flex-wrap: wrap;">
+                    <div style="
+                        background: var(--accent);
+                        color: white;
+                        padding: 8px 16px;
+                        border-radius: 20px;
+                        font-size: 14px;
+                        font-weight: 600;
+                    ">1. Guide</div>
+                    <div style="color: var(--muted); font-size: 18px;">→</div>
+                    <div style="
+                        background: rgba(255, 255, 255, 0.1);
+                        color: var(--muted);
+                        padding: 8px 16px;
+                        border-radius: 20px;
+                        font-size: 14px;
+                        font-weight: 600;
+                    ">2. Face Setup</div>
+                    <div style="color: var(--muted); font-size: 18px;">→</div>
+                    <div style="
+                        background: rgba(255, 255, 255, 0.1);
+                        color: var(--muted);
+                        padding: 8px 16px;
+                        border-radius: 20px;
+                        font-size: 14px;
+                        font-weight: 600;
+                    ">3. Quiz</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Get assignment ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const assignmentId = urlParams.get('assignment_id');
+        
+        // Debug logging
+        console.log('Quiz Guide - Assignment ID from URL:', assignmentId);
+        console.log('Quiz Guide - Full URL:', window.location.href);
+
+        function proceedToSetup() {
+            console.log('Proceed to Setup clicked - Assignment ID:', assignmentId);
+            
+            // Redirect to quiz setup with assignment ID
+            if (assignmentId) {
+                console.log('Redirecting to quiz setup with assignment ID:', assignmentId);
+                window.location.href = `/quiz_setup.html?assignment_id=${assignmentId}`;
+            } else {
+                console.log('No assignment ID in URL, fetching from API...');
+                // If no assignment ID, try to get one from user's assignments
+                fetch('/api/my/assignments', { credentials: 'include' })
+                    .then(response => {
+                        console.log('Assignments API response:', response.status);
+                        return response.json();
+                    })
+                    .then(assignments => {
+                        console.log('Available assignments:', assignments);
+                        // Find the first available assignment
+                        const availableAssignment = assignments.find(a => !a.finished_at);
+                        if (availableAssignment) {
+                            const assignmentId = availableAssignment.assignment_id || availableAssignment._id || availableAssignment.id;
+                            console.log('Found available assignment:', assignmentId);
+                            window.location.href = `/quiz_setup.html?assignment_id=${assignmentId}`;
+                        } else {
+                            // No assignments available, redirect to home
+                            console.log('No available assignments found');
+                            alert('No quiz assignments available. Please contact your administrator.');
+                            window.location.href = '/home';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching assignments:', error);
+                        alert('Error loading assignments. Please try again.');
+                        window.location.href = '/home';
+                    });
+            }
+        }
+
+        // Add confirmation before proceeding
+        document.querySelector('.btn-primary').addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            const confirmed = confirm(
+                'Are you sure you understand all the guidelines and are ready to start the quiz?\n\n' +
+                'Remember: Any violation will immediately terminate your quiz and block access permanently.'
+            );
+            
+            if (confirmed) {
+                proceedToSetup();
+            }
+        });
+    </script>
+</body>
+</html>

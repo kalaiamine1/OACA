@@ -11,11 +11,30 @@ from flask import Blueprint, jsonify, request
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 
-from configuration import get_db, USERS_COLLECTION, NOTIFICATIONS_COLLECTION
+from configuration import get_db, USERS_COLLECTION, NOTIFICATIONS_COLLECTION, SMTP_SERVER, SMTP_PORT, SMTP_USERNAME, SMTP_PASSWORD, SMTP_FROM_EMAIL, SMTP_FROM_NAME
 from login import _current_user_claims
 
 
 users_bp = Blueprint("users", __name__)
+TUNISIA_AIRPORTS = [
+    "Tunis-Carthage (TUN)",
+    "Enfidha–Hammamet (NBE)",
+    "Monastir Habib Bourguiba (MIR)",
+    "Sfax–Thyna (SFA)",
+    "Djerba–Zarzis (DJE)",
+    "Tozeur–Nefta (TOE)",
+    "Gafsa–Ksar (GAF)",
+    "Gabès–Matmata (GAE)",
+    "Tabarka–Ain Draham (TBJ)",
+    "Remada (RMA)",
+]
+
+@users_bp.route("/api/airports", methods=["GET"])  # list Tunisia airports
+def list_airports():
+    claims = _current_user_claims()
+    if not claims:
+        return jsonify({"error": "Unauthorized"}), 401
+    return jsonify(TUNISIA_AIRPORTS)
 
 
 def generate_matricule():
@@ -31,9 +50,9 @@ def generate_password():
 def send_welcome_email(email, matricule, password, role):
     """Send welcome email with login credentials"""
     try:
-        # For now, we'll just log the credentials and return True
-        # In production, you would configure actual SMTP settings
-        print(f"""
+        # Check if SMTP is configured
+        if not SMTP_USERNAME or not SMTP_PASSWORD:
+            print(f"""
         ========================================
         WELCOME EMAIL FOR: {email}
         ========================================
@@ -53,23 +72,27 @@ def send_welcome_email(email, matricule, password, role):
         Access the system at: http://localhost:8000/login.html
         
         ========================================
+        
+        NOTE: SMTP not configured. To send real emails, set these environment variables:
+        - SMTP_USERNAME=your-email@gmail.com
+        - SMTP_PASSWORD=your-app-password
+        - SMTP_SERVER=smtp.gmail.com
+        - SMTP_PORT=587
+        - SMTP_FROM_EMAIL=noreply@oaca.local
+        - SMTP_FROM_NAME=OACA Aviation System
+        ========================================
         """)
+            return True
         
-        # In production, uncomment and configure the SMTP settings below:
-        """
-        smtp_server = "smtp.gmail.com"  # Your SMTP server
-        smtp_port = 587
-        sender_email = "noreply@oaca.local"  # Your sender email
-        sender_password = "your_app_password"  # Your app password
-        
+        # Send actual email
         # Create message
         msg = MIMEMultipart('alternative')
         msg['Subject'] = "Welcome to OACA Aviation System"
-        msg['From'] = sender_email
+        msg['From'] = f"{SMTP_FROM_NAME} <{SMTP_FROM_EMAIL}>"
         msg['To'] = email
         
-        # Create HTML email content (same as before)
-        html_content = f\"\"\"
+        # Create HTML email content
+        html_content = f"""
         <!DOCTYPE html>
         <html>
         <head>
@@ -254,24 +277,105 @@ def send_welcome_email(email, matricule, password, role):
             </div>
         </body>
         </html>
-        \"\"\"
+        """
         
         # Attach HTML content
         html_part = MIMEText(html_content, 'html')
         msg.attach(html_part)
         
-        # Send email
-        server = smtplib.SMTP(smtp_server, smtp_port)
+        # Create server connection and send email
+        server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
         server.starttls()
-        server.login(sender_email, sender_password)
-        text = msg.as_string()
-        server.sendmail(sender_email, email, text)
-        server.quit()
-        """
+        server.login(SMTP_USERNAME, SMTP_PASSWORD)
         
+        # Send email
+        server.sendmail(SMTP_FROM_EMAIL, email, msg.as_string())
+        server.quit()
+        
+        print(f"Welcome email sent successfully to {email}")
         return True
     except Exception as e:
         print(f"Failed to send email: {e}")
+        return False
+
+
+def send_reset_email(email: str, temporary_password: str) -> bool:
+    """Send password reset email with a new temporary password.
+    If SMTP env is configured, try to send via SMTP; otherwise, log to console and return False
+    so the caller can provide an in-app fallback.
+    """
+    try:
+        smtp_server = os.environ.get("SMTP_SERVER", "")
+        smtp_port = int(os.environ.get("SMTP_PORT", "587"))
+        smtp_user = os.environ.get("SMTP_USER", "")
+        smtp_password = os.environ.get("SMTP_PASSWORD", "")
+        sender_email = os.environ.get("SMTP_SENDER", smtp_user or "noreply@oaca.local")
+        app_base_url = os.environ.get("APP_BASE_URL", "http://localhost:8000").rstrip("/")
+
+        if not smtp_server or not smtp_user or not smtp_password:
+            # No SMTP configured
+            print(f"""
+            ========================================
+            PASSWORD RESET FOR: {email}
+            (SMTP not configured; showing in-console only)
+            ========================================
+
+            Temporary Password: {temporary_password}
+            Login: {app_base_url}/login.html
+
+            ========================================
+            """)
+            return False
+
+        # Build email
+        msg = MIMEMultipart('alternative')
+        msg['Subject'] = "OACA – Password Reset"
+        msg['From'] = sender_email
+        msg['To'] = email
+        html_content = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset=\"utf-8\" />
+          <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />
+          <title>OACA – Password Reset</title>
+        </head>
+        <body style=\"margin:0; background:#0b1d44; color:#eaf2ff; font-family:Segoe UI,Roboto,Arial,sans-serif;\">
+          <div style=\"max-width:640px; margin:0 auto; padding:24px;\">
+            <div style=\"background:linear-gradient(135deg,#10265f,#0b1d44); border:1px solid rgba(255,255,255,0.15); border-radius:16px; overflow:hidden; box-shadow:0 12px 30px rgba(0,0,0,.35);\">
+              <div style=\"padding:22px 22px 8px; text-align:center;\">
+                <div style=\"width:56px;height:56px;margin:0 auto 10px; border-radius:14px; background:linear-gradient(135deg,#3b82f6,#60a5fa); display:flex; align-items:center; justify-content:center; font-weight:800; color:#fff;\">✈</div>
+                <div style=\"font-size:22px; font-weight:800; letter-spacing:.2px;\">OACA Aviation</div>
+                <div style=\"opacity:.8; font-size:13px;\">Aviation Administration System</div>
+              </div>
+              <div style=\"padding:16px 24px 6px;\">
+                <h2 style=\"margin:10px 0 8px; font-size:20px;\">Password Reset</h2>
+                <p style=\"margin:0 0 12px; line-height:1.55;\">We've generated a temporary password for your account. Use it to sign in, then update your password from your profile.</p>
+                <div style=\"margin:18px 0; padding:14px 16px; border-radius:12px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.18);\">
+                  <div style=\"font-size:12px; opacity:.85; margin-bottom:6px;\">Temporary password</div>
+                  <div style=\"font-family:Consolas,Menlo,monospace; font-weight:800; font-size:18px; color:#93c5fd;\">{temporary_password}</div>
+                </div>
+                <p style=\"margin:16px 0 22px;\">
+                  <a href=\"{app_base_url}/login.html\" style=\"display:inline-block; padding:12px 18px; background:linear-gradient(135deg,#274bcc,#3b82f6); color:#ffffff; text-decoration:none; border-radius:10px; font-weight:700; box-shadow:0 8px 20px rgba(30,64,175,.35);\">Sign in to OACA</a>
+                </p>
+              </div>
+              <div style=\"padding:16px 24px 22px; border-top:1px solid rgba(255,255,255,0.14); text-align:center; opacity:.8; font-size:12px;\">
+                © OACA Aviation. This is an automated message.
+              </div>
+            </div>
+          </div>
+        </body>
+        </html>
+        """
+        msg.attach(MIMEText(html_content, 'html'))
+        server = smtplib.SMTP(smtp_server, smtp_port)
+        server.starttls()
+        server.login(smtp_user, smtp_password)
+        server.sendmail(sender_email, email, msg.as_string())
+        server.quit()
+        return True
+    except Exception as e:
+        print(f"Failed to send reset email: {e}")
         return False
 
 
@@ -285,6 +389,7 @@ def create_user():
     body: Dict[str, Any] = request.get_json(silent=True) or {}
     email = str(body.get("email", "")).strip().lower()
     role = str(body.get("role", "user"))
+    airport = str(body.get("airport", "")).strip()
     if not email:
         return jsonify({"error": "email is required"}), 400
     
@@ -306,6 +411,7 @@ def create_user():
         "matricule": matricule,
         "password_hash": generate_password_hash(password),
         "role": role,
+        "airport": airport or None,
         "created_at": datetime.datetime.utcnow(),
     }
     
@@ -317,7 +423,8 @@ def create_user():
     return jsonify({
         "ok": True, 
         "message": "User created successfully" + (" and welcome email sent" if email_sent else " but email failed to send"),
-        "matricule": matricule
+        "matricule": matricule,
+        "email_sent": email_sent
     })
 
 
@@ -360,6 +467,9 @@ def update_profile():
     cin = body.get("cin")
     if isinstance(cin, str) and cin.isdigit() and len(cin) == 8:
         updates["cin"] = cin
+    airport = body.get("airport")
+    if isinstance(airport, str) and airport.strip():
+        updates["airport"] = airport.strip()
     # Optional avatar URL (set by upload endpoint)
     avatar_url = body.get("avatar_url")
     if isinstance(avatar_url, str) and avatar_url.strip():
@@ -439,5 +549,43 @@ def mark_notifications_read():
     db = get_db()
     db[NOTIFICATIONS_COLLECTION].update_many({"email": claims.get("email"), "read": False}, {"$set": {"read": True}})
     return jsonify({"ok": True})
+
+
+@users_bp.route("/api/password/forgot", methods=["POST"])  # unauthenticated password reset request
+def forgot_password():
+    body: Dict[str, Any] = request.get_json(silent=True) or {}
+    email = str(body.get("email", "")).strip().lower()
+    if not email:
+        return jsonify({"error": "email is required"}), 400
+    db = get_db()
+    users = db[USERS_COLLECTION]
+    user = users.find_one({"email": email})
+    # Respond 200 even if user not found (avoid enumeration)
+    if not user:
+        return jsonify({"ok": True})
+    temp_password = generate_password()
+    users.update_one({"email": email}, {"$set": {"password_hash": generate_password_hash(temp_password)}})
+    sent_via_email = False
+    try:
+        sent_via_email = send_reset_email(email, temp_password)
+    except Exception:
+        sent_via_email = False
+    # Best-effort notification entry
+    try:
+        db[NOTIFICATIONS_COLLECTION].insert_one({
+            "email": email,
+            "type": "password_reset",
+            "title": "Password Reset",
+            "message": "A temporary password was " + ("sent to your email." if sent_via_email else "generated. Email delivery failed; use the code shown in the reset dialog."),
+            "created_at": datetime.datetime.utcnow(),
+            "read": False,
+        })
+    except Exception:
+        pass
+    # If email couldn't be sent, return the temp password so the client can display it securely
+    resp: Dict[str, Any] = {"ok": True, "via": "email" if sent_via_email else "fallback"}
+    if not sent_via_email:
+        resp["temporary_password"] = temp_password
+    return jsonify(resp)
 
 

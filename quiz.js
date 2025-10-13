@@ -263,7 +263,14 @@
       }
       return null;
     })();
-    const payload = { category, attempted, correct: score, total_with_keys: totalWithKeys };
+    // prepare detailed answers for reporting
+    const answers = state.currentSet.map((q, i) => ({
+      id: (q.id != null ? q.id : i),
+      section: q._section || null,
+      your: String(state.answers[i] || '').toUpperCase(),
+      correct: (q.correct_answer == null ? null : String(q.correct_answer).toUpperCase()),
+    }));
+    const payload = { category, attempted, correct: score, total_with_keys: totalWithKeys, answers };
     if (state.assignmentId) payload.assignment_id = state.assignmentId;
     fetch('/api/scores', {
       method: 'POST',
@@ -280,10 +287,16 @@
     if (state.unkeyed.length) {
       details.push(`<div class="notice">Not scored (no answer key): ${state.unkeyed.join(', ')}</div>`);
     }
+    // answered-all summary
+    const answeredCount = Object.keys(state.answers).length;
+    const allAnswered = answeredCount === state.currentSet.length;
+    details.unshift(`<div><strong>Summary:</strong> ${allAnswered ? 'All questions answered.' : `Answered ${answeredCount}/${state.currentSet.length}.`}</div>`);
     resultDetails.innerHTML = details.join('');
 
     hide(quizCard);
     show(resultCard);
+    // finish notification
+    try { alert('Good luck with check'); } catch (_) {}
   }
 
   // Events

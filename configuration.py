@@ -15,9 +15,11 @@ DB_NAME = os.environ.get("DB_NAME", "OACA")
 
 USERS_COLLECTION = "users"
 SCORES_COLLECTION = "scores"
-MEETINGS_COLLECTION = "meetings"  # 🔹 Ajout de la collection meetings
 NOTIFICATIONS_COLLECTION = "notifications"
 ASSIGNMENTS_COLLECTION = "quiz_assignments"
+QUESTIONS_COLLECTION = "questions"
+SECTIONS_COLLECTION = "sections"
+USER_ATTEMPTS_COLLECTION = "user_attempts"
 
 JWT_SECRET = os.environ.get("JWT_SECRET", "dev-secret-change-me")
 JWT_ALG = "HS256"
@@ -26,6 +28,14 @@ JWT_EXPIRES_MIN = int(os.environ.get("JWT_EXPIRES_MIN", "15"))
 COOKIE_NAME = "access_token"
 COOKIE_SECURE = os.environ.get("COOKIE_SECURE", "false").lower() == "true"
 COOKIE_SAMESITE = os.environ.get("COOKIE_SAMESITE", "Lax")
+
+# --- Email Configuration ---
+SMTP_SERVER = os.environ.get("SMTP_SERVER", "smtp.gmail.com")
+SMTP_PORT = int(os.environ.get("SMTP_PORT", "587"))
+SMTP_USERNAME = os.environ.get("SMTP_USERNAME", "")
+SMTP_PASSWORD = os.environ.get("SMTP_PASSWORD", "")
+SMTP_FROM_EMAIL = os.environ.get("SMTP_FROM_EMAIL", "noreply@oaca.local")
+SMTP_FROM_NAME = os.environ.get("SMTP_FROM_NAME", "OACA Aviation System")
 
 # --- Connexion MongoDB ---
 _mongo_client: Optional[MongoClient] = None
@@ -39,12 +49,6 @@ def get_db():
         _mongo_client = MongoClient(MONGO_URI)
     return _mongo_client[DB_NAME]
 
-def get_meetings_collection():
-    """
-    Retourne la collection meetings.
-    """
-    db = get_db()
-    return db[MEETINGS_COLLECTION]
 
 def ensure_default_user() -> None:
     """

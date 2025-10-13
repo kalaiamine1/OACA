@@ -2,11 +2,11 @@ import os
 import datetime
 from flask import Flask, send_from_directory, abort, redirect, request, jsonify
 
-from configuration import ensure_default_user, get_meetings_collection
+from configuration import ensure_default_user
 from login import auth_bp, _current_user_claims
 from users import users_bp
 from scores import scores_bp
-from interview import interview_bp
+from questions import questions_bp
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -16,14 +16,12 @@ app = Flask(
     static_url_path="",
 )
 
-# 🔹 Collection meetings
-meetings_collection = get_meetings_collection()
 
 # --- Blueprints ---
 app.register_blueprint(auth_bp)
 app.register_blueprint(users_bp)
 app.register_blueprint(scores_bp)
-app.register_blueprint(interview_bp)
+app.register_blueprint(questions_bp)
 
 # --- Routes principales ---
 @app.route("/")
@@ -35,9 +33,6 @@ def root():
 def quiz_js():
     return send_from_directory(BASE_DIR, "quiz.js")
 
-@app.route("/interview")
-def interview_page():
-    return send_from_directory(BASE_DIR, "interview.html")
 
 @app.route("/home")
 def home_page():
@@ -55,6 +50,14 @@ def signup_page():
 def assigned_quiz_page():
     return send_from_directory(BASE_DIR, "assigned_quiz.html")
 
+@app.route("/quiz_setup.html")
+def quiz_setup_page():
+    return send_from_directory(BASE_DIR, "quiz_setup.html")
+
+@app.route("/quiz_guide.html")
+def quiz_guide_page():
+    return send_from_directory(BASE_DIR, "quiz_guide.html")
+
 @app.route("/aviation_quiz_data.json")
 def quiz_data():
     path = os.path.join(BASE_DIR, "aviation_quiz_data.json")
@@ -62,58 +65,6 @@ def quiz_data():
         abort(404)
     return send_from_directory(BASE_DIR, "aviation_quiz_data.json")
 
-# --- Planifier une réunion ---
-@app.route("/planify-interview", methods=["POST"])
-def planify_interview():
-    claims = _current_user_claims()
-    if not claims or claims.get("role") != "admin":
-        return jsonify(success=False, error="Accès refusé"), 403
-
-    data = request.get_json()
-    email = data.get("email")
-    datetime_str = data.get("datetime")
-    duration = data.get("duration")
-
-    if not email or not datetime_str or not duration:
-        return jsonify(success=False, error="Champs manquants")
-
-    try:
-        dt = datetime.datetime.fromisoformat(datetime_str)
-    except Exception:
-        return jsonify(success=False, error="Format de date invalide")
-
-    if dt <= datetime.datetime.now():
-        return jsonify(success=False, error="La date doit être dans le futur")
-
-    zoom_link = "https://us05web.zoom.us/j/81160019257?pwd=Fu0o3yYFnBA1eRzTuCjwYk01Van3SW.1"
-
-    meeting = {
-        "email": email,
-        "datetime": dt,
-        "duration": int(duration),
-        "zoom_link": zoom_link,
-        "created_at": datetime.datetime.utcnow()
-    }
-    meetings_collection.insert_one(meeting)
-    return jsonify(success=True, join_url=zoom_link)
-
-# --- Récupérer toutes les réunions pour le dashboard admin ---
-@app.route("/dashboard-meetings", methods=["GET"])
-def dashboard_meetings():
-    claims = _current_user_claims()
-    if not claims or claims.get("role") != "admin":
-        return jsonify(success=False, error="Accès refusé"), 403
-
-    meetings_cursor = meetings_collection.find({}, {"_id": 0})
-    meetings = []
-    for m in meetings_cursor:
-        meetings.append({
-            "email": m["email"],
-            "datetime": m["datetime"].isoformat(),
-            "duration": m["duration"],
-            "zoom_link": m["zoom_link"]
-        })
-    return jsonify(meetings)
 
 # --- Serve any other top-level file directly ---
 @app.route("/<path:filename>")

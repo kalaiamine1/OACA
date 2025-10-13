@@ -427,11 +427,14 @@
     /* Inbox (notifications) */
     .inbox-wrap { position: relative; display:inline-block; margin-right: 8px; }
     .inbox-btn { width: 40px; height: 40px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.6); display:inline-flex; align-items:center; justify-content:center; background: linear-gradient(135deg, #93c5fd, #60a5fa); color:#0b1d44; font-weight:900; cursor:pointer; }
-    .inbox-list { position:absolute; right:0; top:46px; background: rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.18); border-radius:10px; padding:8px; display:none; flex-direction:column; min-width: 260px; z-index:150; max-height: 320px; overflow:auto; }
-    .inbox-item { padding:8px 10px; border-radius:6px; }
-    .inbox-item.unread { background: rgba(255,255,255,0.10); }
-    .inbox-item .title { font-weight: 700; margin-bottom: 2px; }
-    .inbox-item .time { opacity: .75; font-size: 12px; }
+    .inbox-list { position:absolute; right:0; top:46px; background: rgba(11,29,68,0.95); border:1px solid rgba(255,255,255,0.18); border-radius:12px; padding:8px; display:none; flex-direction:column; min-width: 320px; z-index:150; max-height: 360px; overflow:auto; box-shadow: 0 20px 40px rgba(0,0,0,.35); }
+    .inbox-header { display:flex; align-items:center; justify-content:space-between; padding:8px 10px; border-bottom:1px solid rgba(255,255,255,.12); margin-bottom:6px; }
+    .inbox-title { font-weight:800; font-size:14px; color:#eaf2ff; }
+    .inbox-item { padding:10px 12px; border-radius:10px; background: rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); margin-bottom:6px; }
+    .inbox-item.unread { background: rgba(96,165,250,0.10); border-color: rgba(96,165,250,0.25); }
+    .inbox-item .title { font-weight: 700; margin-bottom: 4px; color:#eaf2ff; }
+    .inbox-item .message { color:#cfe2ff; font-size: 13px; margin-bottom: 4px; }
+    .inbox-item .time { opacity: .75; font-size: 12px; color:#b7c6e6; }
     .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.55); display: none; align-items:center; justify-content:center; z-index: 200; }
     .modal-backdrop.active { display: flex; }
     .modal-card { width: 100%; max-width: 560px; background: rgba(255,255,255,0.12); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.18); border-radius: 16px; padding: 20px; color: #eaf2ff; }
@@ -455,15 +458,12 @@
         <div class="logo-icon">✈</div>
         <span class="logo-text">OACA</span>
       </a>
-      <div class="nav-links">
+      <div class="nav-links" id="mainNavLinks">
         <a href="#" class="nav-link">Find Jobs</a>
         <a href="#" class="nav-link">Browse Companies</a>
         <a href="#" class="nav-link">Post a Job</a>
       </div>
-      <div class="auth-buttons" id="authArea">
-        <a href="/login" class="btn btn-secondary">Login</a>
-        <a href="/signup" class="btn btn-primary">Sign Up</a>
-      </div>
+      <div class="auth-buttons" id="authArea" style="visibility:hidden"></div>
     </nav>
   </header>
 
@@ -665,14 +665,40 @@
         if (res.ok) {
           const me = await res.json();
           const initials = (me.email || 'U').slice(0,1).toUpperCase();
+          // Inject Quiz link for candidates who have assignments
+          try {
+            const respAssign = await fetch('/api/my/assignments', { credentials:'include' });
+            if (respAssign.ok) {
+              const list = await respAssign.json();
+              const hasOpen = Array.isArray(list) && list.some(a => !a.finished_at);
+              if (hasOpen) {
+                const nav = document.getElementById('mainNavLinks');
+                if (nav && !nav.querySelector('#quizNavLink')) {
+                  const a = document.createElement('a');
+                  a.className = 'nav-link';
+                  a.id = 'quizNavLink';
+                  a.textContent = 'Quiz';
+                  a.href = '/quiz_guide.html';
+                  nav.appendChild(a);
+                }
+              }
+            }
+          } catch(_) {}
           auth.innerHTML = `<div class=\"inbox-wrap\"><button class=\"inbox-btn\" id=\"inboxBtn\">🔔</button><div class=\"inbox-list\" id=\"inboxList\"></div></div><div class=\"avatar-wrap\"><button class=\"avatar-btn\" id=\"avatarBtn\">${initials}</button><div class=\"avatar-menu\" id=\"avatarMenu\"><button id=\"openProfile\">Profile</button><button id=\"resetPwd\">Reset Password</button><button id=\"logoutBtn\">Logout</button></div></div>`;
+          auth.style.visibility = 'visible';
           const logoutBtn = document.getElementById('logoutBtn');
           if (logoutBtn) logoutBtn.addEventListener('click', async ()=>{ try { await fetch('/api/logout',{method:'POST', credentials:'include'});} finally { window.location.href='/home'; }});
           const avatarBtn = document.getElementById('avatarBtn');
           const menu = document.getElementById('avatarMenu');
-          if (avatarBtn && menu) {
-            avatarBtn.addEventListener('click', (e)=>{ e.stopPropagation(); menu.style.display = (menu.style.display==='flex') ? 'none' : 'flex'; });
-            document.addEventListener('click', ()=>{ menu.style.display='none'; });
+          const avatarWrap = document.querySelector('.avatar-wrap');
+          if (avatarBtn && menu && avatarWrap) {
+            let hideTimer = null;
+            const showMenu = ()=>{ if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; } menu.style.display='flex'; };
+            const scheduleHide = ()=>{ if (hideTimer) clearTimeout(hideTimer); hideTimer = setTimeout(()=>{ menu.style.display='none'; }, 180); };
+            avatarWrap.addEventListener('mouseenter', showMenu);
+            avatarWrap.addEventListener('mouseleave', scheduleHide);
+            menu.addEventListener('mouseenter', showMenu);
+            menu.addEventListener('mouseleave', scheduleHide);
           }
           const openProfile = document.getElementById('openProfile');
           if (openProfile) openProfile.addEventListener('click', openProfileModal);
@@ -688,18 +714,19 @@
               try {
                 const resN = await fetch('/api/notifications', { credentials:'include' });
                 const rows = resN.ok ? await resN.json() : [];
-                if (!rows.length) inboxList.innerHTML = '<div class="inbox-item">No notifications</div>';
+                const header = '<div class="inbox-header"><div class="inbox-title">Notifications</div></div>';
+                if (!rows.length) inboxList.innerHTML = header + '<div class="inbox-item"><div class="message">No notifications</div></div>';
                 else {
-                  inboxList.innerHTML = rows.map(n => {
+                  inboxList.innerHTML = header + rows.map(n => {
                     const clickable = (n.type === 'quiz_assignment' && n.assignment_id);
-                    const body = `<div class=\"inbox-item ${n.read? '' : 'unread'}\" ${clickable? `data-assignment-id=\\\"${n.assignment_id}\\\"` : ''}><div class=\"title\">${n.title||'Notification'}</div><div>${n.message||''}</div><div class=\"time\">${(n.created_at||'').toString()}</div></div>`;
+                    const body = `<div class=\"inbox-item ${n.read? '' : 'unread'}\" ${clickable? `data-assignment-id=\\\"${n.assignment_id}\\\"` : ''}><div class=\"title\">${n.title||'Notification'}</div><div class=\"message\">${n.message||''}</div><div class=\"time\">${(n.created_at||'').toString()}</div></div>`;
                     return body;
                   }).join('');
                   // Attach click handlers to quiz_assignment items
                   Array.from(inboxList.querySelectorAll('.inbox-item[data-assignment-id]')).forEach(el => {
                     el.addEventListener('click', () => {
                       const id = el.getAttribute('data-assignment-id');
-                      if (id) window.location.href = `/assigned_quiz.html?assignment_id=${encodeURIComponent(id)}`;
+                      if (id) window.location.href = `/quiz_guide.html?assignment_id=${encodeURIComponent(id)}`;
                     });
                   });
                 }
@@ -711,6 +738,7 @@
           }
         } else {
           auth.innerHTML = `<a href=\"/login\" class=\"btn btn-secondary\">Login</a><a href=\"/signup\" class=\"btn btn-primary\">Sign Up</a>`;
+          auth.style.visibility = 'visible';
         }
       } catch (_) {}
     })();
