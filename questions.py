@@ -401,10 +401,19 @@ def migrate_questions():
                     for q in activity.get("questions", []):
                         if q.get("id") is not None:
                             # Convert answers array to options dict
-                            answers = q.get("answers", [])
+                            raw_answers = q.get("answers", [])
                             options = {}
-                            for i, answer in enumerate(answers):
-                                options[chr(65 + i)] = answer  # A, B, C, D
+                            answers = []
+                            # Support both array and object formats
+                            if isinstance(raw_answers, dict):
+                                for key in ["A","B","C","D"]:
+                                    if key in raw_answers:
+                                        options[key] = raw_answers[key]
+                                        answers.append(raw_answers[key])
+                            else:
+                                for i, answer in enumerate(raw_answers):
+                                    options[chr(65 + i)] = answer  # A, B, C, D
+                                answers = list(raw_answers)
                             
                             question_doc = {
                                 "id": q.get("id"),
@@ -435,3 +444,75 @@ def migrate_questions():
         
     except Exception as e:
         return jsonify({"error": f"Migration failed: {str(e)}"}), 500
+
+
+@questions_bp.route("/api/import-exam", methods=["POST"])
+def import_exam():
+    """Import questions from a posted exam payload."""
+    claims = _current_user_claims()
+    if not claims:
+        return jsonify({"error": "Unauthorized"}), 401
+    if claims.get("role") != "admin":
+        return jsonify({"error": "Admin access required"}), 403
+
+    body = request.get_json(silent=True) or {}
+    exam = (body.get("exam") or {})
+    activities = exam.get("activities") or []
+    if not isinstance(activities, list) or not activities:
+        return jsonify({"error": "Invalid payload: exam.activities required"}), 400
+
+    db = get_db()
+    migrated_sections = 0
+    migrated_questions = 0
+    for activity in activities:
+        section_name = str(activity.get("title") or "Unknown").strip() or "Unknown"
+        existing_section = db[SECTIONS_COLLECTION].find_one({"name": section_name})
+        if not existing_section:
+            db[SECTIONS_COLLECTION].insert_one({
+                "name": section_name,
+                "description": f"Imported from {exam.get('title', 'Exam')}",
+                "created_at": datetime.datetime.utcnow(),
+                "created_by": claims.get("email")
+            })
+            migrated_sections += 1
+
+        for q in activity.get("questions", []) or []:
+            qid = q.get("id")
+            if qid is None:
+                continue
+            raw_answers = q.get("answers", [])
+            options = {}
+            answers = []
+            if isinstance(raw_answers, dict):
+                for key in ["A","B","C","D"]:
+                    if key in raw_answers:
+                        options[key] = raw_answers[key]
+                        answers.append(raw_answers[key])
+            else:
+                for i, answer in enumerate(raw_answers or []):
+                    options[chr(65 + i)] = answer
+                    answers.append(answer)
+            correct = q.get("correct_answer") or ("A" if answers else None)
+            doc = {
+                "id": qid,
+                "question": q.get("question"),
+                "answers": answers,
+                "options": options,
+                "correct_answer": correct,
+                "section": section_name,
+                "created_at": datetime.datetime.utcnow(),
+                "created_by": claims.get("email")
+            }
+            existing = db[QUESTIONS_COLLECTION].find_one({"section": section_name, "id": qid})
+            if not existing:
+                db[QUESTIONS_COLLECTION].insert_one(doc)
+                migrated_questions += 1
+            else:
+                db[QUESTIONS_COLLECTION].update_one({"_id": existing["_id"]}, {"$set": doc})
+                migrated_questions += 1
+
+    return jsonify({
+        "message": "Import completed successfully",
+        "sections_created": migrated_sections,
+        "questions_imported": migrated_questions
+    })

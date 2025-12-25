@@ -4,390 +4,145 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Admin Dashboard - OACA</title>
-  <style>
-    :root {
-      --bg1: #0b1d44;
-      --bg2: #0a1a3d;
-      --glass: rgba(255,255,255,0.08);
-      --glass-border: rgba(255,255,255,0.14);
-      --text: #e6eeff;
-      --muted: #9db0d9;
-      --accent: #3b82f6;
-      --accent-2: #60a5fa;
-      --success: #22c55e;
-      --danger: #ef4444;
-    }
-
-    html, body { height: 100%; }
-    body {
-      margin: 0;
-      color: var(--text);
-      background: radial-gradient(1200px 800px at 20% 30%, #13306b 0%, #0d1f4a 60%, #091735 100%),
-                  linear-gradient(135deg, var(--bg1) 0%, var(--bg2) 100%);
-      background-attachment: fixed;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-    }
-
-    .container { max-width: 1100px; margin: 0 auto; padding: 24px; }
-
-    header {
-      position: sticky; top: 0; z-index: 10;
-      display:flex; justify-content: space-between; align-items: center;
-      padding: 16px 24px; margin: -12px -12px 16px; border-radius: 16px;
-      background: rgba(255,255,255,0.06);
-      backdrop-filter: blur(16px) saturate(140%);
-      -webkit-backdrop-filter: blur(16px) saturate(140%);
-      border: 1px solid var(--glass-border);
-      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
-    }
-
-    h1 { margin: 0; font-size: 20px; letter-spacing: 0.3px; }
-    .muted { color: var(--muted); }
-
-    .nav {
-      display:flex; gap:8px; margin: 16px 0; flex-wrap: wrap;
-    }
-    .tab {
-      border: 1px solid var(--glass-border);
-      background: rgba(255,255,255,0.06);
-      color: var(--text);
-      border-radius: 12px;
-      padding: 10px 12px;
-      cursor: pointer;
-      font-weight: 600;
-    }
-    .tab.active { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(59,130,246,0.25) inset; }
-    .tab.disabled { opacity: .45; pointer-events: none; }
-
-    .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 16px; }
-    .card {
-      grid-column: span 12;
-      border: 1px solid var(--glass-border);
-      background: var(--glass);
-      backdrop-filter: blur(20px) saturate(140%);
-      -webkit-backdrop-filter: blur(20px) saturate(140%);
-      border-radius: 16px;
-      padding: 16px;
-      box-shadow: 0 12px 30px rgba(0,0,0,0.25);
-    }
-
-    .section#section-users {
-      grid-column: 1 / -1;
-      width: 100%;
-    }
-
-    .section#section-users .card {
-      width: 100%;
-      max-width: none;
-      padding: 24px;
-    }
-    .section#section-questions {
-      grid-column: 1 / -1;
-      width: 100%;
-    }
-    .section#section-questions .card {
-      width: 100%;
-      max-width: none;
-      padding: 24px;
-    }
-    .section#section-quiz {
-      grid-column: 1 / -1;
-      width: 100%;
-    }
-    .section#section-quiz .card {
-      width: 100%;
-      max-width: none;
-      padding: 24px;
-    }
-    .section#section-report {
-      grid-column: 1 / -1;
-      width: 100%;
-    }
-    .section#section-report .card {
-      width: 100%;
-      max-width: none;
-      padding: 24px;
-    }
-    @media (min-width: 900px) {
-      .card.half { grid-column: span 6; }
-    }
-
-    @media (max-width: 768px) {
-      .form-grid {
-        grid-template-columns: 1fr;
-        gap: 12px;
-      }
-      
-      .form-group.form-actions {
-        align-items: stretch;
-      }
-      
-      .form-group.form-actions .btn {
-        width: 100%;
-      }
-      
-      .section-header {
-        flex-direction: column;
-        gap: 12px;
-        align-items: stretch;
-      }
-      
-      .section-header .btn {
-        width: 100%;
-      }
-    }
-
-    .card h2 { margin: 0 0 8px; font-size: 18px; }
-    .card p { margin: 0 0 20px; }
-
-    .form-section {
-      margin-bottom: 32px;
-      padding: 20px;
-      border: 1px solid var(--glass-border);
-      border-radius: 12px;
-      background: rgba(255,255,255,0.03);
-    }
-
-    .form-section:last-child {
-      margin-bottom: 0;
-    }
-
-    .form-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 20px;
-      align-items: end;
-    }
-
-    .form-group {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .form-group.form-actions {
-      display: flex;
-      justify-content: flex-start;
-      align-items: flex-end;
-    }
-
-    .form-actions-container {
-      margin-top: 20px;
-      display: flex;
-      justify-content: flex-start;
-    }
-
-    .section-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 16px;
-    }
-
-    .users-list {
-      max-height: 400px;
-      overflow-y: auto;
-      border: 1px solid var(--glass-border);
-      border-radius: 8px;
-      background: rgba(255,255,255,0.02);
-    }
-
-    .users-list li {
-      padding: 12px 16px;
-      border-bottom: 1px solid var(--glass-border);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      transition: background-color 0.2s ease;
-    }
-
-    .users-list li:last-child {
-      border-bottom: none;
-    }
-
-    .users-list li:hover {
-      background: rgba(255,255,255,0.05);
-    }
-
-    .user-info {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      width: 100%;
-    }
-
-    .user-email {
-      font-weight: 600;
-      color: var(--text);
-    }
-
-    .user-details {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-
-    .user-role {
-      font-size: 12px;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      background: rgba(59, 130, 246, 0.2);
-      padding: 2px 8px;
-      border-radius: 4px;
-    }
-
-    .user-matricule {
-      font-size: 12px;
-      color: var(--accent-2);
-      font-family: monospace;
-      background: rgba(96, 165, 250, 0.1);
-      padding: 2px 8px;
-      border-radius: 4px;
-    }
-
-    .btn {
-      border: 1px solid var(--accent);
-      background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      color:#fff; border-radius:10px; padding:10px 12px; cursor:pointer;
-      font-weight: 600; letter-spacing: .2px; box-shadow: 0 6px 18px rgba(59,130,246,.35);
-      transition: transform .15s ease, box-shadow .15s ease, opacity .15s ease;
-    }
-    .btn:hover { transform: translateY(-1px); box-shadow: 0 10px 22px rgba(59,130,246,.45); }
-    .btn.secondary { background: transparent; color: var(--text); border-color: var(--glass-border); box-shadow: none; }
-    .btn.secondary:hover { background: rgba(255,255,255,0.06); }
-
-    input, select {
-      padding: 10px 12px; border-radius: 10px; border: 1px solid var(--glass-border);
-      background: rgba(255,255,255,0.08); color: var(--text);
-      outline: none; min-width: 220px; backdrop-filter: blur(6px);
-    }
-    label { display:block; margin: 0 0 6px; font-weight: 600; }
-
-    ul { list-style: none; padding: 0; margin: 10px 0 0; }
-    ul li { padding: 8px 10px; border: 1px solid var(--glass-border); background: rgba(255,255,255,0.05); border-radius: 10px; margin-bottom: 8px; }
-
-    .header-actions { display:flex; align-items:center; gap: 8px; }
-
-    .section { display: none; }
-    .section.active { display: block; }
-
-    /* Polished cards for Report */
-    #scoresPanel.card {
-      border: 1px solid var(--glass-border);
-      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
-      backdrop-filter: blur(18px) saturate(140%);
-      -webkit-backdrop-filter: blur(18px) saturate(140%);
-      border-radius: 16px;
-      padding: 24px;
-      box-shadow: 0 16px 36px rgba(0,0,0,0.28);
-    }
-    #scoresPanel h2 { margin-bottom: 6px; }
-    #scoresPanel .muted { margin-bottom: 14px; }
-    /* List item styling */
-    #scoresList li {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 12px 14px;
-      border: 1px solid var(--glass-border);
-      background: rgba(255,255,255,0.05);
-      border-radius: 10px;
-      transition: background-color 0.2s ease, border-color 0.2s ease;
-    }
-    #scoresList li:hover {
-      background: rgba(255,255,255,0.07);
-      border-color: rgba(255,255,255,0.22);
-    }
-    /* Support two-line layout inside list items when needed */
-    .list-col { display:flex; flex-direction: column; gap: 4px; }
-    .dim { color: var(--muted); font-size: 12px; }
-
-    /* Toast */
-    #toast { position: fixed; right: 20px; top: 20px; z-index: 1000; display:none; padding: 12px 14px; border-radius: 10px; box-shadow: 0 10px 24px rgba(0,0,0,0.35); font-weight: 600; }
-    #toast.success { background: #064e3b; color: #d1fae5; border: 1px solid #10b981; }
-    #toast.error { background: #7f1d1d; color: #fee2e2; border: 1px solid #ef4444; }
-    /* Questions Modal */
-    .qm-backdrop { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; background: rgba(0,0,0,0.55); z-index: 1001; }
-    .qm-backdrop.active { display: flex; }
-    .qm-card { width: 100%; max-width: 760px; background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03)); border: 1px solid var(--glass-border); border-radius: 16px; padding: 18px; color: var(--text); box-shadow: 0 20px 60px rgba(0,0,0,0.35); backdrop-filter: blur(18px) saturate(140%); -webkit-backdrop-filter: blur(18px) saturate(140%); }
-    .qm-header { display:flex; align-items:center; justify-content: space-between; gap: 8px; padding: 6px 6px 10px; border-bottom: 1px solid rgba(255,255,255,0.12); margin: 0 6px 10px; }
-    .qm-title { font-size: 16px; font-weight: 800; letter-spacing: .2px; }
-    .qm-close { background: transparent; border: 1px solid rgba(255,255,255,0.25); color: var(--text); border-radius: 10px; padding: 8px 10px; cursor: pointer; }
-    .qm-body { max-height: 60vh; overflow: auto; padding: 6px; }
-    .qm-item { border: 1px solid var(--glass-border); background: rgba(255,255,255,0.05); border-radius: 12px; padding: 12px 14px; margin-bottom: 10px; }
-    .qm-q { font-weight: 700; margin-bottom: 8px; }
-    .qm-opt { margin: 4px 0; color: var(--muted); }
-  </style>
-  <script>
-  // Protect page: redirect to login if not authenticated
-  (async () => {
-    try {
-      const res = await fetch('/api/me', { credentials: 'include' });
-      if (!res.ok) { window.location.href = '/login.html'; return; }
-      const me = await res.json();
-      // Set label immediately if element exists
-      const who = document.getElementById('who');
-      if (who) { who.textContent = `${me.email} (${me.role})`; }
-      else {
-        document.addEventListener('DOMContentLoaded', () => {
-          const w2 = document.getElementById('who');
-          if (w2) w2.textContent = `${me.email} (${me.role})`;
-        });
-      }
-      // Initialize tabs right away
-      setupTabs(me.role);
-    } catch (e) {
-      window.location.href = '/login.html';
-    }
-  })();
-
-  function setupTabs(role) {
-    const tabs = {
-      users: document.getElementById('tab-users'),
-      questions: document.getElementById('tab-questions'),
-      quiz: document.getElementById('tab-quiz'),
-      report: document.getElementById('tab-report'),
-    };
-    const sections = {
-      users: document.getElementById('section-users'),
-      questions: document.getElementById('section-questions'),
-      quiz: document.getElementById('section-quiz'),
-      report: document.getElementById('section-report'),
-    };
-
-    if (!tabs.users || !sections.users) return;
-
-    // Limit access for non-admins
-    if (role !== 'admin') {
-      tabs.users.classList.add('disabled');
-      tabs.questions.classList.add('disabled');
-      tabs.report.classList.add('disabled');
-    }
-
-    function activate(name) {
-      for (const key of Object.keys(sections)) {
-        sections[key].classList.toggle('active', key === name);
-        tabs[key].classList.toggle('active', key === name);
-      }
-    }
-
-    // Default active tab
-    activate(role === 'admin' ? 'users' : 'quiz');
-
-    tabs.users.addEventListener('click', () => activate('users'));
-    tabs.questions.addEventListener('click', () => activate('questions'));
-    tabs.quiz.addEventListener('click', () => activate('quiz'));
-    tabs.report.addEventListener('click', () => activate('report'));
-  }
-  </script>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
   <div class="container">
     <div id="toast"></div>
+    <!-- Edit User Modal -->
+    <div class="qm-backdrop" id="editUserModal">
+      <div class="qm-card" style="max-width:520px;">
+        <div class="qm-header">
+          <div class="qm-title">Edit User</div>
+          <button class="qm-close" id="editClose">Close</button>
+        </div>
+        <div class="qm-body">
+          <div class="form-grid">
+            <div class="form-group" style="grid-column: 1 / -1;">
+              <label>Email</label>
+              <input id="editEmail" type="text" disabled>
+            </div>
+            <div class="form-group">
+              <label>Role</label>
+              <select id="editRole">
+                <option value="user">User</option>
+                <option value="admin">Admin</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Airport</label>
+              <select id="editAirport"></select>
+            </div>
+            <div class="form-group" style="grid-column: 1 / -1;">
+              <label>Matricule (8 chars, A–Z, 0–9)</label>
+              <input id="editMatricule" type="text" maxlength="8" placeholder="e.g. AB12CD34">
+            </div>
+          </div>
+          <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:12px;">
+            <button class="btn secondary" id="editCancel">Cancel</button>
+            <button class="btn" id="editSave">Save Changes</button>
+          </div>
+          <div id="editInfo" class="muted" style="margin-top:8px;"></div>
+        </div>
+      </div>
+    </div>
+    <!-- Airport Selection Modal -->
+    <div class="qm-backdrop" id="airportSelectionModal">
+      <div class="qm-card" style="max-width: 600px;">
+        <div class="qm-header">
+          <div class="qm-title">Select Airport</div>
+          <button class="qm-close" id="airportModalClose">Close</button>
+        </div>
+        <div class="qm-body">
+          <p style="margin-bottom: 20px; color: var(--muted);">Choose an airport to manage users for that location.</p>
+          <div id="airportOptions" class="airport-options-grid">
+            <!-- Airport options will be populated here -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit Section Modal -->
+    <div class="qm-backdrop" id="editSectionModal">
+      <div class="qm-card" style="max-width:520px;">
+        <div class="qm-header">
+          <div class="qm-title">Edit Section</div>
+          <button class="qm-close" id="secEditClose">Close</button>
+        </div>
+        <div class="qm-body">
+          <input type="hidden" id="editSectionId">
+          <div class="form-grid">
+            <div class="form-group" style="grid-column: 1 / -1;">
+              <label>Section Name</label>
+              <input id="editSectionName" type="text" placeholder="Enter section name">
+            </div>
+            <div class="form-group" style="grid-column: 1 / -1;">
+              <label>Description</label>
+              <input id="editSectionDesc" type="text" placeholder="Optional description">
+            </div>
+          </div>
+          <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:12px;">
+            <button class="btn secondary" id="secEditCancel">Cancel</button>
+            <button class="btn" id="secEditSave">Save Changes</button>
+          </div>
+          <div id="secEditInfo" class="muted" style="margin-top:8px;"></div>
+        </div>
+      </div>
+    </div>
+    <!-- Edit Question Modal -->
+    <div class="qm-backdrop" id="editQuestionModal">
+      <div class="qm-card" style="max-width:760px;">
+        <div class="qm-header">
+          <div class="qm-title">Edit Question</div>
+          <button class="qm-close" id="qEditClose">Close</button>
+        </div>
+        <div class="qm-body">
+          <input type="hidden" id="editQuestionId">
+          <div class="form-grid">
+            <div class="form-group" style="grid-column: 1 / -1;">
+              <label>Question Text</label>
+              <textarea id="editQuestionText" style="min-height: 80px; resize: vertical;"></textarea>
+            </div>
+            <div class="form-group">
+              <label>Section</label>
+              <select id="editQuestionSection"></select>
+            </div>
+            <div class="form-group">
+              <label>Correct Answer</label>
+              <select id="editQuestionCorrect">
+                <option value="A">A</option>
+                <option value="B">B</option>
+                <option value="C">C</option>
+                <option value="D">D</option>
+              </select>
+            </div>
+            <div class="form-group" style="grid-column: 1 / -1;">
+              <label>Option A</label>
+              <input id="editAnswerA" type="text">
+            </div>
+            <div class="form-group" style="grid-column: 1 / -1;">
+              <label>Option B</label>
+              <input id="editAnswerB" type="text">
+            </div>
+            <div class="form-group" style="grid-column: 1 / -1;">
+              <label>Option C</label>
+              <input id="editAnswerC" type="text">
+            </div>
+            <div class="form-group" style="grid-column: 1 / -1;">
+              <label>Option D</label>
+              <input id="editAnswerD" type="text">
+            </div>
+          </div>
+          <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:12px;">
+            <button class="btn secondary" id="qEditCancel">Cancel</button>
+            <button class="btn" id="qEditSave">Save Changes</button>
+          </div>
+          <div id="qEditInfo" class="muted" style="margin-top:8px;"></div>
+        </div>
+      </div>
+    </div>
     <div class="qm-backdrop" id="questionModal">
       <div class="qm-card">
         <div class="qm-header">
@@ -405,1513 +160,613 @@
       </div>
     </header>
 
-    <nav class="nav">
-      <button id="tab-users" class="tab">User Management</button>
-      <button id="tab-questions" class="tab">Question Management</button>
-      <button id="tab-quiz" class="tab">Quiz Management</button>
-      <button id="tab-report" class="tab">Report</button>
-    </nav>
-
-    <div class="grid">
-      <section id="section-users" class="section">
-        <div class="card" id="adminPanel" style="display:none;">
-          <h2>User Management</h2>
-          <p class="muted">Create and manage user accounts for the OACA system.</p>
-          
-          <div class="form-section">
-            <h3 style="margin: 0 0 16px; font-size: 16px; color: var(--text);">Create New User</h3>
-            <div class="form-grid">
-              <div class="form-group">
-                <label>Email Address</label>
-                <input id="newUserEmail" type="email" placeholder="user@example.com" required>
-              </div>
-              <div class="form-group">
-                <label>Role</label>
-                <select id="newUserRole">
-                  <option value="user">User</option>
-                  <option value="admin">Admin</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label>Airport</label>
-                <select id="newUserAirport"></select>
-              </div>
-            </div>
-            <div class="form-actions-container">
-              <button class="btn" onclick="createUser()">Create User & Send Email</button>
-            </div>
-          </div>
-
-          <div class="form-section">
-            <div class="section-header">
-              <h3 style="margin: 0; font-size: 16px; color: var(--text);">User List</h3>
-              <button class="btn secondary" onclick="loadUsers()">Refresh Users</button>
-            </div>
-            <div class="form-grid" style="margin-top:8px;">
-              <div class="form-group">
-                <label>Filter by Airport</label>
-                <select id="filterAirport"></select>
-              </div>
-            </div>
-            <ul id="usersList" class="users-list"></ul>
-          </div>
+    <div class="layout">
+      <aside class="sidebar">
+        <h3>Sections</h3>
+        <div class="side-nav">
+          <button id="tab-users" class="tab">User Management</button>
+          <button id="tab-questions" class="tab">Question Management</button>
+          <button id="tab-sections" class="tab">Section Management</button>
+          <button id="tab-quiz" class="tab">Quiz Management</button>
+          <button id="tab-assignments" class="tab">Assignment Management</button>
+          <button id="tab-report" class="tab">Report</button>
         </div>
-      </section>
-
-      <section id="section-questions" class="section">
-        <div class="card" id="questionPanel" style="display:none;">
-          <h2>Question Management</h2>
-          <p class="muted">Manage quiz questions and sections. Create, edit, and delete questions and sections.</p>
-          
-          <!-- Migration Section -->
-          <div class="form-section">
-            <h3 style="margin: 0 0 16px; font-size: 16px; color: var(--text);">Migrate Questions</h3>
-            <p class="muted" style="margin-bottom: 12px;">Import questions from the existing JSON file to the database.</p>
-            <button class="btn" onclick="migrateQuestions()">Migrate from JSON File</button>
-            <div id="migrationStatus" style="margin-top: 8px;"></div>
-          </div>
-
-          <!-- Section Management -->
-          <div class="form-section">
-            <div class="section-header">
-              <h3 style="margin: 0; font-size: 16px; color: var(--text);">Sections</h3>
-              <button class="btn" onclick="showCreateSectionForm()">Create Section</button>
-            </div>
-            
-            <!-- Manual Section Creation Form -->
-            <div id="createSectionForm" style="display: none; margin-bottom: 20px;">
-              <h4 style="margin: 0 0 16px; font-size: 14px; color: var(--text);">Add New Section</h4>
-              <div class="form-grid">
-                <div class="form-group">
-                  <label>Section Name</label>
-                  <input type="text" id="newSectionName" placeholder="Enter section name...">
+      </aside>
+      <main>
+        <div class="grid">
+          <section id="section-users" class="section">
+            <div class="card" id="adminPanel" style="display:none;">
+              <div class="airport-management-header">
+                <div>
+                  <h2>User Management</h2>
+                  <p class="muted" id="airportDescription">Select an airport to manage users for that location.</p>
                 </div>
-                <div class="form-group">
-                  <label>Number of Questions</label>
-                  <input type="number" id="newSectionQuestionCount" placeholder="Enter number of questions..." min="1" max="100">
-                </div>
-                <div class="form-group" style="grid-column: 1 / -1;">
-                  <label>Description (Optional)</label>
-                  <input type="text" id="newSectionDescription" placeholder="Enter section description...">
+                <button class="btn" id="changeAirportBtn" style="display: none;" onclick="showAirportSelectionModal()">Change Airport</button>
+              </div>
+
+              <div id="airportManagementContent" style="display: none;">
+                <div id="selectedAirportSection" class="selected-airport-section">
+                  <!-- Selected airport section will be displayed here -->
                 </div>
               </div>
+            </div>
+          </section>
+
+          <section id="section-questions" class="section">
+            <div class="card" id="questionPanel" style="display:none;">
+              <h2>Question Management</h2>
+              <p class="muted">Manage quiz questions and sections. Create, edit, and delete questions and sections.</p>
               
-              <div style="display: flex; gap: 12px; margin-top: 16px;">
-                <button class="btn" onclick="submitNewSection()">Create Section</button>
-                <button class="btn secondary" onclick="hideCreateSectionForm()">Cancel</button>
-              </div>
-            </div>
-            
-            <div class="form-grid" style="margin-top:8px;">
-              <div class="form-group">
-                <label>Filter by Section</label>
-                <select id="sectionFilter" onchange="filterQuestions()">
-                  <option value="">All Sections</option>
-                </select>
-              </div>
-            </div>
-            <ul id="sectionsList" class="users-list"></ul>
-          </div>
+              <!-- Migration Section 
+              <div class="form-section">
+                <h3 style="margin: 0 0 16px; font-size: 16px; color: var(--text);">Migrate Questions</h3>
+                <p class="muted" style="margin-bottom: 12px;">Import questions from the existing JSON file to the database.</p>
+                <button class="btn" onclick="migrateQuestions()">Migrate from JSON File</button>
+                <div id="migrationStatus" style="margin-top: 8px;"></div>
+              </div>-->
 
-          <!-- Question Management -->
-          <div class="form-section">
-            <div class="section-header">
-              <h3 style="margin: 0; font-size: 16px; color: var(--text);">Questions</h3>
-              <button class="btn" onclick="showCreateQuestionForm()">Create Question</button>
-            </div>
-            
-            <!-- Manual Question Creation Form -->
-            <div id="createQuestionForm" style="display: none; margin-bottom: 20px;">
-              <h4 style="margin: 0 0 16px; font-size: 14px; color: var(--text);">Add New Question</h4>
-              
-              <!-- Step 1: Section Selection -->
-              <div id="questionStep1" class="question-step">
-                <div style="background: var(--bg-secondary); padding: 16px; border-radius: 8px; margin-bottom: 16px;">
-                  <h5 style="margin: 0 0 12px; color: var(--accent); font-size: 14px;">Step 1: Choose Section</h5>
+              <!-- Question Management -->
+              <div class="form-section">
+                <div class="section-header">
+                  <h3 style="margin: 0; font-size: 16px; color: var(--text);">Questions</h3>
+                  <button class="btn" onclick="showCreateQuestionForm()">Create Question</button>
+                </div>
+                <div class="form-grid" style="margin-top:8px;">
                   <div class="form-group">
-                    <label>Select Section for this Question</label>
-                    <select id="newQuestionSection" onchange="onSectionSelected()">
-                      <option value="">Select a section...</option>
+                    <label>Filter by Section</label>
+                    <select id="questionSectionFilter" onchange="filterQuestions()">
+                      <option value="">All Sections</option>
                     </select>
                   </div>
-                  <div id="sectionInfo" style="margin-top: 12px; padding: 12px; background: var(--bg); border-radius: 6px; display: none;">
-                    <div style="font-size: 12px; color: var(--muted);">
-                      <div><strong>Section:</strong> <span id="selectedSectionName"></span></div>
-                      <div><strong>Questions in section:</strong> <span id="sectionQuestionCount"></span></div>
-                      <div><strong>Target questions:</strong> <span id="sectionTargetCount"></span></div>
-                    </div>
+                  <div class="form-group">
+                    <label>Search by Question</label>
+                    <input type="text" id="questionSearch" placeholder="Type to search..." oninput="filterQuestions()">
                   </div>
                 </div>
+                
+                <!-- Manual Question Creation Form -->
+                <div id="createQuestionForm" style="display: none; margin-bottom: 20px;">
+                  <h4 style="margin: 0 0 16px; font-size: 14px; color: var(--text);">Add New Question</h4>
+                  
+                  <!-- Step 1: Section Selection -->
+                  <div id="questionStep1" class="question-step">
+                    <div style="background: var(--bg-secondary); padding: 16px; border-radius: 8px; margin-bottom: 16px;">
+                      <h5 style="margin: 0 0 12px; color: var(--accent); font-size: 14px;">Step 1: Choose Section</h5>
+                      <div class="form-group">
+                        <label>Select Section for this Question</label>
+                        <select id="newQuestionSection" onchange="onSectionSelected()">
+                          <option value="">Select a section...</option>
+                        </select>
+                      </div>
+                      <div id="sectionInfo" style="margin-top: 12px; padding: 12px; background: var(--bg); border-radius: 6px; display: none;">
+                        <div style="font-size: 12px; color: var(--muted);">
+                          <div><strong>Section:</strong> <span id="selectedSectionName"></span></div>
+                          <div><strong>Questions in section:</strong> <span id="sectionQuestionCount"></span></div>
+                          <div><strong>Target questions:</strong> <span id="sectionTargetCount"></span></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <!-- Step 2: Question Details -->
+                  <div id="questionStep2" class="question-step" style="display: none;">
+                    <div style="background: var(--bg-secondary); padding: 16px; border-radius: 8px; margin-bottom: 16px;">
+                      <h5 style="margin: 0 0 12px; color: var(--accent); font-size: 14px;">Step 2: Question Details</h5>
+                      <div class="form-grid">
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                          <label>Question Text</label>
+                          <textarea id="newQuestionText" placeholder="Enter the question text..." style="min-height: 80px; resize: vertical;"></textarea>
+                        </div>
+                        <div class="form-group">
+                          <label>Correct Answer</label>
+                          <select id="newQuestionCorrect">
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="D">D</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <!-- Step 3: Answer Options -->
+                  <div id="questionStep3" class="question-step" style="display: none;">
+                    <div style="background: var(--bg-secondary); padding: 16px; border-radius: 8px; margin-bottom: 16px;">
+                      <h5 style="margin: 0 0 12px; color: var(--accent); font-size: 14px;">Step 3: Answer Options</h5>
+                      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <div>
+                          <label style="font-size: 12px; color: var(--muted);">Option A</label>
+                          <input type="text" id="answerA" placeholder="Answer A" style="width: 100%;">
+                        </div>
+                        <div>
+                          <label style="font-size: 12px; color: var(--muted);">Option B</label>
+                          <input type="text" id="answerB" placeholder="Answer B" style="width: 100%;">
+                        </div>
+                        <div>
+                          <label style="font-size: 12px; color: var(--muted);">Option C</label>
+                          <input type="text" id="answerC" placeholder="Answer C" style="width: 100%;">
+                        </div>
+                        <div>
+                          <label style="font-size: 12px; color: var(--muted);">Option D</label>
+                          <input type="text" id="answerD" placeholder="Answer D" style="width: 100%;">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <!-- Form Navigation -->
+                  <div style="display: flex; gap: 12px; margin-top: 16px;">
+                    <button id="prevStepBtn" class="btn secondary" onclick="prevQuestionStep()" style="display: none;">Previous</button>
+                    <button id="nextStepBtn" class="btn" onclick="nextQuestionStep()" style="display: none;">Next</button>
+                    <button id="submitQuestionBtn" class="btn" onclick="submitNewQuestion()" style="display: none;">Create Question</button>
+                    <button class="btn secondary" onclick="hideCreateQuestionForm()">Cancel</button>
+                  </div>
+                </div>
+                
+                <ul id="questionsList" class="users-list"></ul>
               </div>
-              
-              <!-- Step 2: Question Details -->
-              <div id="questionStep2" class="question-step" style="display: none;">
-                <div style="background: var(--bg-secondary); padding: 16px; border-radius: 8px; margin-bottom: 16px;">
-                  <h5 style="margin: 0 0 12px; color: var(--accent); font-size: 14px;">Step 2: Question Details</h5>
-                  <div class="form-grid">
+            </div>
+          </section>
+
+          <section id="section-quiz" class="section">
+            <div class="card">
+              <h2>Quiz Management</h2>
+              <p class="muted">Create quiz assignments for individual users or entire airports.</p>
+              <div class="form-section">
+                <h3 style="margin: 0 0 12px; font-size: 16px;">Create Quiz Assignment</h3>
+
+                <!-- Assignment Mode Selection -->
+                <div class="assignment-mode-selector" style="margin-bottom: 20px;">
+                  <div class="mode-tabs">
+                    <button id="modeIndividual" class="mode-tab active" onclick="setAssignmentMode('individual')">Individual Users</button>
+                    <button id="modeAirport" class="mode-tab" onclick="setAssignmentMode('airport')">By Airport</button>
+                  </div>
+                </div>
+
+                <div class="form-grid">
+                  <!-- Individual Users Mode -->
+                  <div id="individualModeSection" class="assignment-mode-section">
                     <div class="form-group" style="grid-column: 1 / -1;">
-                      <label>Question Text</label>
-                      <textarea id="newQuestionText" placeholder="Enter the question text..." style="min-height: 80px; resize: vertical;"></textarea>
+                      <label>Search Candidates</label>
+                      <input type="text" id="assignUserSearch" placeholder="Type email or matricule..." oninput="renderAssignUsers()">
                     </div>
                     <div class="form-group">
-                      <label>Correct Answer</label>
-                      <select id="newQuestionCorrect">
-                        <option value="A">A</option>
-                        <option value="B">B</option>
-                        <option value="C">C</option>
-                        <option value="D">D</option>
-                      </select>
+                      <label>Filter by Airport</label>
+                      <select id="assignAirportFilter" onchange="renderAssignUsers()"></select>
                     </div>
+                    <div class="form-group" style="grid-column: 1 / -1;">
+                      <label>Individual Candidates</label>
+                      <div id="assignUserList" style="max-height: 260px; overflow: auto; border: 1px solid var(--glass-border); border-radius: 10px; padding: 8px; background: rgba(255,255,255,0.05);"></div>
+                    </div>
+                  </div>
+
+                  <!-- Airport Mode -->
+                  <div id="airportModeSection" class="assignment-mode-section" style="display: none;">
+                    <div class="form-group" style="grid-column: 1 / -1;">
+                      <label>Select Airports</label>
+                      <div id="assignAirportList" style="max-height: 300px; overflow: auto; border: 1px solid var(--glass-border); border-radius: 10px; padding: 8px; background: rgba(255,255,255,0.05);"></div>
+                      <div class="muted" style="margin-top: 8px; font-size: 12px;">
+                        Selecting an airport will assign the quiz to ALL users in that airport.
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Number of Questions -->
+                  <div class="form-group">
+                    <label>Number of Questions</label>
+                    <input type="number" id="assignQuestionCount" min="1" max="60" value="60" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--glass-border); background: var(--bg); color: var(--text);">
+                    <div class="muted" style="margin-top: 4px; font-size: 12px;">
+                      Default: 60 questions (1 hour). Timer adjusts automatically: 1 minute per question.
+                    </div>
+                  </div>
+
+                  <div class="form-group form-actions">
+                    <button id="createBtn" class="btn" onclick="createAssignment()" disabled>Create Quiz</button>
+                  </div>
+                </div>
+                <div id="assignInfo" class="muted" style="margin-top:8px;"></div>
+                <div id="assignSuccess" style="display:none; background:#f0fdf4; color:#166534; border:1px solid #bbf7d0; padding:10px; border-radius:6px; margin-top:8px; font-weight:600;"></div>
+                <div id="assignError" style="display:none; background:#fef2f2; color:#dc2626; border:1px solid #fecaca; padding:10px; border-radius:6px; margin-top:8px; font-weight:600;"></div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Added new Assignment Management section -->
+          <section id="section-assignments" class="section">
+            <div class="card">
+              <h2>Assignment Management</h2>
+              <p class="muted">View and manage all quiz assignments.</p>
+              
+              <div class="form-section">
+                <div class="section-header">
+                  <h3 style="margin: 0; font-size: 16px;">Assignments</h3>
+                </div>
+                <div class="form-grid" style="margin-top:8px;">
+                  <div class="form-group" style="grid-column: 1 / -1;">
+                    <label>Search Assignments (email/status)</label>
+                    <input type="text" id="assignmentSearch" placeholder="e.g. user@domain.com or completed/terminated">
+                  </div>
+                  <div class="form-group">
+                    <label>Filter by Airport</label>
+                    <select id="assignmentsAirportFilter"></select>
+                  </div>
+                </div>
+                <ul id="assignmentsList" style="display:grid; grid-template-columns: 1fr; gap:10px;"></ul>
+              </div>
+            </div>
+          </section>
+
+          <section id="section-report" class="section">
+            <div class="card" id="scoresPanel" style="display:none;">
+              <h2>Report</h2>
+              <p class="muted">Overall scores submitted by users.</p>
+              <button class="btn secondary" onclick="loadScores()">Refresh Scores</button>
+              <ul id="scoresList"></ul>
+            </div>
+            <div class="card" id="analyticsPanel" style="display:none; margin-top:12px;">
+              <div style="margin-bottom: 24px;">
+                <h2 style="margin: 0 0 8px 0; display: flex; align-items: center; gap: 8px;">
+                  <i class="bi bi-graph-up"></i> Analytics & Statistics
+                </h2>
+                <p class="muted" style="margin: 0;">Comprehensive insights into your aviation testing platform performance</p>
+              </div>
+
+              <!-- Quick Stats -->
+              <div id="analyticsStatsGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px;">
+                <!-- Stats will be loaded here -->
+              </div>
+
+              <!-- Charts Grid -->
+              <div id="analyticsChartsGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 24px; margin-bottom: 24px;">
+                <!-- Most Asked Sections Chart -->
+                <div style="background: white; border-radius: 12px; padding: 24px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08); border: 1px solid #e5e7eb;">
+                  <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 20px; color: #1f2937; display: flex; align-items: center; gap: 8px;">
+                    <i class="bi bi-bar-chart"></i> Most Asked Sections
+                  </h3>
+                  <div style="position: relative; height: 300px;">
+                    <canvas id="mostAskedSectionsChart"></canvas>
+                  </div>
+                </div>
+
+                <!-- Test Results by Status Chart -->
+                <div style="background: white; border-radius: 12px; padding: 24px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08); border: 1px solid #e5e7eb;">
+                  <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 20px; color: #1f2937; display: flex; align-items: center; gap: 8px;">
+                    <i class="bi bi-pie-chart-fill"></i> Test Results by Status
+                  </h3>
+                  <div style="position: relative; height: 300px;">
+                    <canvas id="testResultsByStatusChart"></canvas>
+                  </div>
+                </div>
+
+                <!-- Users by Role Chart -->
+                <div style="background: white; border-radius: 12px; padding: 24px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08); border: 1px solid #e5e7eb;">
+                  <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 20px; color: #1f2937; display: flex; align-items: center; gap: 8px;">
+                    <i class="bi bi-pie-chart"></i> Users by Role
+                  </h3>
+                  <div style="position: relative; height: 300px;">
+                    <canvas id="usersByRoleChart"></canvas>
+                  </div>
+                </div>
+
+                <!-- Top Sections Chart -->
+                <div style="background: white; border-radius: 12px; padding: 24px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08); border: 1px solid #e5e7eb;">
+                  <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 20px; color: #1f2937; display: flex; align-items: center; gap: 8px;">
+                    <i class="bi bi-graph-up"></i> Top 5 Sections
+                  </h3>
+                  <div style="position: relative; height: 300px;">
+                    <canvas id="topSectionsChart"></canvas>
                   </div>
                 </div>
               </div>
-              
-              <!-- Step 3: Answer Options -->
-              <div id="questionStep3" class="question-step" style="display: none;">
-                <div style="background: var(--bg-secondary); padding: 16px; border-radius: 8px; margin-bottom: 16px;">
-                  <h5 style="margin: 0 0 12px; color: var(--accent); font-size: 14px;">Step 3: Answer Options</h5>
-                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                    <div>
-                      <label style="font-size: 12px; color: var(--muted);">Option A</label>
-                      <input type="text" id="answerA" placeholder="Answer A" style="width: 100%;">
-                    </div>
-                    <div>
-                      <label style="font-size: 12px; color: var(--muted);">Option B</label>
-                      <input type="text" id="answerB" placeholder="Answer B" style="width: 100%;">
-                    </div>
-                    <div>
-                      <label style="font-size: 12px; color: var(--muted);">Option C</label>
-                      <input type="text" id="answerC" placeholder="Answer C" style="width: 100%;">
-                    </div>
-                    <div>
-                      <label style="font-size: 12px; color: var(--muted);">Option D</label>
-                      <input type="text" id="answerD" placeholder="Answer D" style="width: 100%;">
-                    </div>
-                  </div>
+
+              <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-top: 24px;">
+                <label style="font-size:13px; color:var(--muted);">Airport:</label>
+                <select id="reportAirportSelect" style="min-width:200px;"></select>
+                <button class="btn" onclick="generateAirportReport()">Generate Airport Report</button>
+                <button class="btn secondary" onclick="loadAnalyticsCharts()">Refresh Analytics</button>
+              </div>
+              <div id="airportReportResult" style="margin-top:16px;"></div>
+            </div>
+            <!-- Assignment Report Modal -->
+            <div class="qm-backdrop" id="assignmentReportModal">
+              <div class="qm-card" style="max-width: 900px; max-height: 90vh; overflow-y: auto;">
+                <div class="qm-header">
+                  <div class="qm-title">Assignment Report</div>
+                  <button class="qm-close" id="closeAssignmentReport">Close</button>
+                </div>
+                <div class="qm-body">
+                  <p class="muted" style="margin-bottom: 16px;">Detailed answers and per-section results for a specific assignment.</p>
+                  <div id="assignmentMeta" style="margin-bottom:20px; padding: 16px; background: #f8fafc; border-radius: 12px; border: 1px solid var(--glass-border);"></div>
+                  <div id="perSection" style="margin-bottom: 20px;"></div>
+                  <div id="answersList"></div>
                 </div>
               </div>
-              
-              <!-- Form Navigation -->
-              <div style="display: flex; gap: 12px; margin-top: 16px;">
-                <button id="prevStepBtn" class="btn secondary" onclick="prevQuestionStep()" style="display: none;">Previous</button>
-                <button id="nextStepBtn" class="btn" onclick="nextQuestionStep()" style="display: none;">Next</button>
-                <button id="submitQuestionBtn" class="btn" onclick="submitNewQuestion()" style="display: none;">Create Question</button>
-                <button class="btn secondary" onclick="hideCreateQuestionForm()">Cancel</button>
+            </div>
+            <div class="card" id="violationReportsPanel" style="display:none; margin-top:12px;">
+              <h2>Rejected Candidates & Violations</h2>
+              <p class="muted">Quiz violations and rejections with captured evidence and timestamps.</p>
+              <div style="display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;">
+                <button class="btn secondary" onclick="loadViolationReports()">Refresh Reports</button>
+                <button class="btn secondary" onclick="filterRejectedOnly()" id="filterRejectedBtn">Show Rejected Only</button>
+                <button class="btn secondary" onclick="showAllReports()" id="showAllBtn" style="display: none;">Show All</button>
+              </div>
+              <div id="violationReportsList"></div>
+            </div>
+          </section>
+
+          <section id="section-sections" class="section">
+            <div class="card" id="sectionsPanel">
+              <h2>Section Management</h2>
+              <p class="muted">Create, edit, delete and filter sections for organizing questions.</p>
+              <div class="form-section">
+                <div class="section-header">
+                  <h3 style="margin: 0; font-size: 16px; color: var(--text);">Sections</h3>
+                  <button class="btn" onclick="showCreateSectionForm()">Create Section</button>
+                </div>
+                <div id="createSectionForm" style="display: none; margin-bottom: 20px;">
+                  <h4 style="margin: 0 0 16px; font-size: 14px; color: var(--text);">Add New Section</h4>
+                  <div class="form-grid">
+                    <div class="form-group">
+                      <label>Section Name</label>
+                      <input type="text" id="newSectionName" placeholder="Enter section name...">
+                    </div>
+                    <div class="form-group">
+                      <label>Number of Questions</label>
+                      <input type="number" id="newSectionQuestionCount" placeholder="Enter number of questions..." min="1" max="100">
+                    </div>
+                    <div class="form-group" style="grid-column: 1 / -1;">
+                      <label>Description (Optional)</label>
+                      <input type="text" id="newSectionDescription" placeholder="Enter section description...">
+                    </div>
+                  </div>
+                  <div style="display: flex; gap: 12px; margin-top: 16px;">
+                    <button class="btn" onclick="submitNewSection()">Create Section</button>
+                    <button class="btn secondary" onclick="hideCreateSectionForm()">Cancel</button>
+                  </div>
+                </div>
+                <div class="form-grid" style="margin-top:8px; width: 100%;">
+                  <div class="form-group" style="min-width: 220px;">
+                    <label>Filter by Section</label>
+                    <select id="sectionFilter" onchange="filterQuestions()" style="width: 100%;">
+                      <option value="">All Sections</option>
+                    </select>
+                  </div>
+                  <div class="form-group" style="min-width: 220px;">
+                    <label>Search Sections</label>
+                    <input type="text" id="sectionSearch" placeholder="Type to search..." oninput="loadSections()" style="width: 100%;">
+                  </div>
+                </div>
+                <ul id="sectionsList" class="users-list" style="width: 100%;"></ul>
               </div>
             </div>
-            
-            <ul id="questionsList" class="users-list"></ul>
-          </div>
-        </div>
-      </section>
-
-      <section id="section-quiz" class="section">
-        <div class="card">
-          <h2>Quiz Management</h2>
-          <p class="muted">Create a new quiz assignment and review existing assignments.</p>
-          <div class="form-section">
-            <h3 style="margin: 0 0 12px; font-size: 16px;">Create Quiz Assignment</h3>
-            <div class="form-grid">
-              <div class="form-group">
-                <label>Candidate</label>
-                <select id="assignUser"></select>
-                <div class="muted" style="font-size:12px;">Pick from existing users</div>
-              </div>
-              <!-- Sections UI removed: auto-distribution server-side -->
-              <div class="form-group form-actions">
-                <button id="createBtn" class="btn" onclick="createAssignment()" disabled>Create Quiz</button>
-              </div>
-            </div>
-            <div id="assignInfo" class="muted" style="margin-top:8px;"></div>
-            <div id="assignSuccess" style="display:none; background:#f0fdf4; color:#166534; border:1px solid #bbf7d0; padding:10px; border-radius:6px; margin-top:8px; font-weight:600;"></div>
-            <div id="assignError" style="display:none; background:#fef2f2; color:#dc2626; border:1px solid #fecaca; padding:10px; border-radius:6px; margin-top:8px; font-weight:600;"></div>
-          </div>
-          <div class="form-actions-container" style="gap:8px; display:flex; margin-bottom: 12px;">
-            <button class="btn secondary" onclick="loadAssignments()">Refresh Assignments</button>
-          </div>
-          <div class="form-section">
-            <div class="section-header">
-              <h3 style="margin: 0; font-size: 16px;">Assignments</h3>
-            </div>
-            <ul id="assignmentsList" style="display:grid; grid-template-columns: 1fr; gap:10px;"></ul>
-          </div>
+          </section>
 
         </div>
-      </section>
-
-      <section id="section-report" class="section">
-        <div class="card" id="scoresPanel" style="display:none;">
-          <h2>Report</h2>
-          <p class="muted">Overall scores submitted by users.</p>
-          <button class="btn secondary" onclick="loadScores()">Refresh Scores</button>
-          <ul id="scoresList"></ul>
-        </div>
-        <div class="card" id="assignmentDetailsPanel" style="display:none; margin-top:12px;">
-          <h2>Assignment Report</h2>
-          <p class="muted">Detailed answers and per-section results for a specific assignment.</p>
-          <div id="assignmentMeta" class="dim" style="margin-bottom:8px;"></div>
-          <div id="perSection"></div>
-          <div id="answersList" style="margin-top:12px;"></div>
-        </div>
-        <div class="card" id="violationReportsPanel" style="display:none; margin-top:12px;">
-          <h2>🚫 Rejected Candidates & Violations</h2>
-          <p class="muted">Quiz violations and rejections with captured evidence and timestamps.</p>
-          <div style="display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;">
-            <button class="btn secondary" onclick="loadViolationReports()">Refresh Reports</button>
-            <button class="btn secondary" onclick="filterRejectedOnly()" id="filterRejectedBtn">Show Rejected Only</button>
-            <button class="btn secondary" onclick="showAllReports()" id="showAllBtn" style="display: none;">Show All</button>
-          </div>
-          <div id="violationReportsList"></div>
-        </div>
-      </section>
-
+      </main>
     </div>
 
   </div>
 
+  <script src="script.js"></script>
   <script>
-  function showToast(message, type) {
-    const el = document.getElementById('toast');
-    if (!el) return;
-    el.className = '';
-    el.classList.add(type === 'error' ? 'error' : 'success');
-    el.id = 'toast';
-    el.textContent = message || '';
-    el.style.display = 'block';
-    clearTimeout(window.__toastTimer);
-    window.__toastTimer = setTimeout(() => { el.style.display = 'none'; }, 2600);
-  }
-  async function logout() {
-    try { await fetch('/api/logout', { method: 'POST', credentials: 'include' }); }
-    finally { window.location.href = '/login.html'; }
-  }
+    // Chart.js configuration
+    Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif';
+    Chart.defaults.font.size = 12;
+    Chart.defaults.color = '#6b7280';
 
-  // Admin panels logic
-  document.addEventListener('DOMContentLoaded', async () => {
-    const meRes = await fetch('/api/me', { credentials: 'include' });
-    if (meRes.ok) {
-      const me = await meRes.json();
-      if (me.role === 'admin') {
-        document.getElementById('adminPanel').style.display = '';
-        document.getElementById('questionPanel').style.display = '';
-        document.getElementById('scoresPanel').style.display = '';
-        // Initialize quiz creation controls
-        try {
-          await loadUsersForAssign();
-          updateCreateAssignState();
-          loadAssignments();
-        } catch (e) {}
-        await loadAirportsInto('newUserAirport');
-        await loadAirportsInto('filterAirport');
-        loadUsers();
-        loadScores();
-        // Initialize question management
-        loadSections();
-        loadQuestions();
-      }
-    }
-  });
-  async function loadAirportsInto(selectId) {
-    const sel = document.getElementById(selectId);
-    if (!sel) return;
-    sel.innerHTML = '';
-    const first = document.createElement('option');
-    first.value = '';
-    first.textContent = selectId === 'filterAirport' ? 'All airports' : 'Select an airport...';
-    sel.appendChild(first);
-    try {
-      const res = await fetch('/api/airports', { credentials: 'include' });
-      if (!res.ok) return;
-      const airports = await res.json();
-      airports.forEach(a => { const opt = document.createElement('option'); opt.value = a; opt.textContent = a; sel.appendChild(opt); });
-    } catch (_) {}
-  }
+    let analyticsCharts = {};
 
-  async function loadUsersForAssign() {
-    const sel = document.getElementById('assignUser');
-    if (!sel) return;
-    sel.innerHTML = '';
-    const res = await fetch('/api/users', { credentials: 'include' });
-    if (!res.ok) return;
-    const users = await res.json();
-    const first = document.createElement('option');
-    first.value = '';
-    first.textContent = 'Select a candidate...';
-    sel.appendChild(first);
-    for (const u of users) {
-      const opt = document.createElement('option');
-      opt.value = u.email;
-      opt.textContent = `${u.email}${u.matricule ? ' — ' + u.matricule : ''}`;
-      sel.appendChild(opt);
-    }
-    sel.addEventListener('change', updateCreateAssignState);
-  }
-
-  function updateCreateAssignState() {
-    const sel = document.getElementById('assignUser');
-    const btn = document.getElementById('createBtn');
-    const info = document.getElementById('assignInfo');
-    let err = '';
-    if (!sel || !sel.value) err = 'Select a candidate.';
-    if (btn) btn.disabled = Boolean(err);
-    if (info) info.textContent = err ? err : '';
-  }
-
-  async function createUser() {
-    const email = document.getElementById('newUserEmail').value;
-    const role = document.getElementById('newUserRole').value;
-    const airport = document.getElementById('newUserAirport').value;
-    
-    if (!email) {
-      alert('Please enter an email address');
-      return;
-    }
-    
-    // Show loading state
-    const createBtn = document.querySelector('.form-actions-container .btn');
-    const originalText = createBtn.textContent;
-    createBtn.disabled = true;
-    createBtn.textContent = 'Creating User...';
-    
-    try {
-      const response = await fetch('/api/users', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ email, role, airport })
-      });
-      
-      const result = await response.json();
-      
-      if (response.ok) {
-        const emailStatus = result.email_sent ? "✅ Welcome email sent successfully" : "⚠️ User created but email failed to send";
-        const emailInstructions = result.email_sent ? 
-          "The user has received a professional welcome email with their login credentials." :
-          "Email not sent. Check SMTP configuration. Credentials are logged to console.";
-        
-        alert(`User created successfully!\n\nMatricule: ${result.matricule}\n\n${emailStatus}\n\n${emailInstructions}\n\nRecipient: ${email}`);
-        document.getElementById('newUserEmail').value = '';
-        await loadUsers();
-      } else {
-        alert('Error: ' + (result.error || 'Failed to create user'));
-      }
-    } catch (error) {
-      alert('Error: ' + error.message);
-    } finally {
-      // Reset button state
-      createBtn.disabled = false;
-      createBtn.textContent = originalText;
-    }
-  }
-
-  async function loadUsers() {
-    const ul = document.getElementById('usersList');
-    ul.innerHTML = '';
-    const airportFilter = document.getElementById('filterAirport');
-    const selectedAirport = airportFilter ? airportFilter.value : '';
-    
-    try {
-      const res = await fetch('/api/users', { credentials: 'include' });
-      if (!res.ok) {
-        console.error('Failed to load users:', res.status);
-        ul.innerHTML = '<li style="color: var(--danger); text-align: center; padding: 20px;">Failed to load users</li>';
-        return;
-      }
-      
-      let users = await res.json();
-      if (selectedAirport) users = users.filter(u => (u.airport||'') === selectedAirport);
-      
-      if (!users || users.length === 0) {
-        ul.innerHTML = '<li style="color: var(--muted); text-align: center; padding: 20px;">No users found</li>';
-        return;
-      }
-      
-      for (const u of users) {
-        const li = document.createElement('li');
-        const createdDate = u.created_at ? new Date(u.created_at).toLocaleDateString() : 'Unknown';
-        li.innerHTML = `
-          <div class="user-info">
-            <div class="user-email">${u.email}</div>
-            <div class="user-details">
-              <span class="user-role">${u.role.toUpperCase()}</span>
-              ${u.matricule ? `<span class=\"user-matricule\">Matricule: ${u.matricule}</span>` : ''}
-              ${u.airport ? `<span class=\"user-matricule\">${u.airport}</span>` : ''}
-              <span class="user-created" style="color: var(--muted); font-size: 12px;">Created: ${createdDate}</span>
-            </div>
-          </div>
-        `;
-        ul.appendChild(li);
-      }
-    } catch (error) {
-      console.error('Error loading users:', error);
-      ul.innerHTML = '<li style="color: var(--danger); text-align: center; padding: 20px;">Error loading users</li>';
-    }
-  }
-
-  async function loadScores() {
-    const ul = document.getElementById('scoresList');
-    ul.innerHTML = '';
-    const res = await fetch('/api/scores', { credentials: 'include' });
-    if (!res.ok) return;
-    const scores = await res.json();
-    for (const s of scores) {
-      const li = document.createElement('li');
-      li.style.display = 'grid';
-      li.style.gridTemplateColumns = '1fr auto';
-      li.style.alignItems = 'center';
-      const left = document.createElement('div');
-      left.className = 'list-col';
-      left.innerHTML = `<div style="font-weight:700;">${s.email}</div><div class="dim">${s.category || 'All'} — ${s.correct}/${s.total_with_keys} (attempted ${s.attempted})</div>`;
-      const right = document.createElement('div');
-      // Try to discover last assignment for this user to view details
-      const viewBtn = document.createElement('button');
-      viewBtn.className = 'btn secondary';
-      viewBtn.textContent = 'View report';
-      viewBtn.addEventListener('click', async ()=>{
-        await loadLatestAssignmentReportFor(s.email);
-      });
-      right.appendChild(viewBtn);
-      li.appendChild(left);
-      li.appendChild(right);
-      ul.appendChild(li);
-    }
-  }
-
-  async function loadLatestAssignmentReportFor(email){
-    try{
-      // fetch all assignments and pick most recent finished for this user
-      const res = await fetch('/api/quiz-assignments', { credentials: 'include' });
-      if (!res.ok) { showToast('Failed to load assignments', 'error'); return; }
-      const rows = await res.json();
-      const list = Array.isArray(rows)? rows.filter(r=> r.email===email && r.finished_at): [];
-      if (!list.length){ showToast('No finished assignment found for user', 'error'); return; }
-      // pick latest by finished_at
-      list.sort((a,b)=> new Date(b.finished_at).getTime() - new Date(a.finished_at).getTime());
-      const a = list[0];
-      await renderAssignmentReport(a);
-    } catch(_){ showToast('Failed to load report', 'error'); }
-  }
-
-  async function renderAssignmentReport(a){
-    const panel = document.getElementById('assignmentDetailsPanel');
-    if (panel) panel.style.display = '';
-    const meta = document.getElementById('assignmentMeta');
-    if (meta) meta.textContent = `${a.email} — finished ${a.finished_at ? new Date(a.finished_at).toLocaleString() : ''} — score ${typeof a.score==='number'? `${a.score}/${a.total_with_keys}` : 'n/a'} — attempted ${a.attempted || 0}`;
-    const per = document.getElementById('perSection');
-    per.innerHTML = '';
-    const sec = a.per_section || {};
-    const secNames = Object.keys(sec);
-    if (secNames.length){
-      const table = document.createElement('table');
-      table.style.width = '100%';
-      table.style.borderCollapse = 'collapse';
-      table.innerHTML = `<thead><tr><th style="text-align:left; padding:6px; border-bottom:1px solid var(--glass-border);">Section</th><th style="text-align:left; padding:6px; border-bottom:1px solid var(--glass-border);">Correct</th><th style="text-align:left; padding:6px; border-bottom:1px solid var(--glass-border);">Attempted</th></tr></thead>`;
-      const tbody = document.createElement('tbody');
-      for (const name of secNames){
-        const r = sec[name] || {attempted:0, correct:0};
-        const tr = document.createElement('tr');
-        tr.innerHTML = `<td style="padding:6px; border-bottom:1px solid var(--glass-border);">${name}</td><td style="padding:6px; border-bottom:1px solid var(--glass-border);">${r.correct}</td><td style="padding:6px; border-bottom:1px solid var(--glass-border);">${r.attempted}</td>`;
-        tbody.appendChild(tr);
-      }
-      table.appendChild(tbody);
-      per.appendChild(table);
-    } else {
-      per.textContent = 'No per-section data available.';
-    }
-    const answersDiv = document.getElementById('answersList');
-    answersDiv.innerHTML = '';
-    const rows = Array.isArray(a.answers)? a.answers : [];
-    if (rows.length){
-      const ul = document.createElement('ul');
-      rows.forEach((r, idx)=>{
-        const li = document.createElement('li');
-        li.style.margin = '6px 0';
-        li.innerHTML = `<strong>Q${idx+1}${r.id!=null?` (#${r.id})`:''}</strong> ${r.section?`<span class=\"dim\">[${r.section}]</span>`:''} — Your: ${r.your || ''}${r.correct?` — Correct: ${r.correct}`:''} ${r.is_correct? '<span style=\"color:#22c55e; font-weight:700;\">✓</span>' : '<span style=\"color:#ef4444; font-weight:700;\">✗</span>'}`;
-        ul.appendChild(li);
-      });
-      answersDiv.appendChild(ul);
-    } else {
-      answersDiv.textContent = 'No detailed answers available.';
-    }
-  }
-  async function loadSections() {
-    const container = document.getElementById('sectionsContainer');
-    container.innerHTML = '';
-    const res = await fetch('/api/quiz-sections', { credentials: 'include' });
-    if (!res.ok) return;
-    const sections = await res.json();
-    for (const s of sections) {
-      const wrap = document.createElement('div');
-      wrap.style.display = 'flex';
-      wrap.style.alignItems = 'center';
-      wrap.style.gap = '8px';
-      wrap.style.marginBottom = '6px';
-      wrap.innerHTML = `<label style="min-width:200px; margin:0;">${s.name} <span class="muted">(max ${s.count})</span></label><input type="number" min="0" max="${s.count}" step="1" value="0" data-section="${s.name}">`;
-      container.appendChild(wrap);
-    }
-  }
-  async function createAssignment() {
-    const sel = document.getElementById('assignUser');
-    const info = document.getElementById('assignInfo');
-    const okBox = document.getElementById('assignSuccess');
-    const errBox = document.getElementById('assignError');
-    if (info) info.textContent = '';
-    if (okBox) { okBox.style.display = 'none'; okBox.textContent=''; }
-    if (errBox) { errBox.style.display = 'none'; errBox.textContent=''; }
-    const email = sel && sel.value ? sel.value.trim().toLowerCase() : '';
-    if (!email) { if (info) info.textContent = 'Select a candidate.'; return; }
-    const btn = document.getElementById('createBtn') || document.querySelector('button.btn');
-    const prev = btn.textContent; btn.textContent = 'Creating...'; btn.disabled = true;
-    try {
-      const res = await fetch('/api/quiz-assignments', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ email })
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        if (info) info.textContent = data.error || 'Failed';
-        showToast(data.error || 'Failed to create quiz', 'error');
-        if (errBox) { errBox.textContent = data.error || 'Failed to create quiz assignment.'; errBox.style.display='block'; }
-      } else {
-        if (info) info.textContent = 'Quiz created successfully. Email sent and notification queued.';
-        showToast('Quiz created successfully', 'success');
-        if (okBox) { okBox.textContent = 'Quiz created successfully. Candidate has been notified via email and inbox.'; okBox.style.display='block'; }
-        // Reset inputs to 0 and remaining to 15
-        document.querySelectorAll('#sectionsContainer input[type="number"]').forEach(inp => { inp.value = '0'; inp.setAttribute('data-last','0'); });
-        updateCreateAssignState();
-        loadAssignments();
-      }
-    } catch (e) {
-      if (info) info.textContent = String(e);
-      showToast(String(e), 'error');
-      if (errBox) { errBox.textContent = String(e); errBox.style.display='block'; }
-    } finally {
-      btn.textContent = prev; btn.disabled = false;
-    }
-  }
-  async function loadAssignments() {
-    const ul = document.getElementById('assignmentsList');
-    if (!ul) return;
-    ul.innerHTML = '';
-    try {
-      const res = await fetch('/api/quiz-assignments', { credentials: 'include' });
-      if (!res.ok) return;
-      const rows = await res.json();
-      if (!rows.length) {
-        ul.innerHTML = '<li class="muted">No quiz assignments yet</li>';
-        return;
-      }
-      for (const r of rows) {
-        const li = document.createElement('li');
-        li.style.display = 'grid';
-        li.style.gridTemplateColumns = '1fr auto';
-        li.style.alignItems = 'center';
-        const left = document.createElement('div');
-        const right = document.createElement('div');
-        const started = r.started_at ? new Date(r.started_at).toLocaleString() : '';
-        const finished = r.finished_at ? new Date(r.finished_at).toLocaleString() : '';
-        const total = r.total || r.question_count || (Array.isArray(r.selected) ? r.selected.length : undefined);
-        left.innerHTML = `<div style="font-weight:700;">${r.email}</div>
-          <div class="dim">${(r.category||'All')} — ${typeof total==='number'? total : '?'} questions ${started? ' — started '+started: ''}${finished? ' — finished '+finished: ''}${typeof r.score === 'number' ? ` — score ${r.score}/${r.total_with_keys}` : ''}</div>`;
-        const viewBtn = document.createElement('button');
-        viewBtn.className = 'btn secondary';
-        viewBtn.textContent = 'View questions';
-        viewBtn.addEventListener('click', ()=> showAssignmentQuestions(r));
-        right.appendChild(viewBtn);
-        li.appendChild(left);
-        li.appendChild(right);
-        ul.appendChild(li);
-      }
-    } catch (e) {}
-  }
-
-  async function showAssignmentQuestions(row){
-    const id = row.assignment_id;
-    if (!id) { showToast('Missing assignment_id', 'error'); return; }
-    try{
-      const res = await fetch('/api/quiz-assignments/questions', { method:'POST', headers:{'Content-Type':'application/json'}, credentials:'include', body: JSON.stringify({ assignment_id: id }) });
-      if (!res.ok) { showToast('Failed to load questions', 'error'); return; }
-      const data = await res.json();
-      const cats = (data.quiz_data && Array.isArray(data.quiz_data.categories)) ? data.quiz_data.categories : [];
-      const qs = cats.length ? (cats[0].questions||[]) : [];
-      const title = document.getElementById('qmTitle');
-      const body = document.getElementById('qmBody');
-      if (title) title.textContent = `Assignment Questions (${qs.length})`;
-      if (body) {
-        body.innerHTML = '';
-        qs.forEach((q, idx) => {
-          const item = document.createElement('div');
-          item.className = 'qm-item';
-          const opts = q.options ? Object.entries(q.options).sort((a,b)=>a[0].localeCompare(b[0])) : [];
-          const section = q._section ? `<span class=\"dim\" style=\"margin-left:6px;\">[${q._section}]</span>` : '';
-          item.innerHTML = `<div class=\"qm-q\">${idx+1}. ${q.question || ''} ${section}</div>` +
-            (opts.length ? `<div>${opts.map(([k,v])=>`<div class=\"qm-opt\"><strong>${k}.</strong> ${v}</div>`).join('')}</div>` : '');
-          body.appendChild(item);
-        });
-      }
-      const modal = document.getElementById('questionModal');
-      if (modal) modal.classList.add('active');
-    } catch(_) { showToast('Failed to load questions', 'error'); }
-  }
-
-  async function loadViolationReports() {
-    try {
-      const res = await fetch('/api/violation-reports', { credentials: 'include' });
-      if (!res.ok) { showToast('Failed to load violation reports', 'error'); return; }
-      const data = await res.json();
-      const reports = data.reports || [];
-      
-      const panel = document.getElementById('violationReportsPanel');
-      const list = document.getElementById('violationReportsList');
-      
-      if (panel) panel.style.display = 'block';
-      if (list) {
-        if (reports.length === 0) {
-          list.innerHTML = '<p class="muted">No violations reported.</p>';
-          return;
+    // Load analytics charts with Chart.js
+    async function loadAnalyticsCharts() {
+      try {
+        // Load stats
+        const statsRes = await fetch('/api/stats/dashboard', { credentials: 'include' });
+        let stats = {};
+        if (statsRes.ok) {
+          stats = await statsRes.json();
         }
+
+        // Load most asked data
+        const mostAskedRes = await fetch('/api/stats/most-asked', { credentials: 'include' });
+        let mostAskedData = { most_asked_sections: [], most_asked_questions: [] };
+        if (mostAskedRes.ok) {
+          mostAskedData = await mostAskedRes.json();
+        }
+
+        // Load user stats
+        const usersRes = await fetch('/api/users', { credentials: 'include' });
+        let users = [];
+        if (usersRes.ok) {
+          users = await usersRes.json();
+        }
+
+        // Load assignments for test results
+        const assignmentsRes = await fetch('/api/quiz-assignments', { credentials: 'include' });
+        let assignments = [];
+        if (assignmentsRes.ok) {
+          assignments = await assignmentsRes.json();
+        }
+
+        // Update stats grid
+        updateStatsGrid(stats, users, assignments);
+
+        // Destroy existing charts
+        Object.values(analyticsCharts).forEach(chart => {
+          if (chart) chart.destroy();
+        });
+        analyticsCharts = {};
+
+        // Most Asked Sections Chart (Bar)
+        const sectionsData = mostAskedData.most_asked_sections || [];
+        if (sectionsData.length > 0) {
+          const sectionsCtx = document.getElementById('mostAskedSectionsChart');
+          if (sectionsCtx) {
+            analyticsCharts.mostAskedSections = new Chart(sectionsCtx, {
+              type: 'bar',
+              data: {
+                labels: sectionsData.map(s => s.section),
+                datasets: [{
+                  label: 'Times Asked',
+                  data: sectionsData.map(s => s.count || 0),
+                  backgroundColor: '#3b82f6',
+                  borderRadius: 6
+                }]
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                  legend: { display: false }
+                },
+                scales: {
+                  y: {
+                    beginAtZero: true,
+                    ticks: { stepSize: 1 }
+                  }
+                }
+              }
+            });
+          }
+        }
+
+        // Test Results by Status Chart (Pie)
+        const passed = assignments.filter(a => a.finished_at && a.passed && !a.terminated).length;
+        const failed = assignments.filter(a => a.finished_at && !a.passed && !a.terminated).length;
+        const terminated = assignments.filter(a => a.terminated).length;
         
-        list.innerHTML = reports.map(report => {
-          const createdDate = new Date(report.created_at).toLocaleString();
-          const finishedDate = report.finished_at ? new Date(report.finished_at).toLocaleString() : 'Not finished';
-          const status = report.finished_at ? 'Completed' : 'Terminated';
-          const statusColor = report.finished_at ? 'var(--success)' : 'var(--danger)';
-          
-          // Check if this is a rejection (terminated due to violation)
-          const isRejected = report.terminated || (!report.finished_at && report.total_violations > 0);
-          const rejectionReason = isRejected ? (report.termination_reason || report.violations[0]?.type || 'UNKNOWN').replace(/_/g, ' ').toUpperCase() : '';
-          const rejectionTime = isRejected ? (report.terminated_at ? new Date(report.terminated_at).toLocaleString() : (report.violations[0] ? new Date(report.violations[0].timestamp).toLocaleString() : '')) : '';
-          
-          return `
-            <div class="violation-report-item" style="
-              background: ${isRejected ? 'linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(239, 68, 68, 0.05))' : 'var(--glass)'};
-              border: 2px solid ${isRejected ? 'rgba(239, 68, 68, 0.6)' : 'var(--glass-border)'};
-              border-radius: 12px;
-              padding: 16px;
-              margin-bottom: 12px;
-              ${isRejected ? 'box-shadow: 0 0 25px rgba(239, 68, 68, 0.3);' : ''}
-              position: relative;
-            ">
-              ${isRejected ? `
-                <div style="
-                  position: absolute;
-                  top: -8px;
-                  right: 16px;
-                  background: var(--danger);
-                  color: white;
-                  padding: 4px 12px;
-                  border-radius: 20px;
-                  font-size: 12px;
-                  font-weight: 700;
-                  text-transform: uppercase;
-                  letter-spacing: 0.5px;
-                ">REJECTED</div>
-              ` : ''}
-              
-              <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
-                <div style="flex: 1;">
-                  <h3 style="margin: 0 0 4px 0; font-size: 16px; color: ${isRejected ? '#fca5a5' : 'var(--text)'};">${report.email}</h3>
-                  <div class="muted" style="font-size: 14px;">
-                    📅 Created: ${createdDate}<br>
-                    ${isRejected ? `🚫 Rejected: ${rejectionTime}` : `✅ Finished: ${finishedDate}`}
-                  </div>
-                  ${isRejected ? `
-                    <div style="
-                      color: var(--danger); 
-                      font-weight: 600; 
-                      margin-top: 8px; 
-                      padding: 12px; 
-                      background: rgba(239, 68, 68, 0.15); 
-                      border-radius: 8px; 
-                      border: 1px solid rgba(239, 68, 68, 0.4);
-                      display: flex;
-                      align-items: center;
-                      gap: 8px;
-                    ">
-                      <span style="font-size: 18px;">🚫</span>
-                      <div>
-                        <div style="font-size: 14px; margin-bottom: 2px;">REJECTION CAUSE:</div>
-                        <div style="font-size: 16px;">${rejectionReason}</div>
-                      </div>
-                    </div>
-                  ` : ''}
-                </div>
-                <div style="text-align: right;">
-                  <div style="color: ${statusColor}; font-weight: 600; margin-bottom: 4px; font-size: 14px;">${status}</div>
-                  <div class="muted" style="font-size: 12px;">${report.total_violations} violation(s)</div>
-                  ${isRejected ? `
-                    <div style="color: var(--danger); font-size: 11px; margin-top: 4px; font-weight: 600;">
-                      BLOCKED ACCESS
-                    </div>
-                  ` : ''}
-                </div>
-              </div>
-              
-              <div class="violations-list">
-                ${report.violations.map((violation, idx) => {
-                  const violationTime = new Date(violation.timestamp);
-                  const violationTimeFormatted = violationTime.toLocaleString();
-                  const violationTimeAgo = getTimeAgo(violationTime);
-                  const violationType = violation.type.replace(/_/g, ' ').toUpperCase();
-                  const isCritical = ['FACE_MISMATCH', 'MULTIPLE_FACES', 'NO_FACE'].includes(violation.type);
-                  
-                  return `
-                    <div style="
-                      background: ${isCritical ? 'rgba(239, 68, 68, 0.15)' : 'rgba(239, 68, 68, 0.1)'};
-                      border: 2px solid ${isCritical ? 'rgba(239, 68, 68, 0.5)' : 'rgba(239, 68, 68, 0.3)'};
-                      border-radius: 8px;
-                      padding: 12px;
-                      margin-bottom: 8px;
-                      ${isCritical ? 'box-shadow: 0 0 15px rgba(239, 68, 68, 0.2);' : ''}
-                    ">
-                      <div style="display: flex; justify-content: space-between; align-items: start;">
-                        <div style="flex: 1;">
-                          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
-                            <div style="color: #fca5a5; font-weight: 600; font-size: 14px;">${violationType}</div>
-                            ${isCritical ? '<span style="background: var(--danger); color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 700;">CRITICAL</span>' : ''}
-                          </div>
-                          <div class="muted" style="font-size: 13px; margin-bottom: 6px;">${violation.message || 'No message'}</div>
-                          <div style="display: flex; align-items: center; gap: 12px; font-size: 12px;">
-                            <span style="color: var(--muted);">🕒 ${violationTimeFormatted}</span>
-                            <span style="color: var(--accent-2); font-weight: 600;">(${violationTimeAgo})</span>
-                          </div>
-                        </div>
-                        <div style="display: flex; gap: 8px; align-items: center;">
-                          ${violation.has_image ? `
-                            <button onclick="showViolationImage('${report.assignment_id}', ${idx})" style="
-                              background: var(--accent);
-                              border: none;
-                              color: white;
-                              padding: 8px 14px;
-                              border-radius: 6px;
-                              font-size: 12px;
-                              font-weight: 600;
-                              cursor: pointer;
-                              transition: all 0.2s ease;
-                              display: flex;
-                              align-items: center;
-                              gap: 4px;
-                            " onmouseover="this.style.background='var(--accent-2)'" onmouseout="this.style.background='var(--accent)'">
-                              📷 View Evidence
-                            </button>
-                          ` : ''}
-                          <div style="text-align: center;">
-                            <div style="color: ${violation.has_image ? 'var(--success)' : 'var(--muted)'}; font-size: 11px; font-weight: 600;">
-                              ${violation.has_image ? '✅ Evidence' : '❌ No Evidence'}
-                            </div>
-                            ${violation.has_image ? '<div style="color: var(--muted); font-size: 10px;">Screenshot captured</div>' : ''}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  `;
-                }).join('')}
-              </div>
-            </div>
-          `;
-        }).join('');
+        const testResultsCtx = document.getElementById('testResultsByStatusChart');
+        if (testResultsCtx) {
+          analyticsCharts.testResults = new Chart(testResultsCtx, {
+            type: 'pie',
+            data: {
+              labels: ['Passed', 'Failed', 'Terminated'],
+              datasets: [{
+                data: [passed, failed, terminated],
+                backgroundColor: ['#10b981', '#f59e0b', '#ef4444'],
+                borderWidth: 2,
+                borderColor: '#ffffff'
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: { position: 'bottom' }
+              }
+            }
+          });
+        }
+
+        // Users by Role Chart (Doughnut)
+        const adminCount = users.filter(u => u.role === 'admin').length;
+        const userCount = users.filter(u => u.role === 'user').length;
+        
+        const usersRoleCtx = document.getElementById('usersByRoleChart');
+        if (usersRoleCtx) {
+          analyticsCharts.usersByRole = new Chart(usersRoleCtx, {
+            type: 'doughnut',
+            data: {
+              labels: ['Admins', 'Users'],
+              datasets: [{
+                data: [adminCount, userCount],
+                backgroundColor: ['#667eea', '#f59e0b'],
+                borderWidth: 2,
+                borderColor: '#ffffff'
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: { position: 'bottom' }
+              }
+            }
+          });
+        }
+
+        // Top Sections Chart (Horizontal Bar)
+        if (sectionsData.length > 0) {
+          const topSectionsCtx = document.getElementById('topSectionsChart');
+          if (topSectionsCtx) {
+            const top5 = sectionsData.slice(0, 5);
+            analyticsCharts.topSections = new Chart(topSectionsCtx, {
+              type: 'bar',
+              data: {
+                labels: top5.map(s => s.section),
+                datasets: [{
+                  label: 'Times Asked',
+                  data: top5.map(s => s.count || 0),
+                  backgroundColor: '#667eea',
+                  borderRadius: 6
+                }]
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y',
+                plugins: {
+                  legend: { display: false }
+                },
+                scales: {
+                  x: {
+                    beginAtZero: true,
+                    ticks: { stepSize: 1 }
+                  }
+                }
+              }
+            });
+          }
+        }
+
+      } catch (e) {
+        console.error('Failed to load analytics charts:', e);
       }
-    } catch (e) {
-      showToast('Failed to load violation reports', 'error');
     }
-  }
-  
-  // Helper function to get time ago
-  function getTimeAgo(date) {
-    const now = new Date();
-    const diffMs = now - date;
-    const diffMins = Math.floor(diffMs / 60000);
-    const diffHours = Math.floor(diffMins / 60);
-    const diffDays = Math.floor(diffHours / 24);
-    
-    if (diffMins < 1) return 'Just now';
-    if (diffMins < 60) return `${diffMins}m ago`;
-    if (diffHours < 24) return `${diffHours}h ago`;
-    return `${diffDays}d ago`;
-  }
 
-  // Filter to show only rejected candidates
-  function filterRejectedOnly() {
-    const items = document.querySelectorAll('.violation-report-item');
-    const filterBtn = document.getElementById('filterRejectedBtn');
-    const showAllBtn = document.getElementById('showAllBtn');
-    
-    items.forEach(item => {
-      const isRejected = item.style.background.includes('rgba(239, 68, 68');
-      item.style.display = isRejected ? 'block' : 'none';
-    });
-    
-    filterBtn.style.display = 'none';
-    showAllBtn.style.display = 'inline-block';
-  }
+    function updateStatsGrid(stats, users, assignments) {
+      const grid = document.getElementById('analyticsStatsGrid');
+      if (!grid) return;
 
-  // Show all reports
-  function showAllReports() {
-    const items = document.querySelectorAll('.violation-report-item');
-    const filterBtn = document.getElementById('filterRejectedBtn');
-    const showAllBtn = document.getElementById('showAllBtn');
-    
-    items.forEach(item => {
-      item.style.display = 'block';
-    });
-    
-    filterBtn.style.display = 'inline-block';
-    showAllBtn.style.display = 'none';
-  }
+      const totalUsers = users.length || stats.total_users || 0;
+      const totalAssignments = assignments.length || 0;
+      const completedTests = assignments.filter(a => a.finished_at && !a.terminated).length;
+      const pendingAssignments = assignments.filter(a => !a.finished_at && !a.terminated).length;
 
-  async function showViolationImage(assignmentId, violationIndex) {
-    try {
-      const res = await fetch(`/api/violation-image/${assignmentId}/${violationIndex}`, { credentials: 'include' });
-      if (!res.ok) { showToast('Failed to load violation image', 'error'); return; }
-      const data = await res.json();
-      
-      // Create modal to show image
-      const modal = document.createElement('div');
-      modal.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.9);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 10000;
-        padding: 20px;
-      `;
-      
-      const modalContent = document.createElement('div');
-      modalContent.style.cssText = `
-        background: var(--bg1);
-        border: 2px solid rgba(239, 68, 68, 0.3);
-        border-radius: 16px;
-        padding: 24px;
-        max-width: 800px;
-        width: 100%;
-        max-height: 90vh;
-        overflow-y: auto;
-        box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-      `;
-      
-      modalContent.innerHTML = `
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+      grid.innerHTML = `
+        <div style="background: white; border-radius: 8px; padding: 16px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08); border: 1px solid #e5e7eb; display: flex; align-items: center; gap: 12px;">
+          <i class="bi bi-people" style="font-size: 24px; color: #667eea; opacity: 0.8;"></i>
           <div>
-            <h3 style="margin: 0 0 4px 0; color: var(--text); font-size: 20px;">🚫 Violation Evidence</h3>
-            <p style="margin: 0; color: var(--muted); font-size: 14px;">Assignment ID: ${assignmentId}</p>
-          </div>
-          <button onclick="this.closest('.modal').remove()" style="
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            color: var(--danger);
-            font-size: 18px;
-            cursor: pointer;
-            padding: 8px 12px;
-            border-radius: 8px;
-            transition: all 0.2s ease;
-          " onmouseover="this.style.background='rgba(239, 68, 68, 0.2)'" onmouseout="this.style.background='rgba(239, 68, 68, 0.1)'">✕ Close</button>
-        </div>
-        
-        <div style="text-align: center; margin-bottom: 20px;">
-          <div style="
-            background: rgba(239, 68, 68, 0.1);
-            border: 2px solid rgba(239, 68, 68, 0.3);
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 16px;
-          ">
-            <h4 style="color: var(--danger); margin: 0 0 8px 0; font-size: 16px;">⚠️ Evidence of Violation</h4>
-            <p style="color: var(--text); margin: 0; font-size: 14px;">
-              This screenshot was automatically captured when the violation occurred
-            </p>
-          </div>
-          
-          <img src="data:image/jpeg;base64,${data.image}" style="
-            max-width: 100%;
-            max-height: 500px;
-            border-radius: 12px;
-            border: 2px solid rgba(239, 68, 68, 0.3);
-            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
-          " alt="Violation Evidence">
-          
-          <div style="
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 8px;
-            padding: 12px;
-            margin-top: 16px;
-          ">
-            <p style="color: var(--muted); margin: 0; font-size: 14px;">
-              <strong>Captured:</strong> ${new Date(data.timestamp).toLocaleString()}
-            </p>
-            <p style="color: var(--muted); margin: 4px 0 0 0; font-size: 12px;">
-              This evidence is stored permanently and cannot be modified
-            </p>
+            <h4 style="font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; margin: 0 0 4px 0;">Total Users</h4>
+            <p style="font-size: 20px; font-weight: 700; color: #1f2937; margin: 0;">${totalUsers}</p>
           </div>
         </div>
-        
-        <div style="
-          background: rgba(239, 68, 68, 0.05);
-          border: 1px solid rgba(239, 68, 68, 0.2);
-          border-radius: 8px;
-          padding: 16px;
-          margin-top: 16px;
-        ">
-          <h4 style="color: var(--danger); margin: 0 0 8px 0; font-size: 14px;">📋 Violation Details</h4>
-          <p style="color: var(--text); margin: 0; font-size: 13px; line-height: 1.4;">
-            This image serves as proof of the violation that led to quiz termination. 
-            The candidate's access has been permanently blocked and cannot be restored.
-          </p>
+        <div style="background: white; border-radius: 8px; padding: 16px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08); border: 1px solid #e5e7eb; display: flex; align-items: center; gap: 12px;">
+          <i class="bi bi-file-earmark-text" style="font-size: 24px; color: #3b82f6; opacity: 0.8;"></i>
+          <div>
+            <h4 style="font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; margin: 0 0 4px 0;">Total Assignments</h4>
+            <p style="font-size: 20px; font-weight: 700; color: #1f2937; margin: 0;">${totalAssignments}</p>
+          </div>
+        </div>
+        <div style="background: white; border-radius: 8px; padding: 16px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08); border: 1px solid #e5e7eb; display: flex; align-items: center; gap: 12px;">
+          <i class="bi bi-calendar-check" style="font-size: 24px; color: #10b981; opacity: 0.8;"></i>
+          <div>
+            <h4 style="font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; margin: 0 0 4px 0;">Completed Tests</h4>
+            <p style="font-size: 20px; font-weight: 700; color: #1f2937; margin: 0;">${completedTests}</p>
+          </div>
+        </div>
+        <div style="background: white; border-radius: 8px; padding: 16px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08); border: 1px solid #e5e7eb; display: flex; align-items: center; gap: 12px;">
+          <i class="bi bi-clock-history" style="font-size: 24px; color: #f59e0b; opacity: 0.8;"></i>
+          <div>
+            <h4 style="font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; margin: 0 0 4px 0;">Pending</h4>
+            <p style="font-size: 20px; font-weight: 700; color: #1f2937; margin: 0;">${pendingAssignments}</p>
+          </div>
         </div>
       `;
-      
-      modal.appendChild(modalContent);
-      modal.className = 'modal';
-      document.body.appendChild(modal);
-      
-      // Close on background click
-      modal.addEventListener('click', (e) => {
-        if (e.target === modal) modal.remove();
-      });
-      
-      // Close on Escape key
-      const handleEscape = (e) => {
-        if (e.key === 'Escape') {
-          modal.remove();
-          document.removeEventListener('keydown', handleEscape);
-        }
-      };
-      document.addEventListener('keydown', handleEscape);
-      
-    } catch (e) {
-      showToast('Failed to load violation image', 'error');
-    }
-  }
-
-  // Question Management Functions
-  async function loadSections() {
-    try {
-      const res = await fetch('/api/sections', { credentials: 'include' });
-      if (!res.ok) return;
-      const sections = await res.json();
-      
-      const ul = document.getElementById('sectionsList');
-      const filter = document.getElementById('sectionFilter');
-      
-      if (ul) {
-        ul.innerHTML = '';
-        if (sections.length === 0) {
-          ul.innerHTML = '<li style="color: var(--muted); text-align: center; padding: 20px;">No sections found</li>';
-        } else {
-          sections.forEach(section => {
-            const li = document.createElement('li');
-            li.innerHTML = `
-              <div class="user-info">
-                <div class="user-email">${section.name}</div>
-                <div class="user-details">
-                  <span class="user-matricule">${section.question_count} questions</span>
-                  <span class="user-created" style="color: var(--muted); font-size: 12px;">Created: ${new Date(section.created_at).toLocaleDateString()}</span>
-                </div>
-              </div>
-              <div style="display: flex; gap: 8px;">
-                <button class="btn secondary" onclick="editSection('${section._id}', '${section.name}', '${section.description || ''}')">Edit</button>
-                <button class="btn secondary" onclick="deleteSection('${section._id}', '${section.name}')" style="background: var(--danger); border-color: var(--danger);">Delete</button>
-              </div>
-            `;
-            ul.appendChild(li);
-          });
-        }
-      }
-      
-      if (filter) {
-        filter.innerHTML = '<option value="">All Sections</option>';
-        sections.forEach(section => {
-          const opt = document.createElement('option');
-          opt.value = section.name;
-          opt.textContent = `${section.name} (${section.question_count})`;
-          filter.appendChild(opt);
-        });
-      }
-    } catch (error) {
-      console.error('Error loading sections:', error);
-    }
-  }
-
-  async function loadQuestions() {
-    try {
-      const sectionFilter = document.getElementById('sectionFilter')?.value || '';
-      const url = sectionFilter ? `/api/questions?section=${encodeURIComponent(sectionFilter)}` : '/api/questions';
-      const res = await fetch(url, { credentials: 'include' });
-      if (!res.ok) return;
-      const questions = await res.json();
-      
-      const ul = document.getElementById('questionsList');
-      if (ul) {
-        ul.innerHTML = '';
-        if (questions.length === 0) {
-          ul.innerHTML = '<li style="color: var(--muted); text-align: center; padding: 20px;">No questions found</li>';
-        } else {
-          questions.forEach(question => {
-            const li = document.createElement('li');
-            const answers = question.answers || [];
-            const correctAnswer = question.correct_answer || 'A';
-            li.innerHTML = `
-              <div class="user-info" style="flex: 1;">
-                <div class="user-email">${question.question}</div>
-                <div class="user-details">
-                  <span class="user-matricule">Section: ${question.section}</span>
-                  <span class="user-matricule">ID: ${question.id}</span>
-                  <span class="user-created" style="color: var(--muted); font-size: 12px;">Correct: ${correctAnswer}</span>
-                </div>
-                <div style="margin-top: 8px; font-size: 12px; color: var(--muted);">
-                  ${answers.map((answer, idx) => 
-                    `<div>${String.fromCharCode(65 + idx)}. ${answer}${String.fromCharCode(65 + idx) === correctAnswer ? ' ✓' : ''}</div>`
-                  ).join('')}
-                </div>
-              </div>
-              <div style="display: flex; gap: 8px;">
-                <button class="btn secondary" onclick="editQuestion('${question._id}')">Edit</button>
-                <button class="btn secondary" onclick="deleteQuestion('${question._id}')" style="background: var(--danger); border-color: var(--danger);">Delete</button>
-              </div>
-            `;
-            ul.appendChild(li);
-          });
-        }
-      }
-    } catch (error) {
-      console.error('Error loading questions:', error);
-    }
-  }
-
-  function filterQuestions() {
-    loadQuestions();
-  }
-
-  async function migrateQuestions() {
-    const statusDiv = document.getElementById('migrationStatus');
-    if (statusDiv) {
-      statusDiv.innerHTML = '<div style="color: var(--accent);">Migrating questions...</div>';
-    }
-    
-    try {
-      const res = await fetch('/api/migrate-questions', {
-        method: 'POST',
-        credentials: 'include'
-      });
-      const result = await res.json();
-      
-      if (res.ok) {
-        if (statusDiv) {
-          statusDiv.innerHTML = `<div style="color: var(--success);">Migration successful! ${result.sections_created} sections created, ${result.questions_migrated} questions migrated.</div>`;
-        }
-        showToast('Migration completed successfully', 'success');
-        loadSections();
-        loadQuestions();
-      } else {
-        if (statusDiv) {
-          statusDiv.innerHTML = `<div style="color: var(--danger);">Migration failed: ${result.error}</div>`;
-        }
-        showToast('Migration failed: ' + result.error, 'error');
-      }
-    } catch (error) {
-      if (statusDiv) {
-        statusDiv.innerHTML = `<div style="color: var(--danger);">Migration failed: ${error.message}</div>`;
-      }
-      showToast('Migration failed: ' + error.message, 'error');
-    }
-  }
-
-  function showCreateSectionForm() {
-    const form = document.getElementById('createSectionForm');
-    if (form) {
-      form.style.display = 'block';
-      // Clear form
-      clearSectionForm();
-    }
-  }
-
-  function hideCreateSectionForm() {
-    const form = document.getElementById('createSectionForm');
-    if (form) {
-      form.style.display = 'none';
-    }
-  }
-
-  function clearSectionForm() {
-    document.getElementById('newSectionName').value = '';
-    document.getElementById('newSectionQuestionCount').value = '';
-    document.getElementById('newSectionDescription').value = '';
-  }
-
-  async function submitNewSection() {
-    const name = document.getElementById('newSectionName').value.trim();
-    const questionCount = parseInt(document.getElementById('newSectionQuestionCount').value);
-    const description = document.getElementById('newSectionDescription').value.trim();
-
-    if (!name) {
-      showToast('Section name is required', 'error');
-      return;
     }
 
-    if (!questionCount || questionCount < 1) {
-      showToast('Number of questions is required and must be at least 1', 'error');
-      return;
-    }
-
-    try {
-      const res = await fetch('/api/sections', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({
-          name: name,
-          question_count: questionCount,
-          description: description
-        })
-      });
-
-      if (res.ok) {
-        showToast('Section created successfully', 'success');
-        hideCreateSectionForm();
-        loadSections();
-        // Refresh the section dropdown in question form
-        populateSectionDropdown('newQuestionSection');
-      } else {
-        const error = await res.json();
-        showToast(error.error || 'Failed to create section', 'error');
-      }
-    } catch (error) {
-      console.error('Error creating section:', error);
-      showToast('Error creating section', 'error');
-    }
-  }
-
-  async function createSection(name, description) {
-    try {
-      const res = await fetch('/api/sections', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ name, description })
-      });
-      
-      const result = await res.json();
-      if (res.ok) {
-        showToast('Section created successfully', 'success');
-        loadSections();
-      } else {
-        showToast('Error: ' + result.error, 'error');
-      }
-    } catch (error) {
-      showToast('Error: ' + error.message, 'error');
-    }
-  }
-
-  function editSection(sectionId, currentName, currentDescription) {
-    const newName = prompt('Enter new section name:', currentName);
-    if (!newName || newName === currentName) return;
-    
-    const newDescription = prompt('Enter new section description:', currentDescription) || '';
-    
-    updateSection(sectionId, newName, newDescription);
-  }
-
-  async function updateSection(sectionId, name, description) {
-    try {
-      const res = await fetch(`/api/sections/${sectionId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ name, description })
-      });
-      
-      const result = await res.json();
-      if (res.ok) {
-        showToast('Section updated successfully', 'success');
-        loadSections();
-        loadQuestions();
-      } else {
-        showToast('Error: ' + result.error, 'error');
-      }
-    } catch (error) {
-      showToast('Error: ' + error.message, 'error');
-    }
-  }
-
-  async function deleteSection(sectionId, sectionName) {
-    if (!confirm(`Are you sure you want to delete section "${sectionName}" and all its questions?`)) return;
-    
-    try {
-      const res = await fetch(`/api/sections/${sectionId}`, {
-        method: 'DELETE',
-        credentials: 'include'
-      });
-      
-      const result = await res.json();
-      if (res.ok) {
-        showToast('Section deleted successfully', 'success');
-        loadSections();
-        loadQuestions();
-      } else {
-        showToast('Error: ' + result.error, 'error');
-      }
-    } catch (error) {
-      showToast('Error: ' + error.message, 'error');
-    }
-  }
-
-  let currentQuestionStep = 1;
-  let selectedSectionData = null;
-
-  function showCreateQuestionForm() {
-    const form = document.getElementById('createQuestionForm');
-    if (form) {
-      form.style.display = 'block';
-      currentQuestionStep = 1;
-      selectedSectionData = null;
-      // Populate section dropdown
-      populateSectionDropdown('newQuestionSection');
-      // Clear form
-      clearQuestionForm();
-      // Show first step
-      showQuestionStep(1);
-    }
-  }
-
-  function hideCreateQuestionForm() {
-    const form = document.getElementById('createQuestionForm');
-    if (form) {
-      form.style.display = 'none';
-    }
-  }
-
-  function clearQuestionForm() {
-    document.getElementById('newQuestionText').value = '';
-    document.getElementById('newQuestionSection').value = '';
-    document.getElementById('newQuestionCorrect').value = 'A';
-    document.getElementById('answerA').value = '';
-    document.getElementById('answerB').value = '';
-    document.getElementById('answerC').value = '';
-    document.getElementById('answerD').value = '';
-  }
-
-  function showQuestionStep(step) {
-    // Hide all steps
-    document.getElementById('questionStep1').style.display = 'none';
-    document.getElementById('questionStep2').style.display = 'none';
-    document.getElementById('questionStep3').style.display = 'none';
-    
-    // Hide all buttons
-    document.getElementById('prevStepBtn').style.display = 'none';
-    document.getElementById('nextStepBtn').style.display = 'none';
-    document.getElementById('submitQuestionBtn').style.display = 'none';
-    
-    // Show current step
-    document.getElementById(`questionStep${step}`).style.display = 'block';
-    
-    // Show appropriate buttons
-    if (step > 1) {
-      document.getElementById('prevStepBtn').style.display = 'inline-block';
-    }
-    if (step < 3) {
-      document.getElementById('nextStepBtn').style.display = 'inline-block';
-    } else {
-      document.getElementById('submitQuestionBtn').style.display = 'inline-block';
-    }
-  }
-
-  function nextQuestionStep() {
-    if (currentQuestionStep < 3) {
-      currentQuestionStep++;
-      showQuestionStep(currentQuestionStep);
-    }
-  }
-
-  function prevQuestionStep() {
-    if (currentQuestionStep > 1) {
-      currentQuestionStep--;
-      showQuestionStep(currentQuestionStep);
-    }
-  }
-
-  async function onSectionSelected() {
-    const sectionName = document.getElementById('newQuestionSection').value;
-    const sectionInfo = document.getElementById('sectionInfo');
-    
-    if (!sectionName) {
-      sectionInfo.style.display = 'none';
-      return;
-    }
-
-    try {
-      // Get section details
-      const res = await fetch(`/api/sections?name=${encodeURIComponent(sectionName)}`, { credentials: 'include' });
-      if (res.ok) {
-        const section = await res.json();
-        selectedSectionData = section;
-        
-        // Get current question count for this section
-        const questionsRes = await fetch(`/api/questions?section=${encodeURIComponent(sectionName)}`, { credentials: 'include' });
-        const questions = questionsRes.ok ? await questionsRes.json() : [];
-        
-        // Update section info display
-        document.getElementById('selectedSectionName').textContent = section.name;
-        document.getElementById('sectionQuestionCount').textContent = questions.length;
-        document.getElementById('sectionTargetCount').textContent = section.question_count || 'Not set';
-        
-        sectionInfo.style.display = 'block';
-        
-        // Show next step button
-        document.getElementById('nextStepBtn').style.display = 'inline-block';
-      }
-    } catch (error) {
-      console.error('Error loading section details:', error);
-    }
-  }
-
-  async function submitNewQuestion() {
-    const questionText = document.getElementById('newQuestionText').value.trim();
-    const section = document.getElementById('newQuestionSection').value;
-    const correctAnswer = document.getElementById('newQuestionCorrect').value;
-    const answerA = document.getElementById('answerA').value.trim();
-    const answerB = document.getElementById('answerB').value.trim();
-    const answerC = document.getElementById('answerC').value.trim();
-    const answerD = document.getElementById('answerD').value.trim();
-
-    // Validation
-    if (!questionText) {
-      showToast('Question text is required', 'error');
-      showQuestionStep(2); // Go back to step 2
-      return;
-    }
-    if (!section) {
-      showToast('Please select a section', 'error');
-      showQuestionStep(1); // Go back to step 1
-      return;
-    }
-    if (!answerA || !answerB) {
-      showToast('At least answers A and B are required', 'error');
-      showQuestionStep(3); // Go back to step 3
-      return;
-    }
-
-    const answers = [answerA, answerB];
-    if (answerC) answers.push(answerC);
-    if (answerD) answers.push(answerD);
-
-    try {
-      const res = await fetch('/api/questions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({
-          question: questionText,
-          answers: answers,
-          correct_answer: correctAnswer,
-          section: section
-        })
-      });
-
-      if (res.ok) {
-        showToast('Question created successfully', 'success');
-        hideCreateQuestionForm();
-        loadQuestions();
-        loadSections(); // Refresh sections to update question counts
-      } else {
-        const error = await res.json();
-        showToast(error.error || 'Failed to create question', 'error');
-      }
-    } catch (error) {
-      console.error('Error creating question:', error);
-      showToast('Error creating question', 'error');
-    }
-  }
-
-  function populateSectionDropdown(selectId) {
-    const select = document.getElementById(selectId);
-    if (!select) return;
-
-    // Clear existing options except the first one
-    select.innerHTML = '<option value="">Select a section...</option>';
-
-    // Load sections and populate dropdown
-    fetch('/api/sections', { credentials: 'include' })
-      .then(res => res.json())
-      .then(data => {
-        if (data.sections) {
-          data.sections.forEach(section => {
-            const option = document.createElement('option');
-            option.value = section.name;
-            option.textContent = `${section.name} (${section.question_count || 0}/${section.target_questions || '?'} questions)`;
-            select.appendChild(option);
-          });
-        }
-      })
-      .catch(error => console.error('Error loading sections:', error));
-  }
-
-  async function createQuestion(question, answers, correctAnswer, section) {
-    try {
-      const res = await fetch('/api/questions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ question, answers, correct_answer: correctAnswer, section })
-      });
-      
-      const result = await res.json();
-      if (res.ok) {
-        showToast('Question created successfully', 'success');
-        loadQuestions();
-      } else {
-        showToast('Error: ' + result.error, 'error');
-      }
-    } catch (error) {
-      showToast('Error: ' + error.message, 'error');
-    }
-  }
-
-  function editQuestion(questionId) {
-    // For now, just show a simple edit interface
-    showToast('Edit functionality coming soon. Use delete and recreate for now.', 'error');
-  }
-
-  async function deleteQuestion(questionId) {
-    if (!confirm('Are you sure you want to delete this question?')) return;
-    
-    try {
-      const res = await fetch(`/api/questions/${questionId}`, {
-        method: 'DELETE',
-        credentials: 'include'
-      });
-      
-      const result = await res.json();
-      if (res.ok) {
-        showToast('Question deleted successfully', 'success');
-        loadQuestions();
-        loadSections(); // Refresh section counts
-      } else {
-        showToast('Error: ' + result.error, 'error');
-      }
-    } catch (error) {
-      showToast('Error: ' + error.message, 'error');
-    }
-  }
-
-  (function(){
-    const modal = document.getElementById('questionModal');
-    const close = document.getElementById('qmClose');
-    if (close && modal) {
-      close.addEventListener('click', ()=> modal.classList.remove('active'));
-      modal.addEventListener('click', (e)=>{ if (e.target === modal) modal.classList.remove('active'); });
-    }
-  })();
+    // Replace old loadAnalyticsChart function
+    window.loadAnalyticsChart = loadAnalyticsCharts;
   </script>
-  <script>
-</script>
-
 </body>
 </html>
-
-

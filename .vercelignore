@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project specific
+uploads/
+*.bat
+*.sh
+start_server.py
+start_server.bat
+start_server.sh
+
+# Documentation (optional - remove if you want to include them)
+EMAIL_CONFIG_GUIDE.md
+EMAIL_SETUP.md
+NETWORK_ACCESS.md
+
+# Environment files (should be set in Vercel dashboard)
+.env
+.env.local
+.env.*.local
+

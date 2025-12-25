@@ -4,18 +4,207 @@ import string
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from typing import Any, Dict
+from typing import Any, Dict, List
 import os
+import json
 
 from flask import Blueprint, jsonify, request
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 
-from configuration import get_db, USERS_COLLECTION, NOTIFICATIONS_COLLECTION, SMTP_SERVER, SMTP_PORT, SMTP_USERNAME, SMTP_PASSWORD, SMTP_FROM_EMAIL, SMTP_FROM_NAME
+from configuration import get_db, USERS_COLLECTION, NOTIFICATIONS_COLLECTION, ASSIGNMENTS_COLLECTION, USER_ATTEMPTS_COLLECTION, SMTP_SERVER, SMTP_PORT, SMTP_USERNAME, SMTP_PASSWORD, SMTP_FROM_EMAIL, SMTP_FROM_NAME
 from login import _current_user_claims
 
 
 users_bp = Blueprint("users", __name__)
+
+
+def auto_assign_quiz_to_user(target_email: str) -> bool:
+    """Automatically assign a quiz to a newly created user"""
+    try:
+        db = get_db()
+        now = datetime.datetime.utcnow()
+
+        # Check if user already has an unfinished assignment
+        existing_assignment = db[ASSIGNMENTS_COLLECTION].find_one({
+            "email": target_email,
+            "finished_at": None
+        })
+        if existing_assignment:
+            # User already has an unfinished quiz, don't assign another one
+            return True
+
+        # Reset attempts for the new user
+        db[USER_ATTEMPTS_COLLECTION].update_one(
+            {"email": target_email},
+            {
+                "$set": {
+                    "email": target_email,
+                    "attempts_used": 0,
+                    "passed": False,
+                    "pass_date": None,
+                    "final_score": None,
+                    "last_attempt": None,
+                    "updated_at": now
+                }
+            },
+            upsert=True
+        )
+
+        # Load quiz data and build a global pool of questions
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        data_path_v2 = os.path.join(base_dir, "aviation_quiz_data_v2.json")
+        data_path_v1 = os.path.join(base_dir, "aviation_quiz_data.json")
+        data_path = data_path_v2 if os.path.exists(data_path_v2) else data_path_v1
+
+        try:
+            with open(data_path, "r", encoding="utf-8") as fp:
+                data = json.load(fp)
+        except Exception as e:
+            print(f"Failed to load quiz data for auto-assignment: {e}")
+            return False
+
+        global_pool: List[Dict[str, Any]] = []
+
+        # Handle new format: exams[].activities[].questions[]
+        if "exams" in data:
+            for exam in data.get("exams", []):
+                for activity in exam.get("activities", []):
+                    section_name = activity.get("title", "Unknown")
+                    for q in activity.get("questions", []):
+                        if q.get("id") is not None:
+                            global_pool.append({"section": section_name, "id": q.get("id")})
+        # Handle old format: quiz_data.categories[].questions[]
+        elif "quiz_data" in data:
+            categories: List[Dict[str, Any]] = data.get("quiz_data", {}).get("categories", [])
+            for cat in categories:
+                nm = cat.get("name")
+                if not nm:
+                    continue
+                for q in (cat.get("questions", []) or []):
+                    if q.get("id") is not None:
+                        global_pool.append({"section": nm, "id": q.get("id")})
+
+        desired_total = 60  # Default 60 questions for auto-assignment  # Standard quiz size
+        if len(global_pool) < desired_total:
+            print(f"Not enough questions in pool for auto-assignment (need {desired_total}, have {len(global_pool)})")
+            return False
+
+        # Select random questions
+        selected = random.sample(global_pool, desired_total)
+        random.shuffle(selected)
+
+        # Calculate duration using rule of three: 60 questions = 60 minutes (3600 seconds)
+        # So: duration_seconds = (desired_total * 3600) / 60 = desired_total * 60
+        duration_seconds = desired_total * 60  # 1 minute per question
+
+        # Create assignment document
+        doc = {
+            "email": target_email,
+            "assigned_by": "system",  # Auto-assigned by system
+            "per_section": None,
+            "total": desired_total,
+            "selected": selected,
+            "created_at": now,
+            "started_at": None,
+            "finished_at": None,
+            "duration_seconds": duration_seconds,
+            "duration_used_seconds": None,
+            "score": None,
+            "total_with_keys": None,
+            "attempted": None,
+        }
+
+        result = db[ASSIGNMENTS_COLLECTION].insert_one(doc)
+
+        # Send assignment notification email
+        try:
+            _send_assignment_email_smtp(target_email, str(result.inserted_id), {})
+        except Exception as e:
+            print(f"Failed to send assignment email: {e}")
+
+        # Store notification for inbox
+        db[NOTIFICATIONS_COLLECTION].insert_one({
+            "email": target_email,
+            "type": "quiz_assignment",
+            "title": "New Quiz Assigned",
+            "message": f"You have been assigned a quiz with {desired_total} questions. Click to start.",
+            "assignment_id": str(result.inserted_id),
+            "created_at": now,
+            "read": False,
+        })
+
+        return True
+
+    except Exception as e:
+        print(f"Failed to auto-assign quiz to user {target_email}: {e}")
+        return False
+
+
+def _send_assignment_email_smtp(target_email: str, assignment_id: str, per_section: Dict[str, int]) -> bool:
+    """Send assignment email using SMTP settings from environment."""
+    try:
+        smtp_server = os.environ.get("SMTP_SERVER", "")
+        smtp_port = int(os.environ.get("SMTP_PORT", "587"))
+        smtp_user = os.environ.get("SMTP_USERNAME") or os.environ.get("SMTP_USER", "")
+        smtp_password = os.environ.get("SMTP_PASSWORD", "")
+        sender_email = os.environ.get("SMTP_FROM_EMAIL") or os.environ.get("SMTP_SENDER") or (smtp_user or "noreply@oaca.local")
+        app_base_url = os.environ.get("APP_BASE_URL", "http://localhost:8000")
+
+        if not smtp_server or not smtp_user or not smtp_password:
+            return False
+
+        start_url = f"{app_base_url.rstrip('/')}/assigned_quiz.html?assignment_id={assignment_id}"
+
+        msg = MIMEMultipart('alternative')
+        msg['Subject'] = "OACA – New Quiz Assigned"
+        msg['From'] = sender_email
+        msg['To'] = target_email
+
+        # OACA branded minimalist email
+        html_content = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="utf-8" />
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
+          <title>OACA Quiz Assignment</title>
+        </head>
+        <body style="font-family:Segoe UI,Roboto,Arial,sans-serif; margin:0; background:#0b1d44; color:#eaf2ff;">
+        <div style="max-width:640px;margin:0 auto;padding:24px;">
+          <div style="background:linear-gradient(135deg,#10265f,#0b1d44); border:1px solid rgba(255,255,255,0.15); border-radius:16px; overflow:hidden;">
+            <div style="padding:22px 22px 8px; text-align:center;">
+              <div style="width:56px;height:56px;margin:0 auto 10px; border-radius:14px; background:linear-gradient(135deg,#3b82f6,#60a5fa); display:flex; align-items:center; justify-content:center; font-weight:800; color:#fff;">✈</div>
+              <div style="font-size:22px; font-weight:800; letter-spacing:.2px;">OACA Aviation</div>
+              <div style="opacity:.8; font-size:13px;">Aviation Administration System</div>
+            </div>
+            <div style="padding:16px 24px 6px;">
+              <h2 style="margin:10px 0 8px; font-size:20px;">New Quiz Assigned</h2>
+              <p style="margin:0 0 12px; line-height:1.55;">A new quiz has been automatically assigned to your account. Click the button below to begin. Your progress will be timed.</p>
+              <p style="margin:16px 0 22px;">
+                <a href="{start_url}" style="display:inline-block; padding:12px 18px; background:linear-gradient(135deg,#274bcc,#3b82f6); color:#ffffff; text-decoration:none; border-radius:10px; font-weight:700; box-shadow:0 8px 20px rgba(30,64,175,.35);">Start Quiz</a>
+              </p>
+              <div style="font-size:12px; color:#cfe2ff; opacity:.85;">If the button doesn't work, copy and paste this link:</div>
+              <div style="font-size:12px; margin-top:6px;"><a href="{start_url}" style="color:#93c5fd; text-decoration:none;">{start_url}</a></div>
+            </div>
+            <div style="padding:16px 24px 22px; border-top:1px solid rgba(255,255,255,0.14); text-align:center; opacity:.8; font-size:12px;">
+              © OACA Aviation. All rights reserved.
+            </div>
+          </div>
+        </div>
+        </body>
+        </html>
+        """
+        msg.attach(MIMEText(html_content, 'html'))
+
+        server = smtplib.SMTP(smtp_server, smtp_port)
+        server.starttls()
+        server.login(smtp_user, smtp_password)
+        server.sendmail(sender_email, target_email, msg.as_string())
+        server.quit()
+        return True
+    except Exception:
+        return False
 TUNISIA_AIRPORTS = [
     "Tunis-Carthage (TUN)",
     "Enfidha–Hammamet (NBE)",
@@ -52,6 +241,7 @@ def send_welcome_email(email, matricule, password, role):
     try:
         # Check if SMTP is configured
         if not SMTP_USERNAME or not SMTP_PASSWORD:
+            app_base_url = os.environ.get("APP_BASE_URL", "http://localhost:8000").rstrip("/")
             print(f"""
         ========================================
         WELCOME EMAIL FOR: {email}
@@ -69,7 +259,7 @@ def send_welcome_email(email, matricule, password, role):
         1. Use email + password
         2. Use matricule only
         
-        Access the system at: http://localhost:8000/login.html
+        Access the system at: {app_base_url}/login.html
         
         ========================================
         
@@ -82,7 +272,8 @@ def send_welcome_email(email, matricule, password, role):
         - SMTP_FROM_NAME=OACA Aviation System
         ========================================
         """)
-            return True
+            # Indicate failure so caller/UI can show proper message
+            return False
         
         # Send actual email
         # Create message
@@ -92,6 +283,7 @@ def send_welcome_email(email, matricule, password, role):
         msg['To'] = email
         
         # Create HTML email content
+        app_base_url = os.environ.get("APP_BASE_URL", "http://localhost:8000").rstrip("/")
         html_content = f"""
         <!DOCTYPE html>
         <html>
@@ -266,7 +458,7 @@ def send_welcome_email(email, matricule, password, role):
                     </div>
                     
                     <div style="text-align: center;">
-                        <a href="http://localhost:8000/login.html" class="button">Access OACA System</a>
+                    <a href="{app_base_url}/login.html" class="button">Access OACA System</a>
                     </div>
                 </div>
                 
@@ -390,20 +582,33 @@ def create_user():
     email = str(body.get("email", "")).strip().lower()
     role = str(body.get("role", "user"))
     airport = str(body.get("airport", "")).strip()
+    matricule_input = str(body.get("matricule", "")).strip().upper() if body.get("matricule") else None
+
     if not email:
         return jsonify({"error": "email is required"}), 400
-    
+
     users = get_db()[USERS_COLLECTION]
     if users.find_one({"email": email}):
         return jsonify({"error": "User already exists"}), 409
-    
-    # Generate matricule and password
-    matricule = generate_matricule()
-    password = generate_password()
-    
-    # Ensure matricule is unique
-    while users.find_one({"matricule": matricule}):
+
+    # Handle matricule assignment
+    if matricule_input:
+        # Check if provided matricule is valid (8 characters, uppercase letters and digits)
+        if len(matricule_input) != 8 or not all(c in string.ascii_uppercase + string.digits for c in matricule_input):
+            return jsonify({"error": "Matricule must be exactly 8 characters containing only uppercase letters and digits"}), 400
+
+        # Check if matricule is already taken
+        if users.find_one({"matricule": matricule_input}):
+            return jsonify({"error": f"Matricule {matricule_input} is already assigned to another user"}), 409
+
+        matricule = matricule_input
+    else:
+        # Generate random matricule and ensure uniqueness
         matricule = generate_matricule()
+        while users.find_one({"matricule": matricule}):
+            matricule = generate_matricule()
+
+    password = generate_password()
     
     # Create user
     user_data = {
@@ -416,15 +621,19 @@ def create_user():
     }
     
     users.insert_one(user_data)
-    
+
+    # Automatically assign a quiz to the new user
+    quiz_assigned = auto_assign_quiz_to_user(email)
+
     # Send welcome email
     email_sent = send_welcome_email(email, matricule, password, role)
-    
+
     return jsonify({
-        "ok": True, 
-        "message": "User created successfully" + (" and welcome email sent" if email_sent else " but email failed to send"),
+        "ok": True,
+        "message": "User created successfully" + (" and quiz assigned" if quiz_assigned else "") + (" and welcome email sent" if email_sent else " but email failed to send"),
         "matricule": matricule,
-        "email_sent": email_sent
+        "email_sent": email_sent,
+        "quiz_assigned": quiz_assigned
     })
 
 
@@ -437,6 +646,56 @@ def list_users():
         return jsonify({"error": "Forbidden"}), 403
     cursor = get_db()[USERS_COLLECTION].find({}, {"_id": 0, "password_hash": 0}).sort("created_at", -1)
     return jsonify(list(cursor))
+
+
+@users_bp.route("/api/users/<path:target_email>", methods=["PUT"])  # admin updates a user (role/airport/matricule)
+def admin_update_user(target_email: str):
+    claims = _current_user_claims()
+    if not claims:
+        return jsonify({"error": "Unauthorized"}), 401
+    if claims.get("role") != "admin":
+        return jsonify({"error": "Forbidden"}), 403
+    body: Dict[str, Any] = request.get_json(silent=True) or {}
+    updates: Dict[str, Any] = {}
+    # Allow updating limited admin-controlled fields
+    if "role" in body and isinstance(body.get("role"), str):
+        updates["role"] = body.get("role")
+    if "airport" in body and isinstance(body.get("airport"), str):
+        airport_val = body.get("airport").strip()
+        updates["airport"] = airport_val or None
+    if "matricule" in body and isinstance(body.get("matricule"), str):
+        new_m = body.get("matricule").strip().upper()
+        if new_m:
+            # Enforce format: 8 alphanumeric
+            import re
+            if not re.fullmatch(r"[A-Z0-9]{8}", new_m):
+                return jsonify({"error": "matricule must be 8 uppercase letters/digits"}), 400
+            # Ensure uniqueness
+            db = get_db()
+            if db[USERS_COLLECTION].find_one({"matricule": new_m, "email": {"$ne": str(target_email).lower()}}):
+                return jsonify({"error": "matricule already in use"}), 409
+            updates["matricule"] = new_m
+    if not updates:
+        return jsonify({"error": "No valid fields to update"}), 400
+    db = get_db()
+    result = db[USERS_COLLECTION].update_one({"email": str(target_email).lower()}, {"$set": updates})
+    if result.matched_count == 0:
+        return jsonify({"error": "User not found"}), 404
+    return jsonify({"ok": True})
+
+
+@users_bp.route("/api/users/<path:target_email>", methods=["DELETE"])  # admin deletes a user
+def admin_delete_user(target_email: str):
+    claims = _current_user_claims()
+    if not claims:
+        return jsonify({"error": "Unauthorized"}), 401
+    if claims.get("role") != "admin":
+        return jsonify({"error": "Forbidden"}), 403
+    db = get_db()
+    res = db[USERS_COLLECTION].delete_one({"email": str(target_email).lower()})
+    if res.deleted_count == 0:
+        return jsonify({"error": "User not found"}), 404
+    return jsonify({"ok": True})
 
 
 @users_bp.route("/api/profile", methods=["GET"])  # current user profile

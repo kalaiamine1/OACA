@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>À Propos - Plateforme de Quiz et Tests</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="/oaca.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/oaca.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/oaca.png">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-blue: #1e40af;
+      --secondary-blue: #3b82f6;
+      --accent-blue: #60a5fa;
+      --neutral-50: #f8fafc;
+      --neutral-100: #f1f5f9;
+      --neutral-200: #e2e8f0;
+      --neutral-300: #cbd5e1;
+      --neutral-400: #94a3b8;
+      --neutral-500: #64748b;
+      --neutral-600: #475569;
+      --neutral-700: #334155;
+      --neutral-800: #1e293b;
+      --neutral-900: #0f172a;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: #ffffff;
+      min-height: 100vh;
+      color: #1e293b;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      display: none;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-20px) rotate(1deg); }
+    }
+
+    /* Added airplane background styling */
+    .bg-airplane {
+      position: fixed;
+      opacity: 0.15;
+      z-index: 0;
+      pointer-events: none;
+      font-family: Arial, sans-serif;
+      color: #3b82f6;
+      font-size: 48px;
+      animation: floatAirplane 15s ease-in-out infinite;
+    }
+    
+    @keyframes floatAirplane {
+      0%, 100% { 
+        transform: translateY(0px) translateX(0px) rotate(0deg);
+        opacity: 0.15;
+      }
+      50% { 
+        transform: translateY(-30px) translateX(20px) rotate(5deg);
+        opacity: 0.20;
+      }
+    }
+
+    /* Header */
+    .header {
+      position: relative;
+      z-index: 100;
+      padding: 20px 0;
+      background: #ffffff;
+      border-bottom: 1px solid #e2e8f0;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .nav-container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+
+    .logo-icon {
+      width: 64px;
+      height: 64px;
+      object-fit: contain;
+    }
+
+    .logo-text {
+      font-size: 24px;
+      font-weight: 800;
+      color: #1e40af;
+      letter-spacing: -0.025em;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      align-items: center;
+    }
+
+    .nav-link {
+      color: #475569;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 15px;
+      transition: color 0.2s;
+    }
+
+    .nav-link:hover {
+      color: var(--primary-blue);
+    }
+
+    .nav-link.active {
+      color: var(--accent-blue);
+      border-bottom: 2px solid var(--accent-blue);
+      padding-bottom: 4px;
+    }
+
+    .auth-buttons {
+      display: flex;
+      gap: 12px;
+    }
+
+    .btn {
+      padding: 10px 24px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 14px;
+      text-decoration: none;
+      transition: all 0.2s;
+      cursor: pointer;
+      border: none;
+      font-family: inherit;
+    }
+
+    .btn-secondary {
+      background: #f1f5f9;
+      color: #475569;
+      border: 1px solid #e2e8f0;
+    }
+
+    .btn-secondary:hover {
+      background: #e2e8f0;
+      color: #334155;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #274bcc, #3b82f6);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px -5px rgba(30, 64, 175, 0.5);
+    }
+
+    /* Main Content */
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 80px 24px;
+    }
+
+    .page-header {
+      text-align: center;
+      margin-bottom: 60px;
+    }
+
+    .page-title {
+      font-size: 48px;
+      font-weight: 800;
+      margin-bottom: 16px;
+      color: #1e293b;
+    }
+
+    .page-subtitle {
+      font-size: 18px;
+      color: #64748b;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* Section */
+    .section {
+      margin-bottom: 60px;
+    }
+
+    .section-title {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 24px;
+      color: #1e293b;
+    }
+
+    .section-content {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 32px;
+      line-height: 1.8;
+      font-size: 16px;
+      color: #475569;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .section-content p {
+      margin-bottom: 16px;
+    }
+
+    .section-content p:last-child {
+      margin-bottom: 0;
+    }
+
+    /* Values Grid */
+    .values-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      margin-top: 24px;
+    }
+
+    .value-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 28px;
+      transition: all 0.3s;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .value-card:hover {
+      transform: translateY(-4px);
+      background: #ffffff;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+      border-color: #cbd5e1;
+    }
+
+    .value-icon {
+      font-size: 32px;
+      margin-bottom: 12px;
+    }
+
+    .value-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: #1e293b;
+    }
+
+    .value-description {
+      font-size: 14px;
+      color: #64748b;
+      line-height: 1.6;
+    }
+
+    /* Strategic Axes */
+    .axes-list {
+      list-style: none;
+      margin-top: 24px;
+    }
+
+    .axes-list li {
+      padding: 16px;
+      margin-bottom: 12px;
+      background: #dbeafe;
+      border-left: 4px solid var(--primary-blue);
+      border-radius: 8px;
+      font-size: 16px;
+      color: #475569;
+    }
+
+    /* Footer */
+    .footer {
+      position: relative;
+      z-index: 1;
+      margin-top: 80px;
+      padding: 60px 24px;
+      background: #f8fafc;
+      border-top: 1px solid #e2e8f0;
+    }
+
+    .footer-content {
+      max-width: 1280px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 40px;
+      margin-bottom: 40px;
+    }
+
+    .footer-section h3 {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: #1e293b;
+    }
+
+    .footer-section ul {
+      list-style: none;
+    }
+
+    .footer-section ul li {
+      margin-bottom: 12px;
+    }
+
+    .footer-section a {
+      color: #64748b;
+      text-decoration: none;
+      font-size: 14px;
+      transition: color 0.2s;
+    }
+
+    .footer-section a:hover {
+      color: var(--primary-blue);
+    }
+
+    .social-links {
+      display: flex;
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .social-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      background: #e0f2fe;
+      border: 1px solid #bae6fd;
+      border-radius: 8px;
+      color: var(--primary-blue);
+      text-decoration: none;
+      font-size: 18px;
+      transition: all 0.2s;
+    }
+
+    .social-link:hover {
+      background: #bae6fd;
+      transform: translateY(-2px);
+    }
+
+    .footer-bottom {
+      text-align: center;
+      padding-top: 24px;
+      border-top: 1px solid #e2e8f0;
+      color: #64748b;
+      font-size: 14px;
+    }
+
+    /* Mobile responsive */
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .page-title { font-size: 32px; }
+      .section-title { font-size: 24px; }
+      .values-grid { grid-template-columns: 1fr; }
+      .footer-content { grid-template-columns: 1fr; }
+    }
+  </style>
+  <style>
+    /* Avatar dropdown and modal styles */
+    .avatar-btn { width: 40px; height: 40px; border-radius: 50%; border: 2px solid #e2e8f0; display:inline-flex; align-items:center; justify-content:center; background: linear-gradient(135deg, #60a5fa, #3b82f6); color:#fff; font-weight:800; cursor:pointer; }
+    .avatar-wrap { position: relative; display:inline-block; }
+    .avatar-menu { position:absolute; right:0; top:46px; background: #ffffff; border:1px solid #e2e8f0; border-radius:10px; padding:8px; display:none; flex-direction:column; min-width: 180px; z-index:150; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    .avatar-menu button { background: transparent; border:none; color:#475569; text-align:left; padding:8px 10px; border-radius:6px; cursor:pointer; }
+    .avatar-menu button:hover { background: #f1f5f9; }
+    /* Inbox (notifications) */
+    .inbox-wrap { position: relative; display:inline-block; margin-right: 8px; }
+    .inbox-btn { width: 40px; height: 40px; border-radius: 50%; border: 2px solid #e2e8f0; display:inline-flex; align-items:center; justify-content:center; background: linear-gradient(135deg, #93c5fd, #60a5fa); color:#1e40af; font-weight:900; cursor:pointer; }
+    .inbox-list { position:absolute; right:0; top:46px; background: #ffffff; border:1px solid #e2e8f0; border-radius:12px; padding:8px; display:none; flex-direction:column; min-width: 320px; z-index:150; max-height: 360px; overflow:auto; box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
+    .inbox-header { display:flex; align-items:center; justify-content:space-between; padding:8px 10px; border-bottom:1px solid #e2e8f0; margin-bottom:6px; }
+    .inbox-title { font-weight:800; font-size:14px; color:#1e293b; }
+    .inbox-item { padding:10px 12px; border-radius:10px; background: #f8fafc; border:1px solid #e2e8f0; margin-bottom:6px; }
+    .inbox-item.unread { background: #dbeafe; border-color: #bfdbfe; }
+    .inbox-item .title { font-weight: 700; margin-bottom: 4px; color:#1e293b; }
+    .inbox-item .message { color:#475569; font-size: 13px; margin-bottom: 4px; }
+    .inbox-item .time { opacity: .75; font-size: 12px; color:#64748b; }
+    .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: none; align-items:center; justify-content:center; z-index: 200; }
+    .modal-backdrop.active { display: flex; }
+    .modal-card { width: 100%; max-width: 560px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 20px; color: #1e293b; box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
+    .modal-header { display:flex; justify-content: space-between; align-items:center; margin-bottom: 8px; }
+    .close-btn { background: #f1f5f9; border: 1px solid #e2e8f0; color:#475569; border-radius: 8px; padding: 6px 10px; cursor:pointer; }
+    .close-btn:hover { background: #e2e8f0; }
+    .modal-body label { display:block; margin: 10px 0 6px; font-weight: 600; color: #334155; }
+    .modal-body input { width: 100%; padding: 12px 14px; border-radius: 10px; border:1px solid #e2e8f0; background: #ffffff; color:#1e293b; }
+    .modal-body input:focus { outline: none; border-color: #3b82f6; }
+    .modal-actions { display:flex; gap: 8px; justify-content: flex-end; margin-top: 14px; }
+  </style>
+</head>
+<body>
+  <!-- Small decorative airplanes in background -->
+  <span class="bg-airplane" style="left: 5%; top: 10%; font-size: 40px; transform: rotate(-15deg); animation-delay: 0s; opacity: 0.15;">✈</span>
+  <span class="bg-airplane" style="left: 85%; top: 15%; font-size: 36px; transform: rotate(20deg); animation-delay: 2s; opacity: 0.15;">✈</span>
+  <span class="bg-airplane" style="left: 12%; top: 45%; font-size: 32px; transform: rotate(-25deg); animation-delay: 4s; opacity: 0.15;">✈</span>
+  <span class="bg-airplane" style="left: 75%; top: 50%; font-size: 44px; transform: rotate(10deg); animation-delay: 1s; opacity: 0.15;">✈</span>
+  <span class="bg-airplane" style="left: 8%; top: 75%; font-size: 38px; transform: rotate(-30deg); animation-delay: 3s; opacity: 0.15;">✈</span>
+  <span class="bg-airplane" style="left: 90%; top: 80%; font-size: 42px; transform: rotate(25deg); animation-delay: 5s; opacity: 0.15;">✈</span>
+  <span class="bg-airplane" style="left: 50%; top: 25%; font-size: 30px; transform: rotate(-10deg); animation-delay: 2.5s; opacity: 0.15;">✈</span>
+  <span class="bg-airplane" style="left: 30%; top: 65%; font-size: 35px; transform: rotate(15deg); animation-delay: 1.5s; opacity: 0.15;">✈</span>
+
+  <!-- Header will be injected by header.js -->
+  <div id="header-placeholder"></div>
+
+  <div class="container">
+    <div class="page-header">
+      <h1 class="page-title">À Propos de Notre Plateforme</h1>
+      <p class="page-subtitle">Système de Quiz et Tests en Ligne avec Surveillance Anti-Triche</p>
+    </div>
+
+    <!-- Mission Section -->
+    <section class="section">
+      <h2 class="section-title">Notre Mission</h2>
+      <div class="section-content">
+        <p>Notre plateforme de quiz en ligne est conçue pour offrir une expérience d'évaluation moderne, sécurisée et équitable. Notre mission est de fournir un environnement de test fiable qui garantit l'intégrité des évaluations tout en offrant une interface intuitive et accessible à tous les candidats.</p>
+        <p>Nous nous engageons à maintenir les plus hauts standards d'honnêteté académique grâce à notre système de surveillance avancé et à faciliter le processus d'évaluation avec une technologie de pointe.</p>
+      </div>
+    </section>
+
+    <!-- Strategy Section -->
+    <section class="section">
+      <h2 class="section-title">Notre Approche</h2>
+      <div class="section-content">
+        <p>Dans un monde où l'évaluation en ligne devient de plus en plus importante, nous avons développé une solution complète qui combine facilité d'utilisation et sécurité renforcée. Notre plateforme intègre des technologies de surveillance en temps réel pour garantir l'authenticité de chaque test.</p>
+        <p>Notre système utilise la détection faciale intelligente pour vérifier l'identité du candidat, surveiller son comportement pendant le test, et détecter toute tentative de triche. Chaque quiz est protégé par plusieurs couches de sécurité pour assurer la crédibilité des résultats.</p>
+        <p>Nous croyons que l'évaluation devrait être juste, transparente et accessible. C'est pourquoi nous avons créé un système qui permet aux administrateurs de gérer facilement les tests tout en offrant aux candidats une expérience fluide et sans friction.</p>
+      </div>
+    </section>
+
+    <!-- Vision Section -->
+    <section class="section">
+      <h2 class="section-title">Notre Vision</h2>
+      <div class="section-content">
+        <p><strong>L'Excellence dans l'Évaluation Numérique</strong></p>
+        <p>Notre vision est de devenir la référence en matière de plateforme d'évaluation en ligne sécurisée. Nous aspirons à créer un écosystème où chaque test est administré avec la plus grande rigueur, où chaque résultat reflète fidèlement les compétences du candidat, et où la technologie sert à renforcer l'intégrité académique.</p>
+        <p style="margin-top: 20px; font-style: italic; color: rgba(255, 255, 255, 0.8);">"Des tests équitables pour des évaluations justes et des résultats fiables"</p>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="section">
+      <h2 class="section-title">Nos Fonctionnalités</h2>
+      <div class="values-grid">
+        <div class="value-card">
+          <div class="value-icon">🎯</div>
+          <div class="value-title">Quiz Interactifs</div>
+          <div class="value-description">Créez et administrez des quiz personnalisés avec différentes catégories de questions. Notre système permet une organisation flexible et une évaluation précise des connaissances.</div>
+        </div>
+        <div class="value-card">
+          <div class="value-icon">👁️</div>
+          <div class="value-title">Surveillance Anti-Triche</div>
+          <div class="value-description">Détection faciale en temps réel, surveillance des mouvements suspects, détection de plusieurs visages et d'absence prolongée. Notre système garantit l'intégrité de chaque test.</div>
+        </div>
+        <div class="value-card">
+          <div class="value-icon">⏱️</div>
+          <div class="value-title">Gestion du Temps</div>
+          <div class="value-description">Compteur de temps en temps réel, suivi de progression, et limitation de durée pour chaque quiz. Le système assure des conditions de test équitables pour tous.</div>
+        </div>
+        <div class="value-card">
+          <div class="value-icon">📊</div>
+          <div class="value-title">Rapports Détaillés</div>
+          <div class="value-description">Statistiques complètes, scores par section, historique des tentatives, et analyses de performance. Suivez les progrès et identifiez les domaines d'amélioration.</div>
+        </div>
+        <div class="value-card">
+          <div class="value-icon">🔒</div>
+          <div class="value-title">Sécurité Renforcée</div>
+          <div class="value-description">Authentification sécurisée, enregistrement des violations, protection contre les tentatives de contournement, et sauvegarde automatique des réponses.</div>
+        </div>
+        <div class="value-card">
+          <div class="value-icon">👥</div>
+          <div class="value-title">Gestion des Utilisateurs</div>
+          <div class="value-description">Système de rôles (admin, candidat), gestion des tentatives (3 par utilisateur), suivi individuel des performances, et communication via notifications.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="section">
+      <h2 class="section-title">Comment Ça Fonctionne</h2>
+      <ul class="axes-list">
+        <li>✓ <strong>Configuration de la caméra</strong> : Le candidat configure sa caméra et capture une photo de référence au début du test</li>
+        <li>✓ <strong>Vérification d'identité</strong> : Le système vérifie en continu que la même personne passe le test</li>
+        <li>✓ <strong>Passation du quiz</strong> : Navigation intuitive entre les questions avec suivi du temps restant</li>
+        <li>✓ <strong>Surveillance en temps réel</strong> : Détection automatique de toute anomalie (absence de visage, multiple personnes, mouvements suspects)</li>
+        <li>✓ <strong>Soumission et résultats</strong> : Calcul automatique des scores, enregistrement des violations éventuelles, et génération de rapports détaillés</li>
+      </ul>
+    </section>
+
+    <!-- Benefits Section -->
+    <section class="section">
+      <h2 class="section-title">Pourquoi Choisir Notre Plateforme</h2>
+      <div class="section-content">
+        <p><strong>Pour les Administrateurs :</strong></p>
+        <p>Gérez facilement vos utilisateurs, créez des quiz personnalisés avec des questions organisées par sections, assignez des tests aux candidats, et consultez des rapports détaillés avec toutes les statistiques et violations détectées. Notre interface d'administration est intuitive et puissante.</p>
+        
+        <p style="margin-top: 24px;"><strong>Pour les Candidats :</strong></p>
+        <p>Passez vos tests dans un environnement clair et professionnel. Vous disposez de 3 tentatives pour réussir votre quiz. Le système vous guide à chaque étape, de la configuration de la caméra jusqu'à la visualisation de vos résultats. Toute violation détectée vous est immédiatement communiquée pour garantir la transparence.</p>
+      </div>
+    </section>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer" id="footer">
+    <div class="footer-content">
+      <div class="footer-section">
+        <h3>À Propos</h3>
+        <ul>
+          <li><a href="/about.html">À Propos de Notre Plateforme</a></li>
+          <li><a href="/home">Accueil</a></li>
+          <li><a href="/home#footer">Contact</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h3>Ressources</h3>
+        <ul>
+          <li><a href="/home">Accueil</a></li>
+          <li><a href="/home">Quiz Disponibles</a></li>
+          <li><a href="/home">Statistiques</a></li>
+          <li><a href="/home#footer">Support</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h3>Nous Suivre</h3>
+        <p style="font-size: 14px; color: rgba(255, 255, 255, 0.7); margin-bottom: 16px;">Connectez-vous avec nous sur les réseaux sociaux</p>
+        <div class="social-links">
+          <a href="https://fr.linkedin.com/company/oaca2030" target="_blank" rel="noopener noreferrer" class="social-link" title="LinkedIn">in</a>
+          <a href="https://www.youtube.com/@oaca-com2005" target="_blank" rel="noopener noreferrer" class="social-link" title="YouTube">▶</a>
+          <a href="https://www.facebook.com/people/Office-de-lAviation-Civile-des-A%C3%A9roports-OACA/100071094341621/" target="_blank" rel="noopener noreferrer" class="social-link" title="Facebook">f</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2025 Plateforme de Quiz et Tests en Ligne. Tous droits réservés.</p>
+    </div>
+  </footer>
+
+  <!-- Profile Modal -->
+  <div class="modal-backdrop" id="profileModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 style="margin:0;">My Profile</h3>
+        <button class="close-btn" id="closeProfileModal">Close</button>
+      </div>
+      <div class="modal-body">
+        <div style="display:flex; align-items:center; gap:16px; margin-bottom:16px;">
+          <div style="position:relative;">
+            <img id="modalAvatarPreview" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Crect width='64' height='64' fill='%23334155'/%3E%3Ctext x='50%25' y='50%25' font-size='24' fill='%2394a3b8' text-anchor='middle' dy='.3em' font-family='Arial'%3E👤%3C/text%3E%3C/svg%3E" alt="avatar" style="width:80px; height:80px; border-radius:50%; object-fit:cover; border:2px solid rgba(96,165,250,0.3); background:rgba(255,255,255,0.08); box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+            <label for="modalAvatarFile" style="position:absolute; bottom:-4px; right:-4px; width:32px; height:32px; background:linear-gradient(135deg, #3b82f6, #2563eb); border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; border:2px solid #0b1d44; box-shadow: 0 2px 8px rgba(59,130,246,0.4); transition: all 0.2s;">
+              <span style="font-size:16px; color:white;">📷</span>
+            </label>
+            <input id="modalAvatarFile" type="file" accept="image/*" style="display:none;">
+          </div>
+          <div style="flex:1;">
+            <div style="font-weight:600; color:#e6eeff; margin-bottom:4px; font-size:15px;">Profile Photo</div>
+            <div style="font-size:13px; color:#94a3b8; line-height:1.4;">Click the camera icon to upload a new photo</div>
+            <span id="avatarUploadMsg" style="display:block; margin-top:6px; font-size:13px; color:#60a5fa; font-weight:500;"></span>
+          </div>
+        </div>
+        <label>Email</label>
+        <input id="modalProfileEmail" type="email" placeholder="your.email@example.com" disabled style="background: rgba(255,255,255,0.05); cursor: not-allowed; opacity: 0.7;">
+        <label>Display Name</label>
+        <input id="modalProfileName" type="text" placeholder="Your name">
+        <label>Username</label>
+        <input id="modalUsername" type="text" placeholder="username">
+        <label>CIN (8 digits)</label>
+        <input id="modalCIN" type="text" maxlength="8" placeholder="00000000">
+        <label>Airport</label>
+        <select id="modalAirport" style="width: 100%; padding: 12px 14px; border-radius: 10px; border:1px solid rgba(255,255,255,0.25); background: rgba(15,23,42,0.95); color:#fff; font-family: inherit; font-size: 14px; cursor: pointer;">
+          <option value="" style="background: #0f172a; color: #94a3b8;">Select your airport</option>
+          <option value="Tunis-Carthage (TUN)" style="background: #1e293b; color: #e2e8f0; padding: 8px;">Tunis-Carthage (TUN)</option>
+          <option value="Djerba-Zarzis (DJE)" style="background: #1e293b; color: #e2e8f0; padding: 8px;">Djerba-Zarzis (DJE)</option>
+          <option value="Monastir (MIR)" style="background: #1e293b; color: #e2e8f0; padding: 8px;">Monastir (MIR)</option>
+          <option value="Enfidha-Hammamet (NBE)" style="background: #1e293b; color: #e2e8f0; padding: 8px;">Enfidha-Hammamet (NBE)</option>
+          <option value="Sfax-Thyna (SFA)" style="background: #1e293b; color: #e2e8f0; padding: 8px;">Sfax-Thyna (SFA)</option>
+          <option value="Tozeur-Nefta (TOE)" style="background: #1e293b; color: #e2e8f0; padding: 8px;">Tozeur-Nefta (TOE)</option>
+          <option value="Tabarka-Aïn Draham (TBJ)" style="background: #1e293b; color: #e2e8f0; padding: 8px;">Tabarka-Aïn Draham (TBJ)</option>
+          <option value="Gafsa-Ksar (GAF)" style="background: #1e293b; color: #e2e8f0; padding: 8px;">Gafsa-Ksar (GAF)</option>
+          <option value="Gabès-Matmata (GAE)" style="background: #1e293b; color: #e2e8f0; padding: 8px;">Gabès-Matmata (GAE)</option>
+        </select>
+        <div class="modal-actions">
+          <button class="btn btn-secondary" id="closeModalSecondary">Cancel</button>
+          <button class="btn btn-primary" id="saveModalProfile">Save</button>
+        </div>
+        <div id="modalProfileMsg" style="margin-top:8px; color:#cfe2ff;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Change Password Modal -->
+  <div class="modal-backdrop" id="changePwdModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 style="margin:0;">Change Password</h3>
+        <button class="close-btn" id="closeChangePwdModal">Close</button>
+      </div>
+      <div class="modal-body">
+        <label>Old Password</label>
+        <input id="oldPwd" type="password" placeholder="********">
+        <label>New Password</label>
+        <input id="newPwd" type="password" placeholder="********">
+        <div class="modal-actions">
+          <button class="btn btn-secondary" id="cancelChangePwd">Cancel</button>
+          <button class="btn btn-primary" id="saveChangePwd">Change Password</button>
+        </div>
+        <div id="changePwdMsg" style="margin-top:8px; color:#cfe2ff;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Shared Header Component -->
+  <script src="/header.js"></script>
+
+  <script>
+    // Profile Modal handlers
+    const modal = document.getElementById('profileModal');
+    const closeModalBtn = document.getElementById('closeProfileModal');
+    const closeModalSecondary = document.getElementById('closeModalSecondary');
+    
+    // Listen for custom events from header.js
+    window.addEventListener('openProfileModal', openProfileModal);
+    window.addEventListener('openChangePwdModal', openChangePwdModal);
+    
+    function openProfileModal() {
+      if (!modal) return;
+      modal.classList.add('active');
+      fetch('/api/profile', { credentials: 'include' })
+        .then(r => r.ok ? r.json() : null)
+        .then(p => {
+          if (!p) return;
+          const emailEl = document.getElementById('modalProfileEmail');
+          const nameEl = document.getElementById('modalProfileName');
+          const userEl = document.getElementById('modalUsername');
+          const cinEl = document.getElementById('modalCIN');
+          const airportEl = document.getElementById('modalAirport');
+          const avatarPrev = document.getElementById('modalAvatarPreview');
+          if (emailEl) emailEl.value = p.email || '';
+          if (nameEl) nameEl.value = p.name || '';
+          if (userEl) userEl.value = p.username || '';
+          if (cinEl) cinEl.value = p.cin || '';
+          if (airportEl) airportEl.value = p.airport || '';
+          if (avatarPrev && p.avatar_url) avatarPrev.src = p.avatar_url;
+          const msg = document.getElementById('modalProfileMsg'); if (msg) msg.textContent = '';
+        }).catch(()=>{});
+    }
+    function closeProfileModal(){ if (modal) modal.classList.remove('active'); }
+    if (closeModalBtn) closeModalBtn.addEventListener('click', closeProfileModal);
+    if (closeModalSecondary) closeModalSecondary.addEventListener('click', closeProfileModal);
+    if (modal) modal.addEventListener('click', (e)=>{ if (e.target === modal) closeProfileModal(); });
+    const saveModalBtn = document.getElementById('saveModalProfile');
+    if (saveModalBtn) saveModalBtn.addEventListener('click', async ()=>{
+      const name = (document.getElementById('modalProfileName')||{}).value || '';
+      const username = (document.getElementById('modalUsername')||{}).value || '';
+      const cin = (document.getElementById('modalCIN')||{}).value || '';
+      const airport = (document.getElementById('modalAirport')||{}).value || '';
+      const msg = document.getElementById('modalProfileMsg'); if (msg) msg.textContent = '';
+      if (cin && (!/^\d{8}$/.test(cin))) { if (msg) msg.textContent='CIN must be exactly 8 digits.'; return; }
+      try {
+        const res = await fetch('/api/profile', { method:'PUT', headers:{'Content-Type':'application/json'}, credentials:'include', body: JSON.stringify({ name: name || undefined, username: username || undefined, cin: cin || undefined, airport: airport || undefined }) });
+        const data = await res.json();
+        if (!res.ok) { if (msg) msg.textContent = data.error || 'Failed'; }
+        else { if (msg) msg.textContent = 'Profile updated.'; setTimeout(closeProfileModal, 900); }
+      } catch (e) { if (msg) msg.textContent = String(e); }
+    });
+
+    // Avatar upload - auto-upload when file is selected
+    const avatarFileInput = document.getElementById('modalAvatarFile');
+    if (avatarFileInput) {
+      avatarFileInput.addEventListener('change', async (e)=>{
+        const info = document.getElementById('avatarUploadMsg');
+        if (info) info.textContent='Uploading...';
+        
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        // Preview image immediately
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          const avatarPrev = document.getElementById('modalAvatarPreview');
+          if (avatarPrev) avatarPrev.src = ev.target.result;
+        };
+        reader.readAsDataURL(file);
+        
+        // Upload to server
+        const fd = new FormData();
+        fd.append('file', file);
+        try {
+          const r = await fetch('/api/profile/avatar', { method:'POST', body: fd, credentials:'include' });
+          const d = await r.json();
+          if (!r.ok) { 
+            if (info) info.textContent = '❌ ' + (d.error || 'Upload failed');
+            return;
+          }
+          const avatarPrev = document.getElementById('modalAvatarPreview');
+          if (avatarPrev && d.avatar_url) avatarPrev.src = d.avatar_url;
+          
+          // Also update the header avatar button if it exists
+          const avatarBtn = document.getElementById('avatarBtn');
+          if (avatarBtn && d.avatar_url) {
+            avatarBtn.style.backgroundImage = `url('${d.avatar_url}')`;
+            avatarBtn.style.backgroundSize = 'cover';
+            avatarBtn.style.backgroundPosition = 'center';
+            avatarBtn.textContent = '';
+          }
+          
+          if (info) info.textContent = '✅ Photo uploaded successfully!';
+          setTimeout(() => { if (info) info.textContent = ''; }, 3000);
+        } catch(e) { 
+          if (info) info.textContent = '❌ ' + String(e);
+        }
+      });
+    }
+
+    // Change password modal handlers
+    const changePwdModal = document.getElementById('changePwdModal');
+    const closeChangePwdModalBtn = document.getElementById('closeChangePwdModal');
+    const cancelChangePwd = document.getElementById('cancelChangePwd');
+    function openChangePwdModal(){ if (changePwdModal) { const msg = document.getElementById('changePwdMsg'); if (msg) msg.textContent=''; (document.getElementById('oldPwd')||{}).value=''; (document.getElementById('newPwd')||{}).value=''; changePwdModal.classList.add('active'); } }
+    function closeChangePwd(){ if (changePwdModal) changePwdModal.classList.remove('active'); }
+    if (closeChangePwdModalBtn) closeChangePwdModalBtn.addEventListener('click', closeChangePwd);
+    if (cancelChangePwd) cancelChangePwd.addEventListener('click', closeChangePwd);
+    if (changePwdModal) changePwdModal.addEventListener('click', (e)=>{ if (e.target === changePwdModal) closeChangePwd(); });
+    const saveChangePwdBtn = document.getElementById('saveChangePwd');
+    if (saveChangePwdBtn) saveChangePwdBtn.addEventListener('click', async ()=>{
+      const old_password = (document.getElementById('oldPwd')||{}).value || '';
+      const new_password = (document.getElementById('newPwd')||{}).value || '';
+      const msg = document.getElementById('changePwdMsg'); if (msg) msg.textContent='';
+      if (!old_password || !new_password) { if (msg) msg.textContent = 'Both fields are required.'; return; }
+      try {
+        const r = await fetch('/api/profile/reset_password', { method:'POST', headers:{'Content-Type':'application/json'}, credentials:'include', body: JSON.stringify({ old_password, new_password }) });
+        const d = await r.json();
+        if (!r.ok) { if (msg) msg.textContent = d.error || 'Failed'; return; }
+        if (msg) msg.textContent = 'Password changed.'; setTimeout(closeChangePwd, 900);
+      } catch(e){ if (msg) msg.textContent = String(e); }
+    });
+  </script>
+</body>
+</html>

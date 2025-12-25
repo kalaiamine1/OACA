@@ -3,25 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>OACA Tunisia - Aviation Administration</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <title>Client Dashboard - OACA</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="/oaca.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/oaca.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/oaca.png">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
   <style>
-    :root {
-      --primary-blue: #1e40af;
-      --secondary-blue: #3b82f6;
-      --accent-blue: #60a5fa;
-      --neutral-50: #f8fafc;
-      --neutral-100: #f1f5f9;
-      --neutral-200: #e2e8f0;
-      --neutral-300: #cbd5e1;
-      --neutral-400: #94a3b8;
-      --neutral-500: #64748b;
-      --neutral-600: #475569;
-      --neutral-700: #334155;
-      --neutral-800: #1e293b;
-      --neutral-900: #0f172a;
-    }
-
     * {
       margin: 0;
       padding: 0;
@@ -29,73 +17,46 @@
     }
 
     body {
-      font-family: 'Inter', system-ui, -apple-system, sans-serif;
-      background: radial-gradient(1200px 800px at 20% 30%, #13306b 0%, #0d1f4a 60%, #091735 100%),
-                  linear-gradient(135deg, #0b1d44 0%, #0a1a3d 100%);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: #f8fafc;
+      color: #1e293b;
+      line-height: 1.6;
+    }
+
+    .dashboard-container {
       min-height: 100vh;
-      color: white;
-      overflow-x: hidden;
-    }
-
-    body::before {
-      content: '';
-      position: absolute;
-      inset: -50% -50% -50% -50%;
-      background-image: 
-        radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.12) 0%, transparent 55%),
-        radial-gradient(circle at 80% 20%, rgba(30, 64, 175, 0.10) 0%, transparent 55%);
-      animation: float 20s ease-in-out infinite;
-      z-index: 0;
-      pointer-events: none;
-    }
-
-    @keyframes float {
-      0%, 100% { transform: translateY(0px) rotate(0deg); }
-      50% { transform: translateY(-20px) rotate(1deg); }
+      padding: 0;
     }
 
     /* Header */
-    .header {
-      position: relative;
-      z-index: 100;
-      padding: 20px 0;
-      background: rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(20px);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .nav-container {
-      max-width: 1280px;
-      margin: 0 auto;
-      padding: 0 24px;
+    .dashboard-header {
+      background: white;
+      padding: 20px 40px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
       display: flex;
-      align-items: center;
       justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
 
     .logo {
       display: flex;
       align-items: center;
       gap: 12px;
+      font-size: 24px;
+      font-weight: 700;
+      color: #1e293b;
       text-decoration: none;
     }
 
-    .logo-icon {
-      width: 48px;
-      height: 48px;
-      background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 24px;
-    }
-
-    .logo-text {
-      font-size: 24px;
-      font-weight: 800;
-      color: white;
-      letter-spacing: -0.025em;
+    .logo i {
+      font-size: 28px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
 
     .nav-links {
@@ -104,221 +65,342 @@
       align-items: center;
     }
 
-    .nav-link {
-      color: rgba(255, 255, 255, 0.9);
+    .nav-links a {
+      color: #64748b;
       text-decoration: none;
       font-weight: 500;
-      font-size: 15px;
-      transition: color 0.2s;
+      transition: color 0.3s;
     }
 
-    .nav-link:hover {
-      color: var(--accent-blue);
+    .nav-links a:hover {
+      color: #667eea;
     }
 
-    .auth-buttons {
+    .nav-links a.active {
+      color: #667eea;
+    }
+
+    .user-actions {
       display: flex;
-      gap: 12px;
+      gap: 16px;
+      align-items: center;
     }
 
-    .btn {
-      padding: 10px 24px;
-      border-radius: 10px;
-      font-weight: 600;
-      font-size: 14px;
+    .btn-outline {
+      padding: 8px 20px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      background: white;
+      color: #64748b;
       text-decoration: none;
-      transition: all 0.2s;
+      font-weight: 500;
+      transition: all 0.3s;
       cursor: pointer;
-      border: none;
-      font-family: inherit;
     }
 
-    .btn-secondary {
-      background: rgba(255, 255, 255, 0.15);
-      color: white;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-
-    .btn-secondary:hover {
-      background: rgba(255, 255, 255, 0.25);
+    .btn-outline:hover {
+      border-color: #667eea;
+      color: #667eea;
     }
 
     .btn-primary {
-      background: linear-gradient(135deg, #274bcc, #3b82f6);
+      padding: 8px 20px;
+      border: none;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s;
+      cursor: pointer;
     }
 
     .btn-primary:hover {
       transform: translateY(-2px);
-      box-shadow: 0 10px 25px -5px rgba(30, 64, 175, 0.5);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
     }
 
     /* Hero Section */
-    .hero {
-      position: relative;
-      z-index: 1;
-      max-width: 1280px;
+    .hero-section {
+      padding: 80px 40px;
+      max-width: 1400px;
       margin: 0 auto;
-      padding: 80px 24px 60px;
-      display: flex;
-      align-items: center;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
       gap: 60px;
+      align-items: center;
     }
 
-    .hero-content {
-      flex: 1;
-    }
-
-    .hero-badge {
-      display: inline-block;
-      padding: 8px 16px;
-      background: rgba(96, 165, 250, 0.2);
-      border: 1px solid rgba(96, 165, 250, 0.3);
-      border-radius: 20px;
-      color: var(--accent-blue);
-      font-size: 14px;
-      font-weight: 600;
-      margin-bottom: 24px;
-    }
-
-    .hero-title {
+    .hero-content h1 {
       font-size: 56px;
       font-weight: 800;
       line-height: 1.1;
+      color: #1e293b;
       margin-bottom: 24px;
-      background: linear-gradient(135deg, #ffffff 0%, #bfdbfe 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
     }
 
-    .hero-description {
-      font-size: 20px;
-      line-height: 1.6;
-      color: rgba(255, 255, 255, 0.8);
+    .hero-content p {
+      font-size: 18px;
+      color: #64748b;
       margin-bottom: 32px;
-      max-width: 540px;
+      line-height: 1.7;
     }
 
-    .hero-search {
-      display: flex;
+    .cta-button {
+      display: inline-flex;
+      align-items: center;
       gap: 12px;
-      background: rgba(255, 255, 255, 0.18);
-      backdrop-filter: blur(28px);
-      padding: 8px;
-      border-radius: 16px;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      max-width: 600px;
-    }
-
-    .search-input {
-      flex: 1;
-      padding: 14px 20px;
-      background: transparent;
-      border: none;
-      color: white;
-      font-size: 16px;
-      outline: none;
-    }
-
-    .search-input::placeholder {
-      color: rgba(255, 255, 255, 0.5);
-    }
-
-    .search-btn {
-      padding: 14px 32px;
-      background: linear-gradient(135deg, #274bcc, #3b82f6);
+      padding: 16px 32px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
       border: none;
       border-radius: 12px;
-      font-weight: 600;
       font-size: 16px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.3s;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
       cursor: pointer;
-      transition: all 0.2s;
     }
 
-    .search-btn:hover {
+    .cta-button:hover {
       transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(30, 64, 175, 0.4);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
     }
 
-    .hero-image {
-      flex: 1;
-      position: relative;
+    .social-proof {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-top: 40px;
+    }
+
+    .avatars {
+      display: flex;
+      margin-right: 8px;
+    }
+
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 2px solid white;
+      margin-left: -12px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       display: flex;
       align-items: center;
       justify-content: center;
+      color: white;
+      font-weight: 600;
     }
 
-    .airplane-illustration {
-      width: 100%;
-      max-width: 500px;
-      animation: floatPlane 6s ease-in-out infinite;
-      filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.3));
+    .avatar:first-child {
+      margin-left: 0;
     }
 
-    @keyframes floatPlane {
-      0%, 100% { transform: translateY(0px) rotate(-5deg); }
-      50% { transform: translateY(-20px) rotate(-3deg); }
+    .stats-text {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
     }
 
-    /* Stats Section */
-    .stats {
-      position: relative;
-      z-index: 1;
-      max-width: 1280px;
-      margin: 0 auto;
-      padding: 40px 24px;
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 24px;
-    }
-
-    .stat-card {
-      background: rgba(255, 255, 255, 0.12);
-      backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 16px;
-      padding: 32px 24px;
-      text-align: center;
-    }
-
-    .stat-number {
-      font-size: 40px;
-      font-weight: 800;
-      color: var(--accent-blue);
-      margin-bottom: 8px;
-    }
-
-    .stat-label {
+    .stats-text strong {
+      color: #1e293b;
       font-size: 14px;
-      color: rgba(255, 255, 255, 0.7);
-      font-weight: 500;
     }
 
-    /* Categories Section */
-    .categories {
+    .stats-text span {
+      color: #64748b;
+      font-size: 12px;
+    }
+
+    /* Widgets Grid */
+    .widgets-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
       position: relative;
-      z-index: 1;
-      max-width: 1280px;
-      margin: 60px auto;
-      padding: 0 24px;
+    }
+
+    .widget-card {
+      background: white;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .widget-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    }
+
+    .widget-card.reach {
+      background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+    }
+
+    .widget-card.income {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .widget-card.impact {
+      background: white;
+    }
+
+    .widget-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .widget-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #64748b;
+    }
+
+    .widget-card.income .widget-title {
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .widget-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: rgba(102, 126, 234, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #667eea;
+    }
+
+    .widget-card.income .widget-icon {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+    }
+
+    .widget-value {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: #1e293b;
+    }
+
+    .widget-card.income .widget-value {
+      color: white;
+    }
+
+    .widget-subtitle {
+      font-size: 14px;
+      color: #64748b;
+      margin-bottom: 16px;
+    }
+
+    .widget-card.income .widget-subtitle {
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .widget-chart {
+      height: 80px;
+      margin-top: 16px;
+      position: relative;
+    }
+
+    .chart-bars {
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      height: 100%;
+    }
+
+    .chart-bar {
+      flex: 1;
+      background: rgba(102, 126, 234, 0.2);
+      border-radius: 4px 4px 0 0;
+      transition: all 0.3s;
+    }
+
+    .chart-bar.active {
+      background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .widget-card.income .chart-bar {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .widget-card.income .chart-bar.active {
+      background: rgba(255, 255, 255, 0.6);
+    }
+
+    .chart-labels {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 8px;
+      font-size: 11px;
+      color: #94a3b8;
+    }
+
+    .widget-card.income .chart-labels {
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .widget-metrics {
+      display: flex;
+      gap: 16px;
+      margin-top: 16px;
+      font-size: 12px;
+    }
+
+    .metric {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .metric-value {
+      font-weight: 700;
+      color: #1e293b;
+      font-size: 14px;
+    }
+
+    .widget-card.income .metric-value {
+      color: white;
+    }
+
+    .metric-label {
+      color: #94a3b8;
+      font-size: 11px;
+    }
+
+    .widget-card.income .metric-label {
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    /* Recent Requests Section */
+    .recent-section {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 40px 80px;
     }
 
     .section-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 32px;
+      margin-bottom: 24px;
     }
 
     .section-title {
-      font-size: 32px;
+      font-size: 28px;
       font-weight: 700;
+      color: #1e293b;
     }
 
-    .view-all {
-      color: var(--accent-blue);
+    .view-all-link {
+      color: #667eea;
       text-decoration: none;
       font-weight: 600;
       display: flex;
@@ -326,517 +408,535 @@
       gap: 8px;
     }
 
-    .category-grid {
+    .requests-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 24px;
     }
 
-    .category-card {
-      background: rgba(255, 255, 255, 0.12);
-      backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.15);
+    .request-card {
+      background: white;
       border-radius: 16px;
-      padding: 32px 24px;
-      cursor: pointer;
+      padding: 24px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
       transition: all 0.3s;
-      text-decoration: none;
-      color: white;
+      border: 1px solid #e2e8f0;
     }
 
-    .category-card:hover {
+    .request-card:hover {
       transform: translateY(-4px);
-      background: rgba(255, 255, 255, 0.18);
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+      border-color: #667eea;
     }
 
-    .category-icon {
-      width: 56px;
-      height: 56px;
-      background: linear-gradient(135deg, rgba(59, 130, 246, 0.3), rgba(30, 64, 175, 0.3));
-      border-radius: 12px;
+    .request-header {
       display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 28px;
+      justify-content: space-between;
+      align-items: start;
       margin-bottom: 16px;
     }
 
-    .category-card.featured .category-icon {
-      background: linear-gradient(135deg, var(--secondary-blue), var(--primary-blue));
-    }
-
-    .category-name {
+    .request-destination {
       font-size: 18px;
+      font-weight: 700;
+      color: #1e293b;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .request-destination i {
+      color: #667eea;
+    }
+
+    .request-status {
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 11px;
       font-weight: 600;
-      margin-bottom: 8px;
+      text-transform: uppercase;
     }
 
-    .category-count {
+    .request-status.pending {
+      background: #fef3c7;
+      color: #d97706;
+    }
+
+    .request-status.completed {
+      background: #d1fae5;
+      color: #059669;
+    }
+
+    .request-status.terminated {
+      background: #fee2e2;
+      color: #dc2626;
+    }
+
+    .request-status.passed {
+      background: #d1fae5;
+      color: #059669;
+    }
+
+    .request-status.failed {
+      background: #fee2e2;
+      color: #dc2626;
+    }
+
+    .request-details {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .request-detail {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #64748b;
       font-size: 14px;
-      color: rgba(255, 255, 255, 0.6);
     }
 
-    /* Footer */
-    .footer {
-      position: relative;
-      z-index: 1;
-      margin-top: 80px;
-      padding: 40px 24px;
-      background: rgba(255, 255, 255, 0.05);
-      backdrop-filter: blur(20px);
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
-      text-align: center;
+    .request-detail i {
+      color: #94a3b8;
     }
 
-    .footer-text {
-      color: rgba(255, 255, 255, 0.6);
-      font-size: 14px;
-    }
-
-    /* Decorative airplanes */
-    .bg-airplane {
-      position: absolute;
-      opacity: 0.08;
-      color: #bcd3ff;
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    /* Mobile responsive */
-    @media (max-width: 768px) {
-      .nav-links { display: none; }
-      .hero {
-        flex-direction: column;
-        padding: 40px 24px;
+    @media (max-width: 1024px) {
+      .hero-section {
+        grid-template-columns: 1fr;
+        gap: 40px;
       }
-      .hero-title { font-size: 36px; }
-      .hero-description { font-size: 16px; }
-      .hero-search { flex-direction: column; }
-      .stats { grid-template-columns: repeat(2, 1fr); }
-      .category-grid { grid-template-columns: 1fr; }
+
+      .widgets-grid {
+        grid-template-columns: 1fr;
+      }
     }
-  </style>
-  <style>
-    /* Avatar dropdown and modal styles */
-    .avatar-btn { width: 40px; height: 40px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.6); display:inline-flex; align-items:center; justify-content:center; background: linear-gradient(135deg, #60a5fa, #3b82f6); color:#fff; font-weight:800; cursor:pointer; }
-    .avatar-wrap { position: relative; display:inline-block; }
-    .avatar-menu { position:absolute; right:0; top:46px; background: rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.18); border-radius:10px; padding:8px; display:none; flex-direction:column; min-width: 180px; z-index:150; }
-    .avatar-menu button { background: transparent; border:none; color:#fff; text-align:left; padding:8px 10px; border-radius:6px; cursor:pointer; }
-    .avatar-menu button:hover { background: rgba(255,255,255,0.1); }
-    /* Inbox (notifications) */
-    .inbox-wrap { position: relative; display:inline-block; margin-right: 8px; }
-    .inbox-btn { width: 40px; height: 40px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.6); display:inline-flex; align-items:center; justify-content:center; background: linear-gradient(135deg, #93c5fd, #60a5fa); color:#0b1d44; font-weight:900; cursor:pointer; }
-    .inbox-list { position:absolute; right:0; top:46px; background: rgba(11,29,68,0.95); border:1px solid rgba(255,255,255,0.18); border-radius:12px; padding:8px; display:none; flex-direction:column; min-width: 320px; z-index:150; max-height: 360px; overflow:auto; box-shadow: 0 20px 40px rgba(0,0,0,.35); }
-    .inbox-header { display:flex; align-items:center; justify-content:space-between; padding:8px 10px; border-bottom:1px solid rgba(255,255,255,.12); margin-bottom:6px; }
-    .inbox-title { font-weight:800; font-size:14px; color:#eaf2ff; }
-    .inbox-item { padding:10px 12px; border-radius:10px; background: rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); margin-bottom:6px; }
-    .inbox-item.unread { background: rgba(96,165,250,0.10); border-color: rgba(96,165,250,0.25); }
-    .inbox-item .title { font-weight: 700; margin-bottom: 4px; color:#eaf2ff; }
-    .inbox-item .message { color:#cfe2ff; font-size: 13px; margin-bottom: 4px; }
-    .inbox-item .time { opacity: .75; font-size: 12px; color:#b7c6e6; }
-    .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.55); display: none; align-items:center; justify-content:center; z-index: 200; }
-    .modal-backdrop.active { display: flex; }
-    .modal-card { width: 100%; max-width: 560px; background: rgba(255,255,255,0.12); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.18); border-radius: 16px; padding: 20px; color: #eaf2ff; }
-    .modal-header { display:flex; justify-content: space-between; align-items:center; margin-bottom: 8px; }
-    .close-btn { background: transparent; border: 1px solid rgba(255,255,255,0.3); color:#fff; border-radius: 8px; padding: 6px 10px; cursor:pointer; }
-    .modal-body label { display:block; margin: 10px 0 6px; font-weight: 600; }
-    .modal-body input { width: 100%; padding: 12px 14px; border-radius: 10px; border:1px solid rgba(255,255,255,0.25); background: rgba(255,255,255,0.12); color:#fff; }
-    .modal-actions { display:flex; gap: 8px; justify-content: flex-end; margin-top: 14px; }
+
+    @media (max-width: 768px) {
+      .dashboard-header {
+        padding: 16px 20px;
+        flex-wrap: wrap;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .hero-section {
+        padding: 40px 20px;
+      }
+
+      .hero-content h1 {
+        font-size: 36px;
+      }
+
+      .recent-section {
+        padding: 0 20px 40px;
+      }
+
+      .requests-grid {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
 <body>
-  <span class="bg-airplane" style="left: 6%; top: 14%; font-size: 72px; transform: rotate(-20deg);">✈</span>
-  <span class="bg-airplane" style="left: 86%; top: 18%; font-size: 64px; transform: rotate(15deg);">✈</span>
-  <span class="bg-airplane" style="left: 10%; top: 78%; font-size: 68px; transform: rotate(8deg);">✈</span>
-  <span class="bg-airplane" style="left: 70%; top: 75%; font-size: 80px; transform: rotate(-35deg);">✈</span>
-
-    
-  <header class="header">
-    <nav class="nav-container">
+  <div class="dashboard-container">
+    <!-- Header -->
+    <div class="dashboard-header">
       <a href="/home" class="logo">
-        <div class="logo-icon">✈</div>
-        <span class="logo-text">OACA</span>
+        <i class="bi bi-airplane"></i>
+        <span>OACA</span>
       </a>
-      <div class="nav-links" id="mainNavLinks">
-        <a href="#" class="nav-link">Find Jobs</a>
-        <a href="#" class="nav-link">Browse Companies</a>
-        <a href="#" class="nav-link">Post a Job</a>
+      <div class="nav-links">
+        <a href="/home" class="active">Dashboard</a>
+        <a href="/testhistory">Test History</a>
+        <a href="/quiz_guide.html">Quiz Guide</a>
+    </div>
+      <div class="user-actions" id="userActions">
+        <a href="/quiz_guide.html" class="btn-primary" id="newQuizBtn" style="display: none;">
+          <i class="bi bi-plus-circle me-1"></i>Start Quiz
+        </a>
+        <a href="/login.html" class="btn-primary" id="loginBtn">
+          <i class="bi bi-box-arrow-in-right me-1"></i>Login
+        </a>
+        <button class="btn-outline" id="logoutBtn" onclick="logout()" style="display: none;">Logout</button>
+    </div>
+    </div>
+
+    <!-- Hero Section -->
+    <div class="hero-section">
+      <div class="hero-content">
+        <h1>Assessment of Air Traffic Controllers Competency</h1>
+        <p>We will help you manage your quiz assignments and test results easily. Follow the instructions and you can manage all your aviation testing needs here.</p>
+        <a href="/quiz_guide.html" class="cta-button" id="ctaButton" style="display: none;">
+          Start Quiz
+          <i class="bi bi-arrow-right"></i>
+        </a>
+        <div class="social-proof">
+          <div class="avatars">
+            <div class="avatar" id="userAvatar">U</div>
+            <div class="avatar">+</div>
+    </div>
+          <div class="stats-text">
+            <strong id="activeAssignmentsText">0 Active Assignments</strong>
+            <span id="completedTestsText">0 Completed Tests</span>
+    </div>
+    </div>
+    </div>
+
+      <div class="widgets-grid">
+        <!-- Active Assignments Widget -->
+        <div class="widget-card reach">
+          <div class="widget-header">
+            <div>
+              <div class="widget-title">Active Assignments</div>
+              <div class="widget-value" id="activeAssignmentsCount">0</div>
+    </div>
+            <div class="widget-icon">
+              <i class="bi bi-file-earmark-text"></i>
       </div>
-      <div class="auth-buttons" id="authArea" style="visibility:hidden"></div>
-    </nav>
-  </header>
-
-  <section class="hero">
-    <div class="hero-content">
-      <span class="hero-badge">🇹🇳 Tunisia Aviation Authority</span>
-      <h1 class="hero-title">Find Your Dream Aviation Career</h1>
-      <p class="hero-description">
-        Join Tunisia's leading aviation platform. Connect with top airlines, airports, and aviation companies across the country.
-      </p>
-      <div class="hero-search">
-        <input type="text" class="search-input" placeholder="Job title, keyword, or company...">
-        <button class="search-btn">Search Jobs</button>
       </div>
-    </div>
-    <div class="hero-image">
-      <svg class="airplane-illustration" viewBox="0 0 500 300" fill="none" xmlns="http://www.w3.org/2000/svg">
-         Airplane illustration 
-        <g filter="url(#shadow)">
-           Fuselage 
-          <ellipse cx="250" cy="150" rx="180" ry="45" fill="url(#planeGradient)"/>
-          <path d="M70 150 Q70 120 100 120 L400 120 Q430 120 430 150 Q430 180 400 180 L100 180 Q70 180 70 150 Z" fill="url(#planeGradient2)"/>
-          
-           Wings 
-          <ellipse cx="250" cy="150" rx="240" ry="15" fill="url(#wingGradient)"/>
-          
-           Tail 
-          <path d="M410 150 L450 100 L460 100 L420 150 L460 200 L450 200 Z" fill="url(#tailGradient)"/>
-          
-           Windows 
-          <circle cx="150" cy="140" r="8" fill="rgba(147, 197, 253, 0.6)"/>
-          <circle cx="180" cy="140" r="8" fill="rgba(147, 197, 253, 0.6)"/>
-          <circle cx="210" cy="140" r="8" fill="rgba(147, 197, 253, 0.6)"/>
-          <circle cx="240" cy="140" r="8" fill="rgba(147, 197, 253, 0.6)"/>
-          <circle cx="270" cy="140" r="8" fill="rgba(147, 197, 253, 0.6)"/>
-          <circle cx="300" cy="140" r="8" fill="rgba(147, 197, 253, 0.6)"/>
-          <circle cx="330" cy="140" r="8" fill="rgba(147, 197, 253, 0.6)"/>
-          
-           Engine highlights 
-          <ellipse cx="200" cy="165" rx="25" ry="18" fill="url(#engineGradient)"/>
-          <ellipse cx="300" cy="165" rx="25" ry="18" fill="url(#engineGradient)"/>
-        </g>
-        
-        <defs>
-          <linearGradient id="planeGradient" x1="70" y1="150" x2="430" y2="150">
-            <stop offset="0%" stop-color="#3b82f6"/>
-            <stop offset="100%" stop-color="#1e40af"/>
-          </linearGradient>
-          <linearGradient id="planeGradient2" x1="70" y1="120" x2="430" y2="180">
-            <stop offset="0%" stop-color="#60a5fa"/>
-            <stop offset="50%" stop-color="#3b82f6"/>
-            <stop offset="100%" stop-color="#2563eb"/>
-          </linearGradient>
-          <linearGradient id="wingGradient" x1="10" y1="150" x2="490" y2="150">
-            <stop offset="0%" stop-color="#1e40af" stop-opacity="0.8"/>
-            <stop offset="50%" stop-color="#3b82f6"/>
-            <stop offset="100%" stop-color="#1e40af" stop-opacity="0.8"/>
-          </linearGradient>
-          <linearGradient id="tailGradient" x1="410" y1="100" x2="460" y2="200">
-            <stop offset="0%" stop-color="#3b82f6"/>
-            <stop offset="100%" stop-color="#1e40af"/>
-          </linearGradient>
-          <linearGradient id="engineGradient" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#1e293b"/>
-            <stop offset="100%" stop-color="#0f172a"/>
-          </linearGradient>
-          <filter id="shadow">
-            <feDropShadow dx="0" dy="10" stdDeviation="15" flood-opacity="0.3"/>
-          </filter>
-        </defs>
-      </svg>
-    </div>
-  </section>
-
-  <section class="stats">
-    <div class="stat-card">
-      <div class="stat-number">2,500+</div>
-      <div class="stat-label">Active Jobs</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-number">150+</div>
-      <div class="stat-label">Companies</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-number">10K+</div>
-      <div class="stat-label">Candidates</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-number">95%</div>
-      <div class="stat-label">Success Rate</div>
-    </div>
-  </section>
-
-  <section class="categories">
-    <div class="section-header">
-      <h2 class="section-title">Explore by Category</h2>
-      <a href="#" class="view-all">View All →</a>
-    </div>
-    <div class="category-grid">
-      <a href="#" class="category-card">
-        <div class="category-icon">👨‍✈️</div>
-        <div class="category-name">Pilot</div>
-        <div class="category-count">157 Open Positions</div>
-      </a>
-      <a href="#" class="category-card featured">
-        <div class="category-icon">✈️</div>
-        <div class="category-name">Cabin Crew</div>
-        <div class="category-count">312 Open Positions</div>
-      </a>
-      <a href="#" class="category-card">
-        <div class="category-icon">🔧</div>
-        <div class="category-name">Technical & Engineering</div>
-        <div class="category-count">537 Open Positions</div>
-      </a>
-      <a href="#" class="category-card">
-        <div class="category-icon">🎯</div>
-        <div class="category-name">Ground Staff</div>
-        <div class="category-count">167 Open Positions</div>
-      </a>
-      <a href="#" class="category-card">
-        <div class="category-icon">💼</div>
-        <div class="category-name">Executive & Management</div>
-        <div class="category-count">121 Open Positions</div>
-      </a>
-      <a href="#" class="category-card">
-        <div class="category-icon">📚</div>
-        <div class="category-name">Instructors & Trainers</div>
-        <div class="category-count">57 Open Positions</div>
-      </a>
-    </div>
-  </section>
-
-    
-  <footer class="footer">
-    <p class="footer-text">© 2025 OACA Tunisia - Office de l'Aviation Civile et des Aéroports. All rights reserved.</p>
-  </footer>
-
-  <!-- Profile Modal -->
-  <div class="modal-backdrop" id="profileModal">
-    <div class="modal-card">
-      <div class="modal-header">
-        <h3 style="margin:0;">My Profile</h3>
-        <button class="close-btn" id="closeProfileModal">Close</button>
+          <div class="widget-chart">
+            <div class="chart-bars">
+              <div class="chart-bar" style="height: 60%;"></div>
+              <div class="chart-bar active" style="height: 80%;"></div>
+              <div class="chart-bar" style="height: 45%;"></div>
+              <div class="chart-bar" style="height: 70%;"></div>
+              <div class="chart-bar" style="height: 55%;"></div>
       </div>
-      <div class="modal-body">
-        <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;">
-          <img id="modalAvatarPreview" src="" alt="avatar" style="width:64px; height:64px; border-radius:50%; object-fit:cover; border:1px solid rgba(255,255,255,0.25); background:rgba(255,255,255,0.08);">
-          <div style="flex:1;">
-            <input id="modalAvatarFile" type="file" accept="image/*" style="background:transparent; border:none; color:#eaf2ff; width:100%;">
-            <div style="display:flex; gap:8px; margin-top:6px;">
-              <button class="btn btn-secondary" id="uploadAvatarBtn">Upload Photo</button>
-              <span id="avatarUploadMsg" style="align-self:center; font-size:13px; color:#cfe2ff;"></span>
-            </div>
+            <div class="chart-labels">
+              <span>Mon</span>
+              <span>Tue</span>
+              <span>Wed</span>
+              <span>Thu</span>
+              <span>Fri</span>
+      </div>
+      </div>
+      </div>
+
+        <!-- Completed Tests Widget -->
+        <div class="widget-card impact">
+          <div class="widget-header">
+      <div>
+              <div class="widget-title">Completed Tests</div>
+              <div class="widget-value" id="completedTestsCount">0</div>
+          </div>
+            <div class="widget-icon">
+              <i class="bi bi-calendar-check"></i>
+        </div>
+      </div>
+          <div style="margin-top: 20px;">
+            <div style="width: 100%; height: 120px; background: linear-gradient(135deg, #f59e0b 0%, #667eea 100%); border-radius: 12px; position: relative; display: flex; align-items: center; justify-content: center;">
+              <div style="position: absolute; width: 80px; height: 80px; border: 8px solid white; border-top-color: transparent; border-radius: 50%; transform: rotate(-45deg);"></div>
+              <div style="position: absolute; font-size: 24px; font-weight: 700; color: white;" id="successRateDisplay">0%</div>
           </div>
         </div>
-        <label>Display Name</label>
-        <input id="modalProfileName" type="text" placeholder="Your name">
-        <label>Username</label>
-        <input id="modalUsername" type="text" placeholder="username">
-        <label>CIN (8 digits)</label>
-        <input id="modalCIN" type="text" maxlength="8" placeholder="00000000">
-        <div class="modal-actions">
-          <button class="btn btn-secondary" id="closeModalSecondary">Cancel</button>
-          <button class="btn btn-primary" id="saveModalProfile">Save</button>
+      </div>
+
+        <!-- Performance Analysis Widget -->
+        <div class="widget-card income" style="grid-column: 1 / -1;">
+          <div class="widget-header">
+            <div>
+              <div class="widget-title">Performance Analysis</div>
+              <div class="widget-value" id="averageScore">0%</div>
+              <div class="widget-subtitle">Average score across all completed tests</div>
+      </div>
+            <div class="widget-icon">
+              <i class="bi bi-graph-up"></i>
+      </div>
         </div>
-        <div id="modalProfileMsg" style="margin-top:8px; color:#cfe2ff;"></div>
+          <div class="widget-chart">
+            <div class="chart-bars">
+              <div class="chart-bar" style="height: 40%;"></div>
+              <div class="chart-bar active" style="height: 70%;"></div>
+              <div class="chart-bar" style="height: 50%;"></div>
+              <div class="chart-bar" style="height: 60%;"></div>
+              <div class="chart-bar" style="height: 45%;"></div>
+      </div>
+            <div class="chart-labels">
+              <span>Jan</span>
+              <span>Feb</span>
+              <span>Mar</span>
+              <span>Apr</span>
+              <span>May</span>
+    </div>
+    </div>
+          <div class="widget-metrics">
+            <div class="metric">
+              <span class="metric-value" id="totalAssignments">0</span>
+              <span class="metric-label">Total Assignments</span>
+      </div>
+            <div class="metric">
+              <span class="metric-value" id="completedCount">0</span>
+              <span class="metric-label">Completed</span>
+          </div>
+            <div class="metric">
+              <span class="metric-value" id="successRateMetric">0%</span>
+              <span class="metric-label">Success Rate</span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Change Password Modal -->
-  <div class="modal-backdrop" id="changePwdModal">
-    <div class="modal-card">
-      <div class="modal-header">
-        <h3 style="margin:0;">Change Password</h3>
-        <button class="close-btn" id="closeChangePwdModal">Close</button>
+    <!-- Recent Tests Section -->
+    <div class="recent-section">
+      <div class="section-header">
+        <h2 class="section-title">Recent Tests</h2>
+        <a href="/testhistory" class="view-all-link">
+          View All
+          <i class="bi bi-arrow-right"></i>
+        </a>
       </div>
-      <div class="modal-body">
-        <label>Old Password</label>
-        <input id="oldPwd" type="password" placeholder="********">
-        <label>New Password</label>
-        <input id="newPwd" type="password" placeholder="********">
-        <div class="modal-actions">
-          <button class="btn btn-secondary" id="cancelChangePwd">Cancel</button>
-          <button class="btn btn-primary" id="saveChangePwd">Change Password</button>
+      <div class="requests-grid" id="recentTestsGrid">
+        <div style="text-align: center; padding: 48px; grid-column: 1 / -1; color: #64748b;">
+          <div style="font-size: 48px; margin-bottom: 16px;">⏳</div>
+          <div>Loading recent tests...</div>
         </div>
-        <div id="changePwdMsg" style="margin-top:8px; color:#cfe2ff;"></div>
       </div>
     </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    // Show avatar + Logout for authenticated users; otherwise show Login/Sign Up
-    (async () => {
+    // Check authentication and update UI accordingly (no redirect)
+    window.addEventListener('DOMContentLoaded', function() {
+      checkAuthAndUpdateUI();
+    });
+
+    async function checkAuthAndUpdateUI() {
       try {
         const res = await fetch('/api/me', { credentials: 'include' });
-        const auth = document.getElementById('authArea');
-        if (!auth) return;
-        if (res.ok) {
-          const me = await res.json();
-          const initials = (me.email || 'U').slice(0,1).toUpperCase();
-          // Inject Quiz link for candidates who have assignments
-          try {
-            const respAssign = await fetch('/api/my/assignments', { credentials:'include' });
-            if (respAssign.ok) {
-              const list = await respAssign.json();
-              const hasOpen = Array.isArray(list) && list.some(a => !a.finished_at);
-              if (hasOpen) {
-                const nav = document.getElementById('mainNavLinks');
-                if (nav && !nav.querySelector('#quizNavLink')) {
-                  const a = document.createElement('a');
-                  a.className = 'nav-link';
-                  a.id = 'quizNavLink';
-                  a.textContent = 'Quiz';
-                  a.href = '/quiz_guide.html';
-                  nav.appendChild(a);
-                }
-              }
-            }
-          } catch(_) {}
-          auth.innerHTML = `<div class=\"inbox-wrap\"><button class=\"inbox-btn\" id=\"inboxBtn\">🔔</button><div class=\"inbox-list\" id=\"inboxList\"></div></div><div class=\"avatar-wrap\"><button class=\"avatar-btn\" id=\"avatarBtn\">${initials}</button><div class=\"avatar-menu\" id=\"avatarMenu\"><button id=\"openProfile\">Profile</button><button id=\"resetPwd\">Reset Password</button><button id=\"logoutBtn\">Logout</button></div></div>`;
-          auth.style.visibility = 'visible';
-          const logoutBtn = document.getElementById('logoutBtn');
-          if (logoutBtn) logoutBtn.addEventListener('click', async ()=>{ try { await fetch('/api/logout',{method:'POST', credentials:'include'});} finally { window.location.href='/home'; }});
-          const avatarBtn = document.getElementById('avatarBtn');
-          const menu = document.getElementById('avatarMenu');
-          const avatarWrap = document.querySelector('.avatar-wrap');
-          if (avatarBtn && menu && avatarWrap) {
-            let hideTimer = null;
-            const showMenu = ()=>{ if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; } menu.style.display='flex'; };
-            const scheduleHide = ()=>{ if (hideTimer) clearTimeout(hideTimer); hideTimer = setTimeout(()=>{ menu.style.display='none'; }, 180); };
-            avatarWrap.addEventListener('mouseenter', showMenu);
-            avatarWrap.addEventListener('mouseleave', scheduleHide);
-            menu.addEventListener('mouseenter', showMenu);
-            menu.addEventListener('mouseleave', scheduleHide);
-          }
-          const openProfile = document.getElementById('openProfile');
-          if (openProfile) openProfile.addEventListener('click', openProfileModal);
-          const resetPwd = document.getElementById('resetPwd');
-          if (resetPwd) resetPwd.addEventListener('click', openChangePwdModal);
-          // Notifications inbox
-          const inboxBtn = document.getElementById('inboxBtn');
-          const inboxList = document.getElementById('inboxList');
-          if (inboxBtn && inboxList) {
-            inboxBtn.addEventListener('click', async (e)=>{
-              e.stopPropagation();
-              if (inboxList.style.display === 'flex') { inboxList.style.display='none'; return; }
-              try {
-                const resN = await fetch('/api/notifications', { credentials:'include' });
-                const rows = resN.ok ? await resN.json() : [];
-                const header = '<div class="inbox-header"><div class="inbox-title">Notifications</div></div>';
-                if (!rows.length) inboxList.innerHTML = header + '<div class="inbox-item"><div class="message">No notifications</div></div>';
-                else {
-                  inboxList.innerHTML = header + rows.map(n => {
-                    const clickable = (n.type === 'quiz_assignment' && n.assignment_id);
-                    const body = `<div class=\"inbox-item ${n.read? '' : 'unread'}\" ${clickable? `data-assignment-id=\\\"${n.assignment_id}\\\"` : ''}><div class=\"title\">${n.title||'Notification'}</div><div class=\"message\">${n.message||''}</div><div class=\"time\">${(n.created_at||'').toString()}</div></div>`;
-                    return body;
-                  }).join('');
-                  // Attach click handlers to quiz_assignment items
-                  Array.from(inboxList.querySelectorAll('.inbox-item[data-assignment-id]')).forEach(el => {
-                    el.addEventListener('click', () => {
-                      const id = el.getAttribute('data-assignment-id');
-                      if (id) window.location.href = `/quiz_guide.html?assignment_id=${encodeURIComponent(id)}`;
-                    });
-                  });
-                }
-                inboxList.style.display='flex';
-                await fetch('/api/notifications/read', { method:'POST', credentials:'include' });
-              } catch(_) { inboxList.innerHTML = '<div class="inbox-item">Failed to load</div>'; inboxList.style.display='flex'; }
-            });
-            document.addEventListener('click', ()=>{ inboxList.style.display='none'; });
-          }
-        } else {
-          auth.innerHTML = `<a href=\"/login\" class=\"btn btn-secondary\">Login</a><a href=\"/signup\" class=\"btn btn-primary\">Sign Up</a>`;
-          auth.style.visibility = 'visible';
+        if (!res.ok) {
+          // User not authenticated - show login button, hide logout
+          showLoginUI();
+          return;
         }
-      } catch (_) {}
-    })();
-    // Simple search functionality
-    document.querySelector('.search-btn').addEventListener('click', function() {
-      const searchInput = document.querySelector('.search-input');
-      if (searchInput.value.trim()) {
-        alert('Searching for: ' + searchInput.value);
-        // In production, this would redirect to search results page
+        const me = await res.json();
+        
+        // User authenticated - show logout button, hide login, update avatar
+        showAuthenticatedUI(me);
+        
+        // Load dashboard data
+        loadDashboardData();
+      } catch (e) {
+        console.error('Auth check failed:', e);
+        // On error, show login UI
+        showLoginUI();
       }
-    });
-
-    // Enter key support for search
-    document.querySelector('.search-input').addEventListener('keypress', function(e) {
-      if (e.key === 'Enter') {
-        document.querySelector('.search-btn').click();
-      }
-    });
-    // Profile Modal handlers
-    const modal = document.getElementById('profileModal');
-    const closeModalBtn = document.getElementById('closeProfileModal');
-    const closeModalSecondary = document.getElementById('closeModalSecondary');
-    function openProfileModal() {
-      if (!modal) return;
-      modal.classList.add('active');
-      fetch('/api/profile', { credentials: 'include' })
-        .then(r => r.ok ? r.json() : null)
-        .then(p => {
-          if (!p) return;
-          const nameEl = document.getElementById('modalProfileName');
-          const userEl = document.getElementById('modalUsername');
-          const cinEl = document.getElementById('modalCIN');
-          const avatarPrev = document.getElementById('modalAvatarPreview');
-          if (nameEl) nameEl.value = p.name || '';
-          if (userEl) userEl.value = p.username || '';
-          if (cinEl) cinEl.value = p.cin || '';
-          if (avatarPrev) avatarPrev.src = p.avatar_url || '';
-          const msg = document.getElementById('modalProfileMsg'); if (msg) msg.textContent = '';
-        }).catch(()=>{});
     }
-    function closeProfileModal(){ if (modal) modal.classList.remove('active'); }
-    if (closeModalBtn) closeModalBtn.addEventListener('click', closeProfileModal);
-    if (closeModalSecondary) closeModalSecondary.addEventListener('click', closeProfileModal);
-    if (modal) modal.addEventListener('click', (e)=>{ if (e.target === modal) closeProfileModal(); });
-    const saveModalBtn = document.getElementById('saveModalProfile');
-    if (saveModalBtn) saveModalBtn.addEventListener('click', async ()=>{
-      const name = (document.getElementById('modalProfileName')||{}).value || '';
-      const username = (document.getElementById('modalUsername')||{}).value || '';
-      const cin = (document.getElementById('modalCIN')||{}).value || '';
-      const msg = document.getElementById('modalProfileMsg'); if (msg) msg.textContent = '';
-      if (cin && (!/^\d{8}$/.test(cin))) { if (msg) msg.textContent='CIN must be exactly 8 digits.'; return; }
-      try {
-        const res = await fetch('/api/profile', { method:'PUT', headers:{'Content-Type':'application/json'}, credentials:'include', body: JSON.stringify({ name: name || undefined, username: username || undefined, cin: cin || undefined }) });
-        const data = await res.json();
-        if (!res.ok) { if (msg) msg.textContent = data.error || 'Failed'; }
-        else { if (msg) msg.textContent = 'Profile updated.'; setTimeout(closeProfileModal, 900); }
-      } catch (e) { if (msg) msg.textContent = String(e); }
-    });
 
-    // Avatar upload
-    const uploadAvatarBtn = document.getElementById('uploadAvatarBtn');
-    if (uploadAvatarBtn) uploadAvatarBtn.addEventListener('click', async ()=>{
-      const fInput = document.getElementById('modalAvatarFile');
-      const info = document.getElementById('avatarUploadMsg'); if (info) info.textContent='';
-      if (!fInput || !fInput.files || !fInput.files[0]) { if (info) info.textContent = 'Select an image first.'; return; }
-      const fd = new FormData();
-      fd.append('file', fInput.files[0]);
-      try {
-        const r = await fetch('/api/profile/avatar', { method:'POST', body: fd, credentials:'include' });
-        const d = await r.json();
-        if (!r.ok) { if (info) info.textContent = d.error || 'Upload failed'; return; }
-        const avatarPrev = document.getElementById('modalAvatarPreview'); if (avatarPrev) avatarPrev.src = d.avatar_url || '';
-        if (info) info.textContent = 'Uploaded.';
-      } catch(e) { if (info) info.textContent = String(e); }
-    });
+    function showLoginUI() {
+      // Show login button, hide logout and quiz buttons
+      const loginBtn = document.getElementById('loginBtn');
+      const logoutBtn = document.getElementById('logoutBtn');
+      const newQuizBtn = document.getElementById('newQuizBtn');
+      const ctaButton = document.getElementById('ctaButton');
+      
+      if (loginBtn) loginBtn.style.display = 'inline-flex';
+      if (logoutBtn) logoutBtn.style.display = 'none';
+      if (newQuizBtn) newQuizBtn.style.display = 'none';
+      if (ctaButton) ctaButton.style.display = 'none';
+      
+      // Show message in recent tests section
+      const grid = document.getElementById('recentTestsGrid');
+      if (grid) {
+        grid.innerHTML = `
+          <div class="request-card" style="grid-column: 1 / -1; text-align: center; padding: 48px;">
+            <i class="bi bi-box-arrow-in-right" style="font-size: 3rem; color: #cbd5e1; margin-bottom: 16px;"></i>
+            <p style="color: #64748b; margin-bottom: 16px;">Please login to view your test history</p>
+            <a href="/login.html" class="cta-button" style="display: inline-flex;">
+              Login
+              <i class="bi bi-arrow-right"></i>
+            </a>
+          </div>
+        `;
+      }
+    }
 
-    // Change password modal handlers
-    const changePwdModal = document.getElementById('changePwdModal');
-    const closeChangePwdModalBtn = document.getElementById('closeChangePwdModal');
-    const cancelChangePwd = document.getElementById('cancelChangePwd');
-    function openChangePwdModal(){ if (changePwdModal) { const msg = document.getElementById('changePwdMsg'); if (msg) msg.textContent=''; (document.getElementById('oldPwd')||{}).value=''; (document.getElementById('newPwd')||{}).value=''; changePwdModal.classList.add('active'); } }
-    function closeChangePwd(){ if (changePwdModal) changePwdModal.classList.remove('active'); }
-    if (closeChangePwdModalBtn) closeChangePwdModalBtn.addEventListener('click', closeChangePwd);
-    if (cancelChangePwd) cancelChangePwd.addEventListener('click', closeChangePwd);
-    if (changePwdModal) changePwdModal.addEventListener('click', (e)=>{ if (e.target === changePwdModal) closeChangePwd(); });
-    const saveChangePwdBtn = document.getElementById('saveChangePwd');
-    if (saveChangePwdBtn) saveChangePwdBtn.addEventListener('click', async ()=>{
-      const old_password = (document.getElementById('oldPwd')||{}).value || '';
-      const new_password = (document.getElementById('newPwd')||{}).value || '';
-      const msg = document.getElementById('changePwdMsg'); if (msg) msg.textContent='';
-      if (!old_password || !new_password) { if (msg) msg.textContent = 'Both fields are required.'; return; }
+    function showAuthenticatedUI(me) {
+      // Show logout button, hide login button
+      const loginBtn = document.getElementById('loginBtn');
+      const logoutBtn = document.getElementById('logoutBtn');
+      
+      if (loginBtn) loginBtn.style.display = 'none';
+      if (logoutBtn) logoutBtn.style.display = 'inline-block';
+      
+      // Update user avatar
+      const userAvatar = document.getElementById('userAvatar');
+      if (userAvatar && me.name) {
+        userAvatar.textContent = me.name.charAt(0).toUpperCase();
+      } else if (userAvatar && me.email) {
+        userAvatar.textContent = me.email.charAt(0).toUpperCase();
+      }
+    }
+
+    async function loadDashboardData() {
       try {
-        const r = await fetch('/api/profile/reset_password', { method:'POST', headers:{'Content-Type':'application/json'}, credentials:'include', body: JSON.stringify({ old_password, new_password }) });
-        const d = await r.json();
-        if (!r.ok) { if (msg) msg.textContent = d.error || 'Failed'; return; }
-        if (msg) msg.textContent = 'Password changed.'; setTimeout(closeChangePwd, 900);
-      } catch(e){ if (msg) msg.textContent = String(e); }
-    });
+        // Load assignments
+        const assignmentsRes = await fetch('/api/my/assignments', { credentials: 'include' });
+        let assignments = [];
+        if (assignmentsRes.ok) {
+          assignments = await assignmentsRes.json();
+        }
+
+        // Load test history
+        const historyRes = await fetch('/api/my/test-history', { credentials: 'include' });
+        let history = [];
+        if (historyRes.ok) {
+          history = await historyRes.json();
+        }
+
+        // Calculate stats
+        const activeAssignments = assignments.filter(a => !a.finished_at);
+        const completedTests = history.length;
+        const totalAssignments = assignments.length;
+        
+        // Calculate average score
+        let totalScore = 0;
+        let passedCount = 0;
+        history.forEach(test => {
+          if (test.percentage_score) {
+            totalScore += test.percentage_score;
+          }
+          if (test.passed) {
+            passedCount++;
+          }
+        });
+        const averageScore = completedTests > 0 ? Math.round(totalScore / completedTests) : 0;
+        const successRate = completedTests > 0 ? Math.round((passedCount / completedTests) * 100) : 0;
+
+        // Update UI
+        document.getElementById('activeAssignmentsCount').textContent = activeAssignments.length;
+        document.getElementById('completedTestsCount').textContent = completedTests;
+        document.getElementById('averageScore').textContent = averageScore + '%';
+        document.getElementById('successRateDisplay').textContent = successRate + '%';
+        document.getElementById('totalAssignments').textContent = totalAssignments;
+        document.getElementById('completedCount').textContent = completedTests;
+        document.getElementById('successRateMetric').textContent = '+' + successRate + '%';
+        
+        document.getElementById('activeAssignmentsText').textContent = activeAssignments.length + ' Active Assignments';
+        document.getElementById('completedTestsText').textContent = completedTests + ' Completed Tests';
+
+        // Show/hide CTA button based on active assignments
+        const ctaButton = document.getElementById('ctaButton');
+        const newQuizBtn = document.getElementById('newQuizBtn');
+        if (activeAssignments.length > 0) {
+          if (ctaButton) ctaButton.style.display = 'inline-flex';
+          if (newQuizBtn) newQuizBtn.style.display = 'inline-flex';
+        } else {
+          // Check if user has attempts remaining
+          try {
+            const attemptsRes = await fetch('/api/my/attempts', { credentials: 'include' });
+            if (attemptsRes.ok) {
+              const attempts = await attemptsRes.json();
+              const remaining = attempts.remaining_attempts !== undefined ? attempts.remaining_attempts : Math.max(0, 3 - (attempts.attempts_used || 0));
+              const hasPassed = attempts.passed === true;
+              
+              if (remaining > 0 && !hasPassed) {
+                if (ctaButton) ctaButton.style.display = 'inline-flex';
+                if (newQuizBtn) newQuizBtn.style.display = 'inline-flex';
+          }
+        }
+      } catch (e) {
+            console.error('Failed to check attempts:', e);
+          }
+        }
+
+        // Load recent tests
+        loadRecentTests(history.slice(0, 6));
+      } catch (e) {
+        console.error('Failed to load dashboard data:', e);
+      }
+    }
+
+    function loadRecentTests(tests) {
+      const grid = document.getElementById('recentTestsGrid');
+      if (!grid) return;
+
+      if (!tests || tests.length === 0) {
+        grid.innerHTML = `
+          <div class="request-card" style="grid-column: 1 / -1; text-align: center; padding: 48px;">
+            <i class="bi bi-inbox" style="font-size: 3rem; color: #cbd5e1; margin-bottom: 16px;"></i>
+            <p style="color: #64748b; margin-bottom: 16px;">No tests yet</p>
+            <a href="/quiz_guide.html" class="cta-button" style="display: inline-flex;">
+              Start Your First Quiz
+              <i class="bi bi-arrow-right"></i>
+            </a>
+            </div>
+          `;
+          return;
+        }
+
+      grid.innerHTML = '';
+      tests.forEach(test => {
+          const card = document.createElement('div');
+        card.className = 'request-card';
+        
+        // Determine status
+        let statusClass = 'pending';
+        let statusText = 'PENDING';
+        if (test.terminated) {
+          statusClass = 'terminated';
+          statusText = 'TERMINATED';
+        } else if (test.finished_at) {
+          if (test.passed) {
+            statusClass = 'passed';
+            statusText = 'PASSED';
+          } else {
+            statusClass = 'failed';
+            statusText = 'FAILED';
+          }
+        }
+
+        // Format dates
+        const createdDate = test.created_at ? new Date(test.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'N/A';
+        const finishedDate = test.finished_at ? new Date(test.finished_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'N/A';
+
+        card.innerHTML = `
+          <div class="request-header">
+            <div class="request-destination">
+              <i class="bi bi-file-earmark-text"></i>
+              Quiz Assignment
+              </div>
+            <span class="request-status ${statusClass}">
+              ${statusText}
+            </span>
+          </div>
+          <div class="request-details">
+            <div class="request-detail">
+              <i class="bi bi-calendar3"></i>
+              <span>Completed: ${finishedDate}</span>
+            </div>
+            ${test.percentage_score !== undefined ? `
+            <div class="request-detail">
+              <i class="bi bi-graph-up"></i>
+              <span>Score: ${test.percentage_score}% (${test.score || 0}/${test.total || 0})</span>
+            </div>
+            ` : ''}
+            <div class="request-detail">
+              <i class="bi bi-clock"></i>
+              <span>Created: ${createdDate}</span>
+            </div>
+          </div>
+        `;
+        
+        grid.appendChild(card);
+      });
+    }
+
+    function logout() {
+      fetch('/api/logout', { 
+        method: 'POST', 
+        credentials: 'include' 
+      }).then(() => {
+        // Refresh the page to show login button
+        window.location.reload();
+      }).catch(() => {
+        // Refresh the page even on error
+        window.location.reload();
+      });
+    }
   </script>
 </body>
 </html>

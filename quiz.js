@@ -63,6 +63,21 @@
         applyData(parsed);
         return;
       }
+
+      // Check remaining attempts first
+      const attemptsRes = await fetch('/api/my/attempts', { credentials: 'include' });
+      if (!attemptsRes.ok) throw new Error(`HTTP ${attemptsRes.status}`);
+      const attemptsData = await attemptsRes.json();
+      const remainingAttempts = 3 - (attemptsData.attempts_used || 0);
+      
+      if (remainingAttempts <= 0) {
+        setNotice(setupNotice, 'You have used all your attempts. No more attempts remaining.');
+        hide(startBtn);
+        return;
+      }
+
+      document.getElementById('attemptsInfo').textContent = `Remaining attempts: ${remainingAttempts}`;
+      
       // Fallback: fetch from file
       const res = await fetch('aviation_quiz_data.json', { cache: 'no-store' });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);

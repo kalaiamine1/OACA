@@ -37,6 +37,12 @@ SMTP_PASSWORD = os.environ.get("SMTP_PASSWORD", "")
 SMTP_FROM_EMAIL = os.environ.get("SMTP_FROM_EMAIL", "noreply@oaca.local")
 SMTP_FROM_NAME = os.environ.get("SMTP_FROM_NAME", "OACA Aviation System")
 
+# Debug: Print SMTP configuration on startup
+print(f"[CONFIG] SMTP_USERNAME loaded: {'SET' if SMTP_USERNAME else 'NOT SET'}")
+print(f"[CONFIG] SMTP_PASSWORD loaded: {'SET' if SMTP_PASSWORD else 'NOT SET'}")
+print(f"[CONFIG] SMTP_SERVER: {SMTP_SERVER}")
+print(f"[CONFIG] SMTP_PORT: {SMTP_PORT}")
+
 # --- Connexion MongoDB ---
 _mongo_client: Optional[MongoClient] = None
 
@@ -56,7 +62,7 @@ def ensure_default_user() -> None:
     """
     db = get_db()
     users = db[USERS_COLLECTION]
-    default_email = os.environ.get("DEFAULT_USER_EMAIL", "admin@oaca.local").lower()
+    default_email = os.environ.get("DEFAULT_USER_EMAIL", "kalaiamine203@gmail.com").lower()
     default_password = os.environ.get("DEFAULT_USER_PASSWORD", "ChangeMe123!")
     if users.find_one({"email": default_email}):
         return

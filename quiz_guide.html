@@ -6,12 +6,12 @@
     <title>Quiz Guide - OACA</title>
     <style>
         :root {
-            --bg1: #0b1d44;
-            --bg2: #0a1a3d;
-            --glass: rgba(255,255,255,0.08);
-            --glass-border: rgba(255,255,255,0.14);
-            --text: #e6eeff;
-            --muted: #9db0d9;
+            --bg1: #ffffff;
+            --bg2: #f8fafc;
+            --glass: #ffffff;
+            --glass-border: #e2e8f0;
+            --text: #1e293b;
+            --muted: #64748b;
             --accent: #3b82f6;
             --accent-2: #60a5fa;
             --success: #22c55e;
@@ -27,9 +27,7 @@
         
         body {
             color: var(--text);
-            background: radial-gradient(1200px 800px at 20% 30%, #13306b 0%, #0d1f4a 60%, #091735 100%),
-                        linear-gradient(135deg, var(--bg1) 0%, var(--bg2) 100%);
-            background-attachment: fixed;
+            background: #ffffff;
             font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
         }
 
@@ -42,11 +40,10 @@
 
         .guide-card {
             background: var(--glass);
-            backdrop-filter: blur(16px) saturate(140%);
             border: 1px solid var(--glass-border);
             border-radius: 20px;
             padding: 40px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
             margin-bottom: 24px;
         }
 
@@ -185,7 +182,8 @@
         }
 
         .monitoring-item {
-            background: rgba(0, 0, 0, 0.2);
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
             border-radius: 8px;
             padding: 16px;
             text-align: center;
@@ -214,8 +212,8 @@
         .btn {
             padding: 16px 32px;
             border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid #e2e8f0;
+            background: #ffffff;
             color: var(--text);
             cursor: pointer;
             text-decoration: none;
@@ -228,8 +226,8 @@
         }
 
         .btn:hover {
-            background: rgba(255, 255, 255, 0.12);
-            border-color: rgba(255, 255, 255, 0.25);
+            background: #f1f5f9;
+            border-color: #cbd5e1;
             transform: translateY(-2px);
         }
 
@@ -245,16 +243,18 @@
         }
 
         .btn-secondary {
-            background: rgba(107, 114, 128, 0.2);
-            border-color: rgba(107, 114, 128, 0.3);
+            background: #f1f5f9;
+            border-color: #cbd5e1;
+            color: #475569;
         }
 
         .btn-secondary:hover {
-            background: rgba(107, 114, 128, 0.3);
+            background: #e2e8f0;
+            border-color: #94a3b8;
         }
 
         .consequences {
-            background: rgba(0, 0, 0, 0.3);
+            background: #fef2f2;
             border: 2px solid var(--danger);
             border-radius: 16px;
             padding: 24px;
@@ -307,6 +307,61 @@
             
             .btn {
                 width: 100%;
+            }
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            top: 80px;
+            right: 24px;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.95) 0%, rgba(37, 99, 235, 0.95) 100%);
+            color: white;
+            padding: 16px 24px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+            font-size: 15px;
+            z-index: 10000;
+            animation: slideIn 0.3s ease-out, fadeOut 0.3s ease-in 2.7s forwards;
+            backdrop-filter: blur(10px);
+        }
+
+        .toast.warning {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.95) 0%, rgba(217, 119, 6, 0.95) 100%);
+        }
+
+        .toast.danger {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.95) 0%, rgba(220, 38, 38, 0.95) 100%);
+        }
+
+        .toast.success {
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.95) 0%, rgba(22, 163, 74, 0.95) 100%);
+        }
+
+        .toast-icon {
+            font-size: 24px;
+            line-height: 1;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                transform: translateX(400px);
             }
         }
     </style>
@@ -459,6 +514,36 @@
     </div>
 
     <script>
+        // Toast Notification Function
+        function showToast(message, type = 'info') {
+            // Remove any existing toasts
+            const existingToasts = document.querySelectorAll('.toast');
+            existingToasts.forEach(toast => toast.remove());
+            
+            // Create new toast
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            // Icon based on type
+            let icon = '🔔';
+            if (type === 'warning') icon = '⚠️';
+            if (type === 'danger') icon = '❌';
+            if (type === 'success') icon = '✅';
+            if (type === 'info') icon = 'ℹ️';
+            
+            toast.innerHTML = `
+                <span class="toast-icon">${icon}</span>
+                <span>${message}</span>
+            `;
+            
+            document.body.appendChild(toast);
+            
+            // Auto remove after 3 seconds
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
         // Get assignment ID from URL
         const urlParams = new URLSearchParams(window.location.search);
         const assignmentId = urlParams.get('assignment_id');
@@ -467,42 +552,119 @@
         console.log('Quiz Guide - Assignment ID from URL:', assignmentId);
         console.log('Quiz Guide - Full URL:', window.location.href);
 
+        // Check authentication on page load
+        (async () => {
+            try {
+                const meRes = await fetch('/api/me', { credentials: 'include' });
+                if (!meRes.ok) {
+                    // Not authenticated - redirect to login
+                    console.log('User not authenticated, redirecting to login');
+                    window.location.href = '/login.html';
+                    return;
+                }
+                
+                // User is authenticated - show guide page and check attempts
+                const me = await meRes.json();
+                console.log('User authenticated, showing guide page');
+                
+                // Check attempts and status
+                const attRes = await fetch(`/api/user-attempts/${encodeURIComponent(me.email)}`, { credentials: 'include' });
+                if (attRes.ok) {
+                    const att = await attRes.json();
+                    const remaining = att.remaining_attempts !== undefined ? att.remaining_attempts : Math.max(0, 3 - (att.attempts_used || 0));
+                    const hasPassed = att.passed === true;
+
+                    // If user has already passed, redirect them
+                    if (hasPassed) {
+                        showToast('🎉 Congratulations! You have successfully completed the quiz.', 'success');
+                        setTimeout(() => {
+                            window.location.href = '/home';
+                        }, 3000);
+                        return;
+                    }
+
+                    // Show toast based on remaining attempts
+                    if (remaining === 3) {
+                        showToast('You have 3 attempts remaining', 'success');
+                    } else if (remaining === 2) {
+                        showToast('You have 2 attempts remaining', 'info');
+                    } else if (remaining === 1) {
+                        showToast('⚠️ Warning: Only 1 attempt remaining!', 'warning');
+                    } else if (remaining === 0) {
+                        showToast('❌ No attempts remaining. Contact admin.', 'danger');
+                        setTimeout(() => {
+                            window.location.href = '/home';
+                        }, 3000);
+                        return;
+                    }
+                }
+            } catch (e) {
+                console.error('Error checking authentication:', e);
+                // On error, redirect to login
+                window.location.href = '/login.html';
+            }
+        })();
+
         function proceedToSetup() {
             console.log('Proceed to Setup clicked - Assignment ID:', assignmentId);
             
-            // Redirect to quiz setup with assignment ID
-            if (assignmentId) {
-                console.log('Redirecting to quiz setup with assignment ID:', assignmentId);
-                window.location.href = `/quiz_setup.html?assignment_id=${assignmentId}`;
-            } else {
-                console.log('No assignment ID in URL, fetching from API...');
-                // If no assignment ID, try to get one from user's assignments
-                fetch('/api/my/assignments', { credentials: 'include' })
-                    .then(response => {
-                        console.log('Assignments API response:', response.status);
-                        return response.json();
-                    })
-                    .then(assignments => {
-                        console.log('Available assignments:', assignments);
-                        // Find the first available assignment
-                        const availableAssignment = assignments.find(a => !a.finished_at);
-                        if (availableAssignment) {
-                            const assignmentId = availableAssignment.assignment_id || availableAssignment._id || availableAssignment.id;
-                            console.log('Found available assignment:', assignmentId);
-                            window.location.href = `/quiz_setup.html?assignment_id=${assignmentId}`;
-                        } else {
-                            // No assignments available, redirect to home
-                            console.log('No available assignments found');
-                            alert('No quiz assignments available. Please contact your administrator.');
-                            window.location.href = '/home';
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error fetching assignments:', error);
-                        alert('Error loading assignments. Please try again.');
-                        window.location.href = '/home';
-                    });
-            }
+            // First check if user is authenticated
+            fetch('/api/me', { credentials: 'include' })
+                .then(response => {
+                    if (!response.ok) {
+                        // Not authenticated - redirect to login
+                        console.log('User not authenticated, redirecting to login');
+                        window.location.href = '/login.html';
+                        return;
+                    }
+                    
+                    // User is authenticated - proceed to quiz setup
+                    // Redirect to quiz setup with assignment ID
+                    if (assignmentId) {
+                        console.log('Redirecting to quiz setup with assignment ID:', assignmentId);
+                        window.location.href = `/quiz_setup.html?assignment_id=${assignmentId}`;
+                    } else {
+                        console.log('No assignment ID in URL, fetching from API...');
+                        // If no assignment ID, try to get one from user's assignments
+                        fetch('/api/my/assignments', { credentials: 'include' })
+                            .then(response => {
+                                console.log('Assignments API response:', response.status);
+                                return response.json();
+                            })
+                            .then(assignments => {
+                                console.log('Available assignments:', assignments);
+                                // Find the first available assignment
+                                const availableAssignment = assignments.find(a => !a.finished_at && !a.terminated);
+                                if (availableAssignment) {
+                                    const assignmentId = availableAssignment.assignment_id || availableAssignment._id || availableAssignment.id;
+                                    console.log('Found available assignment:', assignmentId);
+                                    window.location.href = `/quiz_setup.html?assignment_id=${assignmentId}`;
+                                } else {
+                                    // No open assignment, create a new one for the next attempt
+                                    fetch('/api/quiz-assignments', { method:'POST', headers:{'Content-Type':'application/json'}, credentials:'include', body: JSON.stringify({}) })
+                                      .then(r=>r.json().then(j=>({ok:r.ok, j})))
+                                      .then(({ok, j})=>{
+                                        if (ok && j.assignment_id){
+                                          window.location.href = `/quiz_setup.html?assignment_id=${j.assignment_id}`;
+                                        } else {
+                                          alert(j.error || 'Failed to create new assignment.');
+                                          window.location.href = '/home';
+                                        }
+                                      })
+                                      .catch(()=>{ alert('Failed to create new assignment.'); window.location.href='/home'; });
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error fetching assignments:', error);
+                                alert('Error loading assignments. Please try again.');
+                                window.location.href = '/home';
+                            });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking authentication:', error);
+                    window.location.href = '/login.html';
+                });
         }
 
         // Add confirmation before proceeding

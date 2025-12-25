@@ -1,5 +1,6 @@
 import os
 import datetime
+from dotenv import load_dotenv
 from flask import Flask, send_from_directory, abort, redirect, request, jsonify
 
 from configuration import ensure_default_user
@@ -9,7 +10,7 @@ from scores import scores_bp
 from questions import questions_bp
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-
+load_dotenv() 
 app = Flask(
     __name__,
     static_folder=BASE_DIR,
@@ -58,6 +59,10 @@ def quiz_setup_page():
 def quiz_guide_page():
     return send_from_directory(BASE_DIR, "quiz_guide.html")
 
+@app.route("/testhistory")
+def test_history_page():
+    return send_from_directory(BASE_DIR, "test_history.html")
+
 @app.route("/aviation_quiz_data.json")
 def quiz_data():
     path = os.path.join(BASE_DIR, "aviation_quiz_data.json")
@@ -77,4 +82,26 @@ def serve_file(filename: str):
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", "8000"))
     ensure_default_user()
+    
+    # Print network access information
+    import socket
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        local_ip = s.getsockname()[0]
+        s.close()
+        print(f"\n{'='*60}")
+        print("  OACA Server - Network Access Information")
+        print(f"{'='*60}")
+        print(f"\n📍 Server running on port: {port}")
+        print(f"\n🌐 Access from this computer:")
+        print(f"   • http://localhost:{port}")
+        print(f"   • http://127.0.0.1:{port}")
+        print(f"\n💻 Access from other devices on the network:")
+        print(f"   • http://{local_ip}:{port}")
+        print(f"\n⚠️  Make sure your firewall allows connections on port {port}")
+        print(f"{'='*60}\n")
+    except Exception:
+        pass
+    
     app.run(host="0.0.0.0", port=port, debug=True)

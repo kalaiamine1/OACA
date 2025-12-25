@@ -13,8 +13,8 @@
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', sans-serif;
-      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-      color: #f1f5f9;
+      background: #ffffff;
+      color: #1e293b;
       margin: 0;
       padding: 0;
       min-height: 100vh;
@@ -32,11 +32,10 @@
       justify-content: space-between;
       align-items: center;
       padding: 20px 28px;
-      background: rgba(255, 255, 255, 0.05);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
       border-radius: 16px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
 
     .title {
@@ -78,9 +77,9 @@
     .btn {
       padding: 12px 24px;
       border-radius: 12px;
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      background: rgba(255, 255, 255, 0.08);
-      color: #f1f5f9;
+      border: 1px solid #e2e8f0;
+      background: #ffffff;
+      color: #1e293b;
       cursor: pointer;
       text-decoration: none;
       font-weight: 600;
@@ -90,8 +89,8 @@
     }
 
     .btn:hover {
-      background: rgba(255, 255, 255, 0.12);
-      border-color: rgba(255, 255, 255, 0.25);
+      background: #f1f5f9;
+      border-color: #cbd5e1;
       transform: translateY(-1px);
     }
 
@@ -107,13 +106,12 @@
     }
 
     .card {
-      background: rgba(255, 255, 255, 0.06);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
       border-radius: 20px;
       padding: 32px;
       margin-top: 24px;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
       transition: all 0.3s ease;
     }
 
@@ -123,7 +121,7 @@
 
     .notice {
       margin: 16px 0;
-      color: #cbd5e1;
+      color: #64748b;
       font-size: 16px;
       line-height: 1.6;
     }
@@ -142,13 +140,13 @@
       font-weight: 700;
       margin: 20px 0 24px;
       line-height: 1.4;
-      color: #f8fafc;
+      color: #1e293b;
     }
 
     .option {
       margin: 12px 0;
-      background: rgba(255, 255, 255, 0.04);
-      border: 2px solid rgba(255, 255, 255, 0.1);
+      background: #f8fafc;
+      border: 2px solid #e2e8f0;
       border-radius: 12px;
       padding: 16px 20px;
       transition: all 0.2s ease;
@@ -156,8 +154,8 @@
     }
 
     .option:hover {
-      background: rgba(255, 255, 255, 0.08);
-      border-color: rgba(59, 130, 246, 0.4);
+      background: #f1f5f9;
+      border-color: #93c5fd;
       transform: translateX(4px);
     }
 
@@ -178,18 +176,23 @@
     }
 
     .option:has(input:checked) {
-      background: rgba(59, 130, 246, 0.15);
+      background: #dbeafe;
       border-color: #3b82f6;
     }
 
     /* Camera monitoring box */
     .camera-monitor {
-      margin: 20px 0;
-      background: rgba(255, 255, 255, 0.08);
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      width: 240px;
+      background: #ffffff;
       border: 2px solid rgba(255, 255, 255, 0.15);
       border-radius: 12px;
-      padding: 16px;
+      padding: 12px;
+      z-index: 1000;
       text-align: center;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.35);
     }
 
     .camera-header {
@@ -226,7 +229,7 @@
     .camera-container {
       position: relative;
       width: 100%;
-      max-width: 300px;
+      max-width: 216px;
       margin: 0 auto;
       background: #000;
       border-radius: 8px;
@@ -235,7 +238,7 @@
 
     .camera-video {
       width: 100%;
-      height: 200px;
+      height: 152px;
       object-fit: cover;
       display: block;
     }
@@ -252,7 +255,7 @@
     .face-detection-box {
       position: absolute;
       border: 2px solid #3b82f6;
-      background: rgba(59, 130, 246, 0.1);
+      background: #dbeafe;
       border-radius: 4px;
     }
 
@@ -281,10 +284,10 @@
     .attention-warning {
       margin-top: 8px;
       padding: 8px 12px;
-      background: rgba(239, 68, 68, 0.1);
-      border: 1px solid rgba(239, 68, 68, 0.3);
+      background: #fef2f2;
+      border: 1px solid #fecaca;
       border-radius: 6px;
-      color: #fca5a5;
+      color: #dc2626;
       font-size: 14px;
       font-weight: 500;
       display: none;
@@ -324,7 +327,7 @@
       border-left: 3px solid #ef4444;
       border-radius: 8px;
       font-size: 14px;
-      color: #fca5a5;
+      color: #dc2626;
     }
 
     #quizMsg {
@@ -580,7 +583,7 @@
           const r = await fetch('/api/my/assignments', { credentials:'include' });
           if (!r.ok) { setMsg(setupMsg, 'Missing assignment_id. No assigned quiz found.'); startBtn.disabled = true; return false; }
           const list = await r.json();
-          const open = Array.isArray(list) ? list.find(a => !a.finished_at) : null;
+          const open = Array.isArray(list) ? list.find(a => !a.finished_at && !a.terminated) : null;
           if (!open){ setMsg(setupMsg, 'No assigned quiz available.'); startBtn.disabled = true; return false; }
           assignmentId = open.assignment_id || open._id || open.id; // prefer explicit assignment_id
           if (!assignmentId){ setMsg(setupMsg, 'Could not determine assignment.'); startBtn.disabled = true; return false; }
@@ -612,6 +615,13 @@
         }
         setMsg(quizMsg, '');
         if (i === state.questions.length-1){ hide(nextBtn); show(submitBtn); } else { show(nextBtn); hide(submitBtn); }
+        // Ensure camera box is mounted at body top-right, not inside the quiz card
+        try {
+          const cam = document.querySelector('.camera-monitor');
+          if (cam && cam.parentElement !== document.body) {
+            document.body.appendChild(cam);
+          }
+        } catch(_) {}
       }
 
       function recordOrWarn(){
@@ -648,7 +658,7 @@
       }
 
       // Check if quiz was terminated due to violation
-      function checkTerminationStatus() {
+      async function checkTerminationStatus() {
         const k = storageKey();
         if (k) {
           try {
@@ -657,6 +667,25 @@
               const data = JSON.parse(terminated);
               if (data.terminated) {
                 setMsg(setupMsg, `Quiz terminated due to violation: ${data.message}`);
+                // Check attempts and offer retry if available
+                try {
+                  const attRes = await fetch('/api/my/attempts', { credentials: 'include' });
+                  if (attRes.ok) {
+                    const att = await attRes.json();
+                    const used = att.attempts_used || 0;
+                    const remaining = Math.max(0, 3 - used);
+                    if (remaining > 0) {
+                      startBtn.disabled = false;
+                      startBtn.textContent = `Retry Quiz (${remaining} attempts left)`;
+                      startBtn.onclick = () => { window.location.href = '/quiz_setup.html'; };
+                      return true;
+                    } else {
+                      startBtn.disabled = true;
+                      startBtn.textContent = 'No Attempts Left';
+                      return true;
+                    }
+                  }
+                } catch(_) {}
                 startBtn.disabled = true;
                 startBtn.textContent = 'Quiz Terminated';
                 return true;
@@ -667,21 +696,95 @@
         return false;
       }
 
-      // Initial state
-      if (!assignmentId){ setMsg(setupMsg, 'Looking for your assigned quiz...'); }
-      
-      // Check termination status first
-      if (checkTerminationStatus()) {
-        // Quiz was terminated, don't proceed with normal flow
-        return;
-      }
+      // Initial state + attempt messaging
+      (async ()=>{
+        if (!assignmentId){ setMsg(setupMsg, 'Looking for your assigned quiz...'); }
+        try{
+          const attRes = await fetch('/api/my/attempts', { credentials: 'include' });
+          if (attRes.ok){
+            const att = await attRes.json();
+            const used = att.attempts_used || 0;
+            const remaining = Math.max(0, 3 - used);
+            const hasPassed = att.passed === true;
+
+            // If user has already passed, redirect them away from quiz
+            if (hasPassed) {
+              setMsg(setupMsg, 'Congratulations! You have successfully completed the quiz.');
+              startBtn.disabled = true;
+              startBtn.textContent = 'Quiz Completed';
+              // Redirect to home after a short delay
+              setTimeout(() => {
+                window.location.href = '/home';
+              }, 3000);
+              return;
+            }
+
+            const base = 'This quiz was assigned to you. When you click Start, the timer begins.';
+            if (remaining === 3) setMsg(setupMsg, base + ' You have 3 attempts remaining.');
+            else if (remaining === 2) setMsg(setupMsg, base + ' You have 2 attempts remaining.');
+            else if (remaining === 1) setMsg(setupMsg, base + ' You have 1 attempt remaining. This is your final attempt.');
+            else if (remaining === 0) { setMsg(setupMsg, 'No attempts remaining. Contact admin.'); startBtn.disabled = true; }
+          }
+        }catch(_){}
+        const terminated = await checkTerminationStatus();
+        if (terminated) return;
+      })();
 
       // Wire events
       startBtn.addEventListener('click', async ()=>{
         if (state.initializing || state.inQuiz) return;
         state.initializing = true;
-        const resolved = await resolveAssignmentIfMissing();
-        if (!resolved) { state.initializing = false; return; }
+        // Confirm on attempts 2 and 3 (when 1 or 0 attempts will remain after starting)
+        try{
+          const attRes = await fetch('/api/my/attempts', { credentials: 'include' });
+          if (attRes.ok){
+            const att = await attRes.json();
+            const used = att.attempts_used || 0;
+            const remaining = Math.max(0, 3 - used);
+            if (remaining === 2){
+              const ok = window.confirm('Warning: This will be your 2nd attempt. If you are rejected, only 1 attempt will remain. Continue?');
+              if (!ok){ state.initializing = false; return; }
+            } else if (remaining === 1){
+              const ok = window.confirm('Final attempt: This will be your 3rd and final attempt. If you are rejected, you will have 0 attempts left. Continue?');
+              if (!ok){ state.initializing = false; return; }
+            } else if (remaining === 0){
+              alert('No attempts remaining. Contact administrator.');
+              state.initializing = false; return;
+            }
+          }
+        }catch(_){ }
+        let resolved = await resolveAssignmentIfMissing();
+        if (!resolved) {
+          try {
+            // Clear any persisted/terminated flags for the old assignment key
+            try {
+              const oldKey = storageKey();
+              if (oldKey) {
+                localStorage.removeItem(oldKey);
+                localStorage.removeItem(`${oldKey}_terminated`);
+                localStorage.removeItem(`${oldKey}_last_frame`);
+              }
+            } catch(_) {}
+            const createRes = await fetch('/api/quiz-assignments', { method:'POST', headers:{'Content-Type':'application/json'}, credentials:'include', body: JSON.stringify({}) });
+            const created = await createRes.json();
+            if (createRes.ok && created.assignment_id){
+              assignmentId = created.assignment_id;
+              const url = new URL(window.location.href);
+              url.searchParams.set('assignment_id', assignmentId);
+              window.history.replaceState({}, '', url.toString());
+              // Reset in-memory state for a fresh timer/questions on new attempt
+              state.index = 0;
+              state.answers = {};
+              state.started = false;
+              state.countdown = 0; // Will be set from server
+              resolved = true;
+              console.log('[TIMER] New assignment created. Timer will be reset to 15 minutes from server.');
+            } else {
+              setMsg(setupMsg, created.error || 'Failed to create new assignment');
+              state.initializing = false; return;
+            }
+          } catch(e){ setMsg(setupMsg, String(e)); state.initializing = false; return; }
+        }
         
         // Check if face setup is required
         const faceSetupComplete = await checkFaceSetupRequired();
@@ -690,8 +793,62 @@
           return; 
         }
         
-        // Start the quiz directly since we came from setup
-        startQuiz();
+        // Clear any old persisted state for new attempts (critical for timer reset)
+        clearPersisted();
+        
+        // Fetch fresh status from server (this ensures we get the full 15-minute timer)
+        const ok = await syncStatus();
+        if (!ok || state.countdown <= 0) {
+          // Check if user has passed and show appropriate message
+          try {
+            // Get current user info to check their attempt status
+            const attRes = await fetch('/api/my/attempts', { credentials: 'include' });
+            if (attRes.ok) {
+              const att = await attRes.json();
+              if (att.passed === true) {
+                setMsg(setupMsg, 'Congratulations! You have already successfully completed the quiz. The quiz is no longer available.');
+                startBtn.disabled = true;
+                startBtn.textContent = 'Quiz Completed';
+                state.initializing = false;
+                return;
+              } else if (att.attempts_used >= 3) {
+                setMsg(setupMsg, 'Maximum attempts reached. Contact administrator for assistance.');
+                startBtn.disabled = true;
+                startBtn.textContent = 'Attempts Exhausted';
+                state.initializing = false;
+                return;
+              }
+            }
+          } catch (_) {}
+          setMsg(setupMsg, 'Failed to start quiz. Please try again.');
+          state.initializing = false;
+          return;
+        }
+        
+        console.log(`[TIMER] Fresh quiz starting with ${state.countdown} seconds (${Math.floor(state.countdown/60)}:${String(state.countdown%60).padStart(2,'0')})`);
+        
+        // Load questions
+        const got = await fetchQuestions();
+        if (!got) {
+          setMsg(setupMsg, 'Failed to load questions.');
+          state.initializing = false;
+          return;
+        }
+        
+        // Start the quiz with fresh state
+        state.index = 0;
+        state.answers = {};
+        state.started = true;
+        savePersisted();
+        
+        hide(setupCard); 
+        show(quizCard); 
+        render();
+        
+        // Initialize camera monitoring
+        initCamera();
+        startTimer();
+        state.inQuiz = true;
         state.initializing = false;
       });
       nextBtn.addEventListener('click', next);
@@ -762,6 +919,7 @@
       // Camera monitoring functions for seat detection and face detection
       async function initCamera() {
         try {
+          console.log('[CAMERA] Requesting camera access...');
           const stream = await navigator.mediaDevices.getUserMedia({ 
             video: { 
               width: { ideal: 640 }, 
@@ -772,10 +930,11 @@
           cameraVideo.srcObject = stream;
           cameraStatus.classList.add('active');
           state.cameraActive = true;
+          console.log('[CAMERA] Camera initialized successfully');
           startSeatDetection();
           startFaceDetection();
         } catch (error) {
-          console.warn('Camera access denied:', error);
+          console.error('[CAMERA] Camera access denied:', error);
           cameraStatus.style.background = '#f59e0b';
           attentionWarning.textContent = '⚠️ Camera access required for seat monitoring.';
           attentionWarning.classList.add('show');
@@ -838,6 +997,11 @@
               attentionWarning.classList.add('show');
                 
                 // Log violation to server (best effort)
+                // Capture current frame as evidence
+                let capturedImage = null;
+                try {
+                  capturedImage = canvas.toDataURL('image/jpeg');
+                } catch (_) {}
                 fetch('/api/log-violation', {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
@@ -847,7 +1011,8 @@
                     type: 'seat_movement',
                     timestamp: new Date().toISOString(),
                     message: 'Significant movement detected - possible standing up',
-                    movement_level: movement
+                    movement_level: movement,
+                    captured_image: capturedImage
                   })
                 }).catch(() => {});
               }
@@ -937,6 +1102,16 @@
         state.faceDetectionActive = true;
         state.lastFaceDetected = Date.now();
         
+        // Give 8 seconds grace period before starting strict face detection
+        console.log('[FACE] Waiting 8 seconds before starting face detection...');
+        setTimeout(() => {
+          if (!state.faceDetectionActive) return;
+          console.log('[FACE] Grace period over. Starting strict face detection.');
+          startStrictFaceDetection();
+        }, 8000);
+      }
+      
+      function startStrictFaceDetection() {
         // Check for faces every 2 seconds
         state.faceDetectionInterval = setInterval(async () => {
           if (!state.faceDetectionActive) return;
@@ -949,6 +1124,11 @@
             
             ctx.drawImage(cameraVideo, 0, 0, canvas.width, canvas.height);
             const imageData = canvas.toDataURL('image/jpeg');
+            // Cache locally to be able to show in rejection modal instantly
+            try {
+              const k = storageKey();
+              if (k) localStorage.setItem(`${k}_last_frame`, imageData);
+            } catch(_) {}
             
             // Send frame to backend for face detection
             const response = await fetch('/api/check-frame', {
@@ -1101,7 +1281,7 @@
         showRejectionModal(violationType, message);
       }
       
-      function showRejectionModal(violationType, message) {
+      async function showRejectionModal(violationType, message) {
         // Create rejection modal
         const modal = document.createElement('div');
         modal.style.cssText = `
@@ -1110,7 +1290,8 @@
           left: 0;
           width: 100%;
           height: 100%;
-          background: rgba(0, 0, 0, 0.8);
+          background: rgba(0, 0, 0, 0.4);
+          backdrop-filter: blur(4px);
           display: flex;
           align-items: center;
           justify-content: center;
@@ -1119,20 +1300,22 @@
         
         const modalContent = document.createElement('div');
         modalContent.style.cssText = `
-          background: #1e293b;
-          border: 2px solid #ef4444;
-          border-radius: 16px;
-          padding: 32px;
-          max-width: 500px;
+          background: #ffffff;
+          border: 1px solid #e2e8f0;
+          border-radius: 20px;
+          padding: 40px;
+          max-width: 520px;
           width: 90%;
           text-align: center;
-          color: #f1f5f9;
+          color: #1e293b;
+          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
         `;
         
         const violationMessages = {
-          'no_face_detected': 'No face detected for 30 seconds',
+          'no_face_detected': 'No face detected for more than 15 seconds',
           'multiple_faces': 'Multiple faces detected',
-          'position_change': 'Significant position change detected',
+          'position_change': 'Significant movement detected - possible standing up',
+          'seat_movement': 'Significant movement detected - possible standing up',
           'distance_change': 'Distance from camera changed significantly',
           'face_mismatch': 'Different person detected',
           'no_eyes': 'Eyes not detected - face may be obscured',
@@ -1141,38 +1324,146 @@
         
         const violationTitle = violationMessages[violationType] || message;
         
+        // Determine remaining attempts (attempt has already been counted when quiz started)
+        let remainingAttempts = 0;
+        let attemptsUsed = 0;
+        let hasPassed = false;
+        try {
+          const attRes = await fetch('/api/my/attempts', { credentials: 'include' });
+          if (attRes.ok) {
+            const att = await attRes.json();
+            attemptsUsed = att.attempts_used || 0;
+            hasPassed = att.passed === true;
+            remainingAttempts = Math.max(0, 3 - attemptsUsed);
+          }
+        } catch(_) {}
+
+        // Create retry function
+        const retryNow = async () => {
+          try {
+            const res = await fetch('/api/quiz-assignments', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              credentials: 'include',
+              body: JSON.stringify({})
+            });
+            const data = await res.json();
+            if (res.ok && data.assignment_id) {
+              window.location.href = `/quiz_setup.html?assignment_id=${data.assignment_id}&attempts=${remainingAttempts}`;
+            } else {
+              alert(data.error || 'Failed to create new quiz');
+            }
+          } catch (e) {
+            alert('Error: ' + e);
+          }
+        };
+
+        const actionsHtml = remainingAttempts > 0
+          ? `
+            <div style="display:flex; gap:12px; justify-content:center; margin-top: 8px; flex-wrap: wrap;">
+              <button id="retryNowBtn" style="
+                background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+                border: none;
+                color: white;
+                padding: 14px 28px;
+                border-radius: 12px;
+                font-size: 15px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);"
+                onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(34, 197, 94, 0.4)';"
+                onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(34, 197, 94, 0.3)';">
+                Retry Now (${remainingAttempts} left)
+              </button>
+              <button onclick="window.location.href='/home'" style="
+                background: #ffffff;
+                border: 1px solid #e2e8f0;
+                color: #475569;
+                padding: 14px 28px;
+                border-radius: 12px;
+                font-size: 15px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.2s ease;"
+                onmouseover="this.style.background='#f8fafc'; this.style.borderColor='#cbd5e1'; this.style.transform='translateY(-2px)';"
+                onmouseout="this.style.background='#ffffff'; this.style.borderColor='#e2e8f0'; this.style.transform='translateY(0)';">
+                Return to Home
+              </button>
+            </div>
+          `
+          : `
+            <button onclick="window.location.href='/home'" style="
+              background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+              border: none;
+              color: white;
+              padding: 14px 28px;
+              border-radius: 12px;
+              font-size: 15px;
+              font-weight: 600;
+              cursor: pointer;
+              transition: all 0.2s ease;
+              box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);"
+              onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(59, 130, 246, 0.4)';"
+              onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(59, 130, 246, 0.3)';">
+              Return to Home
+            </button>
+          `;
+
         modalContent.innerHTML = `
-          <div style="font-size: 48px; margin-bottom: 16px;">❌</div>
-          <h2 style="color: #ef4444; margin-bottom: 16px; font-size: 24px;">Quiz Terminated</h2>
-          <p style="margin-bottom: 24px; font-size: 18px; color: #cbd5e1;">Sorry, you have been rejected</p>
-          <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 8px; padding: 16px; margin-bottom: 24px;">
-            <h3 style="color: #fca5a5; margin-bottom: 8px;">Violation Detected:</h3>
-            <p style="color: #fca5a5; font-weight: 600;">${violationTitle}</p>
+          <div style="font-size: 56px; margin-bottom: 20px; line-height: 1;">❌</div>
+          <h2 style="color: #dc2626; margin-bottom: 12px; font-size: 28px; font-weight: 700; letter-spacing: -0.02em;">Quiz Terminated</h2>
+          <p style="margin-bottom: 32px; font-size: 16px; color: #64748b; line-height: 1.5;">Sorry, you have been rejected</p>
+          <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 12px; padding: 20px; margin-bottom: 20px; text-align: left;">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
+              <span style="font-size: 18px;">⚠️</span>
+              <h3 style="color: #dc2626; margin: 0; font-size: 15px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Violation Detected</h3>
+            </div>
+            <p style="color: #991b1b; font-weight: 500; font-size: 15px; margin: 0; line-height: 1.5;">${violationTitle}</p>
           </div>
-          <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 8px; padding: 16px; margin-bottom: 24px;">
-            <h3 style="color: #fca5a5; margin-bottom: 8px;">⚠️ Access Blocked:</h3>
-            <p style="color: #fca5a5; font-size: 14px;">You cannot access this quiz anymore due to the violation. The quiz has been permanently terminated.</p>
+          ${remainingAttempts > 0 ? `
+          <div style=\"background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; padding: 20px; margin-bottom: 20px; text-align: left;\">
+            <div style=\"display: flex; align-items: center; gap: 8px; margin-bottom: 10px;\">
+              <span style=\"font-size: 18px;\">✓</span>
+              <h3 style=\"color: #16a34a; margin: 0; font-size: 15px; font-weight: 700;\">You Can Retry</h3>
+            </div>
+            <p style=\"color: #15803d; font-size: 14px; margin: 0; line-height: 1.5;\">You still have <strong>${remainingAttempts} attempt(s)</strong> left. Please follow the rules to avoid another termination.</p>
           </div>
-          <p style="margin-bottom: 24px; color: #94a3b8; font-size: 14px;">
+          ` : `
+          <div style=\"background: #fef2f2; border: 1px solid #fecaca; border-radius: 12px; padding: 20px; margin-bottom: 20px; text-align: left;\">
+            <div style=\"display: flex; align-items: center; gap: 8px; margin-bottom: 10px;\">
+              <span style=\"font-size: 18px;\">🔒</span>
+              <h3 style=\"color: #dc2626; margin: 0; font-size: 15px; font-weight: 700;\">Access Blocked</h3>
+            </div>
+            <p style=\"color: #991b1b; font-size: 14px; margin: 0; line-height: 1.5;\">No attempts remaining. Please contact the administrator for assistance.</p>
+          </div>
+          `}
+          <p style="margin-bottom: 32px; color: #64748b; font-size: 13px; line-height: 1.5;">
             A screenshot was captured at the time of violation for review purposes.
           </p>
-          <button onclick="window.location.href='/home'" style="
-            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-            border: none;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-          " onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform='translateY(0)'">
-            Return to Home
-          </button>
+          ${actionsHtml}
         `;
         
+        // Try to embed last captured frame as evidence (if cached locally)
+        try {
+          const k = storageKey();
+          const img64 = k ? localStorage.getItem(`${k}_last_frame`) : null;
+          if (img64) {
+            const img = document.createElement('img');
+            img.src = img64;
+            img.style.cssText = 'max-width:100%;border-radius:12px;margin-top:20px;border:1px solid #e2e8f0;box-shadow: 0 4px 12px rgba(0,0,0,0.1);';
+            modalContent.appendChild(img);
+          }
+        } catch(_) {}
+
         modal.appendChild(modalContent);
         document.body.appendChild(modal);
+        
+        // Add event listener for retry button
+        const retryBtn = document.getElementById('retryNowBtn');
+        if (retryBtn) {
+          retryBtn.addEventListener('click', retryNow);
+        }
         
         // Prevent closing the modal
         modal.addEventListener('click', (e) => {

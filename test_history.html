@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Test History - OACA Tunisia</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="/oaca.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/oaca.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/oaca.png">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+  <style>
+    :root {
+      --primary-blue: #1e40af;
+      --secondary-blue: #3b82f6;
+      --accent-blue: #60a5fa;
+      --neutral-50: #f8fafc;
+      --neutral-100: #f1f5f9;
+      --neutral-200: #e2e8f0;
+      --neutral-300: #cbd5e1;
+      --neutral-400: #94a3b8;
+      --neutral-500: #64748b;
+      --neutral-600: #475569;
+      --neutral-700: #334155;
+      --neutral-800: #1e293b;
+      --neutral-900: #0f172a;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: #f8fafc;
+      min-height: 100vh;
+      color: #1e293b;
+      overflow-x: hidden;
+    }
+
+    /* Header matching home page */
+    .dashboard-header {
+      background: white;
+      padding: 20px 40px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 24px;
+      font-weight: 700;
+      color: #1e293b;
+      text-decoration: none;
+    }
+
+    .logo i {
+      font-size: 28px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      align-items: center;
+    }
+
+    .nav-links a {
+      color: #64748b;
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.3s;
+    }
+
+    .nav-links a:hover {
+      color: #667eea;
+    }
+
+    .nav-links a.active {
+      color: #667eea;
+    }
+
+    .user-actions {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .btn-outline {
+      padding: 8px 20px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      background: white;
+      color: #64748b;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s;
+      cursor: pointer;
+    }
+
+    .btn-outline:hover {
+      border-color: #667eea;
+      color: #667eea;
+    }
+
+    .btn-primary {
+      padding: 8px 20px;
+      border: none;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s;
+      cursor: pointer;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    /* Main Content */
+    .main-content {
+      position: relative;
+      z-index: 1;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 40px;
+    }
+
+    .page-header {
+      margin-bottom: 32px;
+    }
+
+    .page-title {
+      font-size: 32px;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 8px;
+    }
+
+    .page-description {
+      font-size: 16px;
+      color: #64748b;
+    }
+
+    /* Test History Styles */
+    .test-history-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 20px;
+    }
+
+    .test-history-card {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 24px;
+      transition: all 0.3s;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .test-history-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+      border-color: #667eea;
+    }
+
+    .test-history-card.terminated {
+      border-color: #fecaca;
+      background: #fef2f2;
+    }
+
+    .test-history-card.passed {
+      border-color: #bbf7d0;
+      background: #f0fdf4;
+    }
+
+    .test-history-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 16px;
+    }
+
+    .test-history-date {
+      font-size: 14px;
+      color: #64748b;
+      margin-bottom: 8px;
+    }
+
+    .test-history-status {
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .test-history-status.passed {
+      background: #d1fae5;
+      color: #059669;
+    }
+
+    .test-history-status.failed {
+      background: #fee2e2;
+      color: #dc2626;
+    }
+
+    .test-history-status.terminated {
+      background: #fee2e2;
+      color: #dc2626;
+    }
+
+    .test-history-score {
+      font-size: 32px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin: 12px 0;
+    }
+
+    .test-history-details {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid #e2e8f0;
+    }
+
+    .test-history-detail-item {
+      font-size: 14px;
+    }
+
+    .test-history-detail-label {
+      color: #64748b;
+      margin-bottom: 4px;
+    }
+
+    .test-history-detail-value {
+      color: #1e293b;
+      font-weight: 600;
+    }
+
+    .test-history-sections {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid #e2e8f0;
+    }
+
+    .test-history-section-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      font-size: 13px;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .test-history-section-item:last-child {
+      border-bottom: none;
+    }
+
+    .test-history-section-name {
+      color: #475569;
+    }
+
+    .test-history-section-score {
+      color: var(--accent-blue);
+      font-weight: 600;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .section-title {
+      font-size: 28px;
+      font-weight: 700;
+      color: #1e293b;
+    }
+
+    .btn-secondary {
+      padding: 8px 20px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      background: white;
+      color: #64748b;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .btn-secondary:hover {
+      border-color: #667eea;
+      color: #667eea;
+    }
+
+    /* Background airplanes */
+    .bg-airplane {
+      position: fixed;
+      opacity: 0.15;
+      z-index: 0;
+      pointer-events: none;
+      font-family: Arial, sans-serif;
+      color: #3b82f6;
+      font-size: 48px;
+      animation: floatAirplane 15s ease-in-out infinite;
+    }
+    
+    @keyframes floatAirplane {
+      0%, 100% { 
+        transform: translateY(0px) translateX(0px) rotate(0deg);
+        opacity: 0.15;
+      }
+      50% { 
+        transform: translateY(-30px) translateX(20px) rotate(5deg);
+        opacity: 0.20;
+      }
+    }
+
+    /* Footer */
+    .footer {
+      position: relative;
+      z-index: 1;
+      margin-top: 80px;
+      padding: 60px 24px;
+      background: #f8fafc;
+      border-top: 1px solid #e2e8f0;
+    }
+
+    .footer-content {
+      max-width: 1280px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 40px;
+      margin-bottom: 40px;
+    }
+
+    .footer-section h3 {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: var(--accent-blue);
+    }
+
+    .footer-section ul {
+      list-style: none;
+    }
+
+    .footer-section ul li {
+      margin-bottom: 12px;
+    }
+
+    .footer-section a {
+      color: #64748b;
+      text-decoration: none;
+      font-size: 14px;
+      transition: color 0.2s;
+    }
+
+    .footer-section a:hover {
+      color: var(--primary-blue);
+    }
+
+    .social-links {
+      display: flex;
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .social-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      background: #e0f2fe;
+      border: 1px solid #bae6fd;
+      border-radius: 8px;
+      color: var(--primary-blue);
+      text-decoration: none;
+      font-size: 18px;
+      transition: all 0.2s;
+    }
+
+    .social-link:hover {
+      background: #bae6fd;
+      transform: translateY(-2px);
+    }
+
+    .footer-bottom {
+      text-align: center;
+      padding-top: 24px;
+      border-top: 1px solid #e2e8f0;
+      color: #64748b;
+      font-size: 14px;
+    }
+
+    /* Mobile responsive */
+    @media (max-width: 768px) {
+      .dashboard-header {
+        padding: 16px 20px;
+        flex-wrap: wrap;
+      }
+      .nav-links { display: none; }
+      .main-content { padding: 20px; }
+      .page-title { font-size: 24px; }
+      .test-history-grid { grid-template-columns: 1fr; }
+      .section-header { flex-direction: column; align-items: flex-start; gap: 16px; }
+      .footer-content { grid-template-columns: 1fr; }
+    }
+  </style>
+  <style>
+    /* Avatar dropdown and modal styles */
+    .avatar-btn { width: 40px; height: 40px; border-radius: 50%; border: 2px solid #e2e8f0; display:inline-flex; align-items:center; justify-content:center; background: linear-gradient(135deg, #60a5fa, #3b82f6); color:#fff; font-weight:800; cursor:pointer; }
+    .avatar-wrap { position: relative; display:inline-block; }
+    .avatar-menu { position:absolute; right:0; top:46px; background: #ffffff; border:1px solid #e2e8f0; border-radius:10px; padding:8px; display:none; flex-direction:column; min-width: 180px; z-index:150; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    .avatar-menu button { background: transparent; border:none; color:#475569; text-align:left; padding:8px 10px; border-radius:6px; cursor:pointer; }
+    .avatar-menu button:hover { background: #f1f5f9; }
+    /* Inbox (notifications) */
+    .inbox-wrap { position: relative; display:inline-block; margin-right: 8px; }
+    .inbox-btn { width: 40px; height: 40px; border-radius: 50%; border: 2px solid #e2e8f0; display:inline-flex; align-items:center; justify-content:center; background: linear-gradient(135deg, #93c5fd, #60a5fa); color:#1e40af; font-weight:900; cursor:pointer; }
+    .inbox-list { position:absolute; right:0; top:46px; background: #ffffff; border:1px solid #e2e8f0; border-radius:12px; padding:8px; display:none; flex-direction:column; min-width: 320px; z-index:150; max-height: 360px; overflow:auto; box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
+    .inbox-header { display:flex; align-items:center; justify-content:space-between; padding:8px 10px; border-bottom:1px solid #e2e8f0; margin-bottom:6px; }
+    .inbox-title { font-weight:800; font-size:14px; color:#1e293b; }
+    .inbox-item { padding:10px 12px; border-radius:10px; background: #f8fafc; border:1px solid #e2e8f0; margin-bottom:6px; }
+    .inbox-item.unread { background: #dbeafe; border-color: #bfdbfe; }
+    .inbox-item .title { font-weight: 700; margin-bottom: 4px; color:#1e293b; }
+    .inbox-item .message { color:#475569; font-size: 13px; margin-bottom: 4px; }
+    .inbox-item .time { opacity: .75; font-size: 12px; color:#64748b; }
+    .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: none; align-items:center; justify-content:center; z-index: 200; }
+    .modal-backdrop.active { display: flex; }
+    .modal-card { width: 100%; max-width: 560px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 20px; color: #1e293b; box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
+    .modal-header { display:flex; justify-content: space-between; align-items:center; margin-bottom: 8px; }
+    .close-btn { background: #f1f5f9; border: 1px solid #e2e8f0; color:#475569; border-radius: 8px; padding: 6px 10px; cursor:pointer; }
+    .close-btn:hover { background: #e2e8f0; }
+    .modal-body label { display:block; margin: 10px 0 6px; font-weight: 600; color: #334155; }
+    .modal-body input { width: 100%; padding: 12px 14px; border-radius: 10px; border:1px solid #e2e8f0; background: #ffffff; color:#1e293b; }
+    .modal-body input:focus { outline: none; border-color: #3b82f6; }
+    .modal-actions { display:flex; gap: 8px; justify-content: flex-end; margin-top: 14px; }
+  </style>
+</head>
+<body>
+  <div class="dashboard-container" style="min-height: 100vh;">
+    <!-- Header -->
+    <div class="dashboard-header">
+      <a href="/home" class="logo">
+        <i class="bi bi-airplane"></i>
+        <span>OACA</span>
+      </a>
+      <div class="nav-links">
+        <a href="/home">Dashboard</a>
+        <a href="/testhistory" class="active">Test History</a>
+        <a href="/quiz_guide.html">Quiz Guide</a>
+      </div>
+      <div class="user-actions" id="userActions">
+        <a href="/quiz_guide.html" class="btn-primary" id="newQuizBtn" style="display: none;">
+          <i class="bi bi-plus-circle me-1"></i>Start Quiz
+        </a>
+        <a href="/login.html" class="btn-primary" id="loginBtn" style="display: none;">
+          <i class="bi bi-box-arrow-in-right me-1"></i>Login
+        </a>
+        <button class="btn-outline" id="logoutBtn" onclick="logout()" style="display: none;">Logout</button>
+      </div>
+    </div>
+
+  <div class="main-content">
+    <div class="page-header">
+      <h1 class="page-title">My Test History</h1>
+      <p class="page-description">View your completed quizzes and track your progress</p>
+    </div>
+
+    <div class="section-header">
+      <h2 class="section-title">Test Results</h2>
+      <button class="btn btn-secondary" onclick="loadTestHistory()">Refresh</button>
+    </div>
+
+    <div id="testHistoryContainer" style="min-height: 200px;">
+      <div style="text-align: center; padding: 40px; color: #64748b;">
+        <div style="font-size: 48px; margin-bottom: 16px;">📋</div>
+        <div>Loading test history...</div>
+      </div>
+    </div>
+  </div>
+  </div>
+
+  <!-- Updated footer with social media links and contact information -->
+  <footer class="footer" id="footer" style="background: #f8fafc;">
+    <div class="footer-content">
+      <div class="footer-section">
+        <h3>À Propos</h3>
+        <ul>
+          <li><a href="/about.html">À Propos de Notre Plateforme</a></li>
+          <li><a href="/home">Accueil</a></li>
+          <li><a href="/about.html">Nos Fonctionnalités</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h3>Ressources</h3>
+        <ul>
+          <li><a href="/home">Accueil</a></li>
+          <li><a href="/home">Quiz Disponibles</a></li>
+          <li><a href="/testhistory">Test History</a></li>
+          <li><a href="/home">Statistiques</a></li>
+          <li><a href="/home#footer">Support</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h3>Nous Suivre</h3>
+        <p style="font-size: 14px; color: #64748b; margin-bottom: 16px;">Connectez-vous avec nous sur les réseaux sociaux</p>
+        <div class="social-links">
+          <a href="https://fr.linkedin.com/company/oaca2030" target="_blank" rel="noopener noreferrer" class="social-link" title="LinkedIn">in</a>
+          <a href="https://www.youtube.com/@oaca-com2005" target="_blank" rel="noopener noreferrer" class="social-link" title="YouTube">▶</a>
+          <a href="https://www.facebook.com/people/Office-de-lAviation-Civile-des-A%C3%A9roports-OACA/100071094341621/" target="_blank" rel="noopener noreferrer" class="social-link" title="Facebook">f</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2025 OACA Tunisia - Office de l'Aviation Civile et des Aéroports. Tous droits réservés.</p>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Check authentication and update UI
+    (async function() {
+      try {
+        const res = await fetch('/api/me', { credentials: 'include' });
+        if (!res.ok) {
+          window.location.href = '/login.html';
+          return;
+        }
+        const me = await res.json();
+        
+        // Show logout button, hide login
+        const loginBtn = document.getElementById('loginBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (loginBtn) loginBtn.style.display = 'none';
+        if (logoutBtn) logoutBtn.style.display = 'inline-block';
+        
+        // Check if user can start quiz
+        try {
+          const attemptsRes = await fetch('/api/my/attempts', { credentials: 'include' });
+          if (attemptsRes.ok) {
+            const attempts = await attemptsRes.json();
+            const remaining = attempts.remaining_attempts !== undefined ? attempts.remaining_attempts : Math.max(0, 3 - (attempts.attempts_used || 0));
+            const hasPassed = attempts.passed === true;
+            const newQuizBtn = document.getElementById('newQuizBtn');
+            
+            if (remaining > 0 && !hasPassed && newQuizBtn) {
+              newQuizBtn.style.display = 'inline-flex';
+            }
+          }
+        } catch (e) {
+          console.error('Failed to check attempts:', e);
+        }
+      } catch (e) {
+        window.location.href = '/login.html';
+      }
+    })();
+
+    function logout() {
+      fetch('/api/logout', { 
+        method: 'POST', 
+        credentials: 'include' 
+      }).then(() => {
+        window.location.reload();
+      }).catch(() => {
+        window.location.reload();
+      });
+    }
+  </script>
+  <script>
+    // Load and display test history
+    async function loadTestHistory() {
+      const container = document.getElementById('testHistoryContainer');
+      if (!container) return;
+
+      try {
+        container.innerHTML = '<div style="text-align: center; padding: 40px; color: #64748b;"><div style="font-size: 48px; margin-bottom: 16px;">⏳</div><div>Loading test history...</div></div>';
+
+        const res = await fetch('/api/my/test-history', { credentials: 'include' });
+        if (!res.ok) {
+          if (res.status === 401) {
+            // User not authenticated - redirect to login
+            window.location.href = '/login.html';
+            return;
+          }
+          throw new Error('Failed to load test history');
+        }
+
+        const history = await res.json();
+
+        if (!Array.isArray(history) || history.length === 0) {
+          container.innerHTML = `
+            <div style="text-align: center; padding: 40px; color: #64748b;">
+              <div style="font-size: 48px; margin-bottom: 16px;">📋</div>
+              <div style="font-size: 18px; margin-bottom: 8px; color: #475569;">No test history yet</div>
+              <div style="font-size: 14px;">Complete a quiz to see your results here</div>
+            </div>
+          `;
+          return;
+        }
+
+        // Format and display history
+        const grid = document.createElement('div');
+        grid.className = 'test-history-grid';
+
+        history.forEach((test) => {
+          const card = document.createElement('div');
+          card.className = 'test-history-card';
+          
+          // Determine card class based on status
+          if (test.terminated) {
+            card.classList.add('terminated');
+          } else if (test.passed) {
+            card.classList.add('passed');
+          }
+
+          // Format date
+          const finishedDate = test.finished_at ? new Date(test.finished_at) : null;
+          const dateStr = finishedDate ? finishedDate.toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'short', 
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+          }) : 'N/A';
+
+          // Determine status
+          let statusText = 'Failed';
+          let statusClass = 'failed';
+          if (test.terminated) {
+            statusText = 'Terminated';
+            statusClass = 'terminated';
+          } else if (test.passed) {
+            statusText = 'Passed';
+            statusClass = 'passed';
+          }
+
+          // Format duration
+          const durationUsed = test.duration_used_seconds || 0;
+          const minutes = Math.floor(durationUsed / 60);
+          const seconds = durationUsed % 60;
+          const durationStr = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+
+          // Build per-section breakdown
+          let sectionsHtml = '';
+          if (test.per_section && Object.keys(test.per_section).length > 0) {
+            sectionsHtml = '<div class="test-history-sections"><div style="font-size: 12px; color: #64748b; margin-bottom: 8px; text-transform: uppercase; font-weight: 600;">Section Breakdown</div>';
+            for (const [sectionName, stats] of Object.entries(test.per_section)) {
+              const attempted = stats.attempted || 0;
+              const correct = stats.correct || 0;
+              const sectionPercent = attempted > 0 ? Math.round((correct / attempted) * 100) : 0;
+              sectionsHtml += `
+                <div class="test-history-section-item">
+                  <span class="test-history-section-name">${sectionName}</span>
+                  <span class="test-history-section-score">${correct}/${attempted} (${sectionPercent}%)</span>
+                </div>
+              `;
+            }
+            sectionsHtml += '</div>';
+          }
+
+          card.innerHTML = `
+            <div class="test-history-header">
+              <div>
+                <div class="test-history-date">${dateStr}</div>
+              </div>
+              <span class="test-history-status ${statusClass}">${statusText}</span>
+            </div>
+            <div class="test-history-score">${test.percentage_score ? test.percentage_score.toFixed(1) : 0}%</div>
+            <div class="test-history-details">
+              <div class="test-history-detail-item">
+                <div class="test-history-detail-label">Score</div>
+                <div class="test-history-detail-value">${test.score || 0}/${test.total_with_keys || 0}</div>
+              </div>
+              <div class="test-history-detail-item">
+                <div class="test-history-detail-label">Attempted</div>
+                <div class="test-history-detail-value">${test.attempted || 0}/${test.total || 0}</div>
+              </div>
+              <div class="test-history-detail-item">
+                <div class="test-history-detail-label">Duration</div>
+                <div class="test-history-detail-value">${durationStr}</div>
+              </div>
+              <div class="test-history-detail-item">
+                <div class="test-history-detail-label">Status</div>
+                <div class="test-history-detail-value">${statusText}</div>
+              </div>
+            </div>
+            ${sectionsHtml}
+            ${test.termination_reason ? `<div style="margin-top: 12px; padding: 8px; background: #fee2e2; border-radius: 8px; font-size: 12px; color: #dc2626;"><strong>Reason:</strong> ${test.termination_reason.replace(/_/g, ' ')}</div>` : ''}
+          `;
+
+          grid.appendChild(card);
+        });
+
+        container.innerHTML = '';
+        container.appendChild(grid);
+      } catch (e) {
+        console.error('Error loading test history:', e);
+        container.innerHTML = `
+          <div style="text-align: center; padding: 40px; color: #64748b;">
+            <div style="font-size: 48px; margin-bottom: 16px;">❌</div>
+            <div>Failed to load test history. Please try again.</div>
+          </div>
+        `;
+      }
+    }
+
+    // Load test history when page loads
+    window.addEventListener('DOMContentLoaded', function() {
+      loadTestHistory();
+    });
+  </script>
+</body>
+</html>
+

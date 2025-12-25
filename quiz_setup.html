@@ -6,12 +6,12 @@
     <title>Quiz Setup - OACA</title>
     <style>
         :root {
-            --bg1: #0b1d44;
-            --bg2: #0a1a3d;
-            --glass: rgba(255,255,255,0.08);
-            --glass-border: rgba(255,255,255,0.14);
-            --text: #e6eeff;
-            --muted: #9db0d9;
+            --bg1: #ffffff;
+            --bg2: #f8fafc;
+            --glass: #ffffff;
+            --glass-border: #e2e8f0;
+            --text: #1e293b;
+            --muted: #64748b;
             --accent: #3b82f6;
             --accent-2: #60a5fa;
             --success: #22c55e;
@@ -27,9 +27,7 @@
         
         body {
             color: var(--text);
-            background: radial-gradient(1200px 800px at 20% 30%, #13306b 0%, #0d1f4a 60%, #091735 100%),
-                        linear-gradient(135deg, var(--bg1) 0%, var(--bg2) 100%);
-            background-attachment: fixed;
+            background: #ffffff;
             font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
         }
 
@@ -45,12 +43,11 @@
 
         .setup-card {
             background: var(--glass);
-            backdrop-filter: blur(16px) saturate(140%);
             border: 1px solid var(--glass-border);
             border-radius: 20px;
             padding: 40px;
             text-align: center;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
             width: 100%;
             max-width: 600px;
         }
@@ -94,7 +91,7 @@
             gap: 8px;
             margin: 16px 0;
             padding: 12px 16px;
-            background: rgba(255,255,255,0.05);
+            background: #f1f5f9;
             border-radius: 8px;
             font-size: 14px;
             font-weight: 500;
@@ -124,7 +121,7 @@
         .progress-bar {
             width: 100%;
             height: 8px;
-            background: rgba(255, 255, 255, 0.1);
+            background: #e2e8f0;
             border-radius: 4px;
             overflow: hidden;
             margin: 12px 0;
@@ -139,8 +136,8 @@
         }
 
         .capture-instructions {
-            background: rgba(59, 130, 246, 0.1);
-            border: 1px solid rgba(59, 130, 246, 0.3);
+            background: #dbeafe;
+            border: 1px solid #93c5fd;
             border-radius: 12px;
             padding: 16px;
             margin: 16px 0;
@@ -168,8 +165,8 @@
             text-align: left;
             margin: 24px 0;
             padding: 20px;
-            background: rgba(59, 130, 246, 0.1);
-            border: 1px solid rgba(59, 130, 246, 0.3);
+            background: #dbeafe;
+            border: 1px solid #93c5fd;
             border-radius: 12px;
         }
 
@@ -220,10 +217,10 @@
             text-align: left;
             margin: 24px 0;
             padding: 20px;
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid rgba(239, 68, 68, 0.3);
+            background: #fef2f2;
+            border: 1px solid #fecaca;
             border-radius: 12px;
-            color: #fca5a5;
+            color: #dc2626;
         }
 
         .warning strong {
@@ -281,6 +278,16 @@
         <div class="setup-card">
             <h1>Quiz Setup</h1>
             <p class="subtitle">AI-Powered Anti-Cheating Detection</p>
+            <div id="attemptsInfo" style="
+                background: #dbeafe;
+                border: 1px solid #93c5fd;
+                border-radius: 12px;
+                padding: 12px;
+                margin: 0 0 20px 0;
+                font-size: 16px;
+                color: var(--accent-2);
+                font-weight: 600;
+            ">Loading attempts information...</div>
             
             <div class="camera-setup">
                 <video id="video" autoplay playsinline muted></video>
@@ -320,8 +327,8 @@
             </div>
             
             <div style="
-                background: rgba(59, 130, 246, 0.1);
-                border: 1px solid rgba(59, 130, 246, 0.3);
+                background: #dbeafe;
+                border: 1px solid #93c5fd;
                 border-radius: 12px;
                 padding: 20px;
                 margin: 20px 0;
@@ -330,7 +337,7 @@
                 <h4 style="color: var(--accent-2); margin: 0 0 12px 0; font-size: 16px;">📋 Quiz Flow</h4>
                 <div style="display: flex; justify-content: center; align-items: center; gap: 16px; flex-wrap: wrap;">
                     <div style="
-                        background: rgba(255, 255, 255, 0.1);
+                        background: #e2e8f0;
                         color: var(--muted);
                         padding: 8px 16px;
                         border-radius: 20px;
@@ -348,7 +355,7 @@
                     ">2. Face Setup</div>
                     <div style="color: var(--muted); font-size: 18px;">→</div>
                     <div style="
-                        background: rgba(255, 255, 255, 0.1);
+                        background: #e2e8f0;
                         color: var(--muted);
                         padding: 8px 16px;
                         border-radius: 20px;
@@ -397,24 +404,105 @@
         let stream = null;
         let faceCaptured = false;
 
-        // Get assignment ID from URL
+        // Get assignment ID and attempts from URL
         const urlParams = new URLSearchParams(window.location.search);
         const assignmentId = urlParams.get('assignment_id');
+        const attemptsParam = urlParams.get('attempts');
+        let attemptsInfoEl = document.getElementById('attemptsInfo');
+
+        // Display attempts information if available
+        (async () => {
+            try {
+                let attemptsInfo = '';
+                if (attemptsParam) {
+                    // Use attempts from URL if available
+                    attemptsInfo = `You have ${attemptsParam} attempt${attemptsParam !== '1' ? 's' : ''} remaining`;
+                } else {
+                    // Fetch attempts from API
+                    const meRes = await fetch('/api/profile', { credentials: 'include' });
+                    if (meRes.ok) {
+                        const me = await meRes.json();
+                        const attRes = await fetch('/api/my/attempts', { credentials: 'include' });
+                        if (attRes.ok) {
+                            const att = await attRes.json();
+                            const used = att.attempts_used || 0;
+                            const remaining = Math.max(0, 3 - used);
+                            attemptsInfo = `You have ${remaining} attempt${remaining !== 1 ? 's' : ''} remaining`;
+                        }
+                    }
+                }
+                if (attemptsInfoEl && attemptsInfo) {
+                    attemptsInfoEl.textContent = attemptsInfo;
+                } else if (attemptsInfoEl) {
+                    attemptsInfoEl.textContent = 'Loading attempts information...';
+                }
+            } catch (e) {
+                console.log('Could not fetch attempts:', e);
+                if (attemptsInfoEl) {
+                    attemptsInfoEl.textContent = 'Attempts information not available';
+                }
+            }
+        })();
 
         // Check if quiz was terminated due to violation
-        function checkTerminationStatus() {
+        async function checkTerminationStatus() {
             if (assignmentId) {
                 try {
                     const terminated = localStorage.getItem(`assigned_quiz_state_${assignmentId}_terminated`);
                     if (terminated) {
                         const data = JSON.parse(terminated);
                         if (data.terminated) {
-                            statusDiv.innerHTML = `<div class="status-indicator"></div><span>Quiz terminated: ${data.message}</span>`;
-                            statusDiv.classList.add('error');
-                            startBtn.disabled = true;
-                            startBtn.textContent = 'Quiz Terminated';
-                            startBtn.style.display = 'block';
-                            return true;
+                            // Check remaining attempts; don't block camera if attempts remain
+                            let remainingAttempts = 0;
+                            try {
+                                const attRes = await fetch('/api/my/attempts', { credentials: 'include' });
+                                if (attRes.ok) {
+                                    const att = await attRes.json();
+                                    const used = att.attempts_used || 0;
+                                    remainingAttempts = Math.max(0, 3 - used);
+                                }
+                            } catch(_) {}
+
+                            statusDiv.innerHTML = `<div class="status-indicator"></div><span>Quiz terminated: ${data.message}${remainingAttempts>0?` — You can retry (${remainingAttempts} left)`:''}</span>`;
+                            statusDiv.classList.add(remainingAttempts>0 ? 'ready' : 'error');
+
+                            if (remainingAttempts > 0) {
+                                // Auto-create a fresh assignment for the next attempt
+                                try {
+                                    const createRes = await fetch('/api/quiz-assignments', { method:'POST', headers:{'Content-Type':'application/json'}, credentials:'include', body: JSON.stringify({}) });
+                                    const created = await createRes.json();
+                                    if (createRes.ok && created.assignment_id) {
+                                        // Clear old persisted state and termination flag for the previous assignment
+                                        try {
+                                          localStorage.removeItem(`assigned_quiz_state_${assignmentId}`);
+                                          localStorage.removeItem(`assigned_quiz_state_${assignmentId}_terminated`);
+                                        } catch(_) {}
+                                        const newId = created.assignment_id;
+                                        const url = new URL(window.location.href);
+                                        url.searchParams.set('assignment_id', newId);
+                                        window.history.replaceState({}, '', url.toString());
+                                        // Update local variable and UI
+                                        statusDiv.classList.remove('error');
+                                        statusDiv.classList.add('ready');
+                                        statusDiv.innerHTML = '<div class="status-indicator"></div><span>New attempt created. Initializing camera...</span>';
+                                        // Update assignmentId binding
+                                        // Note: reassignment of const is not allowed; we rely on URL param hereafter
+                                        setTimeout(()=>{ initCamera(); }, 300);
+                                        return false;
+                                    }
+                                } catch(_) {}
+                                // If creation failed, allow manual start at least
+                                startBtn.disabled = false;
+                                startBtn.textContent = 'Start Quiz';
+                                startBtn.style.display = 'block';
+                                return false;
+                            } else {
+                                // Block if no attempts left
+                                startBtn.disabled = true;
+                                startBtn.textContent = 'Quiz Terminated';
+                                startBtn.style.display = 'block';
+                                return true;
+                            }
                         }
                     }
                 } catch(_) {}
@@ -649,13 +737,15 @@
         });
 
         // Check termination status first
-        if (checkTerminationStatus()) {
-            // Quiz was terminated, don't proceed with camera initialization
-            console.log('Quiz was terminated, skipping camera initialization');
-        } else {
-            // Initialize on load
-            initCamera();
-        }
+        (async ()=>{
+            const blocked = await checkTerminationStatus();
+            if (!blocked) {
+                // Initialize on load
+                initCamera();
+            } else {
+                console.log('Quiz was terminated with no attempts left, skipping camera initialization');
+            }
+        })();
     </script>
 </body>
 </html>
